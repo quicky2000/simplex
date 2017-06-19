@@ -87,6 +87,18 @@ namespace simplex
 			   const COEF_TYPE & p_value
 			   );
 
+    /**
+       Return coefficient for A coefficients in A x = b
+       @param p_equation_index : the value should be less than total number of equations
+       @param p_variable_index : the value should be less than number of variables
+       @return value : value of coefficient in A
+    */
+    inline
+      const COEF_TYPE &
+      get_A_coef(const unsigned int p_equation_index,
+		 const unsigned int p_variable_index
+		 ) const;
+
     inline ~simplex(void);
 
     /**
@@ -125,6 +137,7 @@ namespace simplex
     inline void set_adjustement_variable(const unsigned int & p_equation_index,
 					 const COEF_TYPE & p_value
 					 );
+
     /**
        Variable numbers without adjustment variables
     */
@@ -282,6 +295,19 @@ namespace simplex
 
   //----------------------------------------------------------------------------
   template <typename COEF_TYPE>
+    const COEF_TYPE &
+    simplex<COEF_TYPE>::get_A_coef(const unsigned int p_equation_index,
+				   const unsigned int p_variable_index
+				   )const
+    {
+      assert(m_equation_coefs);
+      assert(p_equation_index < m_nb_total_equations);
+      assert(p_variable_index < m_nb_variables);
+      return m_equation_coefs[p_equation_index * m_nb_all_variables + p_variable_index];
+    }
+
+  //----------------------------------------------------------------------------
+  template <typename COEF_TYPE>
   void simplex<COEF_TYPE>::pivot(const unsigned int p_row_index,
 				 const unsigned int p_column_index
 				 )
@@ -376,6 +402,7 @@ namespace simplex
       m_equation_coefs[p_equation_index * m_nb_all_variables + l_column_index] = p_value;
       ++m_nb_defined_adjustment_variables;
     }
+
   //----------------------------------------------------------------------------
   template <typename COEF_TYPE>
   void simplex<COEF_TYPE>::define_equation_type(const unsigned int & p_equation_index,
