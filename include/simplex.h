@@ -163,6 +163,31 @@ namespace simplex
     inline void set_adjustement_variable(const unsigned int & p_equation_index,
 					 const COEF_TYPE & p_value
 					 );
+    /**
+       Method to determine the next input variable for pivot operation
+       when searching max optimum
+       @param reference on variable where to store the input variable index if any
+       @return boolean indicating if an input variable was found: TRUE = found
+     */
+    inline bool get_max_input_variable_index(unsigned int & p_variable_index) const;
+
+    /**
+       Method to determine the next output variable for pivot operation
+       @param index of input variable
+       @param reference on variable where to store the input variable index if any
+       @return boolean indicating if an input variable was found
+     */
+    inline bool get_output_variable_index(unsigned int p_input_variable_index,
+					      unsigned int & p_variable_index
+					      )const;
+
+    /**
+       Method to determine the next input variable for pivot operation
+       when searching min optimum
+       @param reference on variable where to store the input variable index if any
+       @return boolean indicating if an input variable was found: TRUE = found
+     */
+    inline bool get_min_input_variable_index(unsigned int & p_variable_index) const;
 
     /**
        Variable numbers without adjustment variables
@@ -453,6 +478,71 @@ namespace simplex
       unsigned int l_column_index = m_nb_variables + m_nb_defined_adjustment_variables;
       set_internal_coef(p_equation_index, l_column_index, p_value);
       ++m_nb_defined_adjustment_variables;
+    }
+
+  //----------------------------------------------------------------------------
+  template <typename COEF_TYPE>
+  bool simplex<COEF_TYPE>::get_max_input_variable_index(unsigned int & p_variable_index) const
+    {
+      for(unsigned int l_index = 0;
+	  l_index < m_nb_all_variables;
+	  ++l_index
+	  )
+	{
+	  if(m_z_coefs[l_index] < 0)
+	    {
+	      p_variable_index = l_index;
+	      return true;
+	    }
+	}
+      return false;
+    }
+
+  //----------------------------------------------------------------------------
+  template <typename COEF_TYPE>
+  bool simplex<COEF_TYPE>::get_min_input_variable_index(unsigned int & p_variable_index) const
+    {
+      for(unsigned int l_index = 0;
+	  l_index < m_nb_all_variables;
+	  ++l_index
+	  )
+	{
+	  if(m_z_coefs[l_index] > 0)
+	    {
+	      p_variable_index = l_index;
+	      return true;
+	    }
+	}
+      return false;
+    }
+
+  //----------------------------------------------------------------------------
+  template <typename COEF_TYPE>
+  bool simplex<COEF_TYPE>::get_output_variable_index(unsigned int p_input_variable_index,
+							 unsigned int & p_variable_index
+							 )const
+    {
+      assert(p_input_variable_index < m_nb_all_variables);
+      bool l_found = false;
+      COEF_TYPE l_min = 9999999;
+      for(unsigned int l_index = 0;
+	  l_index < m_nb_total_equations;
+	  ++l_index
+	  )
+	{
+	  COEF_TYPE l_divider = get_internal_coef(l_index,p_input_variable_index);
+	  if(l_divider > 0)
+	    {
+	      COEF_TYPE l_result = m_b_coefs[l_index] / l_divider;
+	      if(l_result < l_min)
+		{
+		  l_min = l_result;
+		  p_variable_index = l_index;
+		  l_found = true;
+		}
+	    }
+	}
+      return l_found;
     }
 
   //----------------------------------------------------------------------------
