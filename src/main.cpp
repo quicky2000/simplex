@@ -46,23 +46,20 @@ void test_case1(void)
   l_simplex.define_equation_type(0,simplex::t_equation_type::EQUATION);
   l_simplex.define_equation_type(1,simplex::t_equation_type::EQUATION);
 
-  std::cout << "---------------------------------" << std::endl;
-  l_simplex.display_array(std::cout);
-
-  l_simplex.pivot(0,0);
-
-  std::cout << "---------------------------------" << std::endl;
-  l_simplex.display_array(std::cout);
-
-  l_simplex.pivot(0,1);
-
-  std::cout << "---------------------------------" << std::endl;
-  l_simplex.display_array(std::cout);
-
-  l_simplex.pivot(1,2);
-
-  std::cout << "---------------------------------" << std::endl;
-  l_simplex.display_array(std::cout);
+  double l_max = 0;
+  bool l_infinite = false;
+  if(l_simplex.find_max(l_max,l_infinite))
+    {
+      std::cout << "Max = " << l_max << std::endl ;
+    }
+  else if(l_infinite)
+    {
+      std::cout << "Inifinite Max" << std::endl;
+    }
+  else
+    {
+      std::cout << "No Max found !?" << std::endl;
+    }
 }
 
 void test_case2(void)
@@ -75,28 +72,31 @@ void test_case2(void)
   // x2 <= 14
   // x1 x2 >= 0
 
-  unsigned int l_max = 0;
-  for(unsigned int l_x1 = 0;
-      l_x1 <= 34;
-      ++l_x1
-      )
-    {
-      for(unsigned int l_x2 = 0;
-	  l_x2 < 14;
-	  ++l_x2
-	  )
-	{
-	  if(2 * l_x1 + 3 * l_x2 <= 60 && 10 * l_x1 + 5 * l_x2 <=200)
-	    {
-	      unsigned int l_result = 1000 * l_x1 + 1200 * l_x2;
-	      if(l_result > l_max)
-		{
-		  l_max = l_result;
-		  std::cout << "(" << l_x1 << "," << l_x2 << ") = " << l_max << std::endl;
-		}
-	    }
-	}
-    }
+  // Manual search
+  {
+    unsigned int l_max = 0;
+    for(unsigned int l_x1 = 0;
+	l_x1 <= 34;
+	++l_x1
+	)
+      {
+	for(unsigned int l_x2 = 0;
+	    l_x2 < 14;
+	    ++l_x2
+	    )
+	  {
+	    if(2 * l_x1 + 3 * l_x2 <= 60 && 10 * l_x1 + 5 * l_x2 <=200)
+	      {
+		unsigned int l_result = 1000 * l_x1 + 1200 * l_x2;
+		if(l_result > l_max)
+		  {
+		    l_max = l_result;
+		    std::cout << "(" << l_x1 << "," << l_x2 << ") = " << l_max << std::endl;
+		  }
+	      }
+	  }
+      }
+  }
 
   simplex::simplex<double> l_simplex(2, // Number of variables : x1 and x2
 				     4, // Number of inequations with the form A x <= b
@@ -120,18 +120,20 @@ void test_case2(void)
   l_simplex.define_equation_type(2,simplex::t_equation_type::INEQUATION_LT);
   l_simplex.define_equation_type(3,simplex::t_equation_type::INEQUATION_LT);
 
-  std::cout << "---------------------------------" << std::endl;
-  l_simplex.display_array(std::cout);
-
-  l_simplex.pivot(0,0);
-
-  std::cout << "---------------------------------" << std::endl;
-  l_simplex.display_array(std::cout);
-
-  l_simplex.pivot(1,1);
-
-  std::cout << "---------------------------------" << std::endl;
-  l_simplex.display_array(std::cout);
+  double l_max = 0;
+  bool l_infinite = false;
+  if(l_simplex.find_max(l_max,l_infinite))
+    {
+      std::cout << "Max = " << l_max << std::endl ;
+    }
+  else if(l_infinite)
+    {
+      std::cout << "Inifinite Max" << std::endl;
+    }
+  else
+    {
+      std::cout << "No Max found !?" << std::endl;
+    }
 }
 
 //------------------------------------------------------------------------------

@@ -24,6 +24,7 @@
 #include <iostream>
 #include <sstream>
 #include <string>
+#include <limits>
 		
 namespace simplex
 {
@@ -125,6 +126,8 @@ namespace simplex
     inline void pivot(const unsigned int p_row_index,
 		      const unsigned int p_column_index
 		      );
+
+    inline bool find_max(COEF_TYPE & p_max, bool & p_infinite);
 
   private:
     /**
@@ -524,7 +527,7 @@ namespace simplex
     {
       assert(p_input_variable_index < m_nb_all_variables);
       bool l_found = false;
-      COEF_TYPE l_min = 9999999;
+      COEF_TYPE l_min = std::numeric_limits<COEF_TYPE>::max();
       for(unsigned int l_index = 0;
 	  l_index < m_nb_total_equations;
 	  ++l_index
@@ -570,6 +573,34 @@ namespace simplex
 	default:
 	  throw quicky_exception::quicky_logic_exception("Unknown equation_type value : "+ std::to_string((unsigned int)p_equation_type),__LINE__,__FILE__);
 	}
+    }
+
+  //----------------------------------------------------------------------------
+  template <typename COEF_TYPE>
+  bool simplex<COEF_TYPE>::find_max(COEF_TYPE & p_max, bool & p_infinite)
+    {
+      std::cout << "---------------------------------" << std::endl;
+      display_array(std::cout);
+      p_infinite = false;
+      bool l_input_found = true;
+      unsigned int l_input_variable_index = 0;
+      while(true == (l_input_found = get_max_input_variable_index(l_input_variable_index)))
+	{
+	  unsigned int l_ouput_variable_index = 0;
+	  if(get_output_variable_index(l_input_variable_index,l_ouput_variable_index))
+	    {
+	      pivot(l_ouput_variable_index,l_input_variable_index);
+	      std::cout << "---------------------------------" << std::endl;
+	      display_array(std::cout);
+	    }
+	  else
+	    {
+	      p_infinite = true;
+	      return false;
+	    }
+	}
+      p_max = m_z0;
+      return true;
     }
 
   //----------------------------------------------------------------------------
