@@ -45,6 +45,8 @@ void test_case1(void)
   l_simplex.set_A_coef(1,4,1);
   l_simplex.define_equation_type(0,simplex::t_equation_type::EQUATION);
   l_simplex.define_equation_type(1,simplex::t_equation_type::EQUATION);
+  l_simplex.define_base_variable(3);
+  l_simplex.define_base_variable(4);
 
   double l_max = 0;
   bool l_infinite = false;

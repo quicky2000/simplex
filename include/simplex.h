@@ -127,7 +127,21 @@ namespace simplex
 		      const unsigned int p_column_index
 		      );
 
+    /**
+       Method implementing simplex algorithm to find max optimum solution
+       The problem must be in solved form
+       @param reference on variable where result will be stored
+       @param reference on a boolean value that will receive true if max
+       is infinite
+       @return value indicating if a max was found
+     */
     inline bool find_max(COEF_TYPE & p_max, bool & p_infinite);
+
+    /**
+       Declare that a variable is a base variable
+       @param variable index in simplex array
+    */
+    inline void define_base_variable(const unsigned int & p_variable_index);
 
   private:
     /**
@@ -175,13 +189,14 @@ namespace simplex
     inline bool get_max_input_variable_index(unsigned int & p_variable_index) const;
 
     /**
-       Method to determine the next output variable for pivot operation
+       Method to determine the equation index corresponding to next output
+       variable for pivot operation
        @param index of input variable
-       @param reference on variable where to store the input variable index if any
+       @param reference on variable where to store the output equation index if any
        @return boolean indicating if an input variable was found
      */
-    inline bool get_output_variable_index(unsigned int p_input_variable_index,
-					      unsigned int & p_variable_index
+    inline bool get_output_equation_index(unsigned int p_input_variable_index,
+					      unsigned int & p_equation_index
 					      )const;
 
     /**
@@ -213,9 +228,9 @@ namespace simplex
     unsigned int m_nb_inequations_gt;
 
     /**
-       Variable counting the number of base variables specified
+       Variable counting the number of base variables
      */
-    unsigned int m_nb_base_variables;
+    unsigned int m_nb_adjustment_variable;
 
     /**
        Variable counting the number of adjustement variable specified
@@ -256,6 +271,21 @@ namespace simplex
        Equation types
      */
     t_equation_type * m_equation_types;
+
+    /**
+       Base variables, array to store base variables index
+    */
+    unsigned int * m_base_variables;
+
+    /**
+       Array storing if variable is a base variable or not
+     */
+    unsigned int * m_base_variables_position;
+
+    /**
+       Nb base variables defined
+     */
+    unsigned int m_nb_base_variables_defined;
   };
 
   //----------------------------------------------------------------------------
@@ -294,21 +324,32 @@ namespace simplex
     m_nb_inequations_lt(p_nb_inequations_lt),
     m_nb_equations(p_nb_equations),
     m_nb_inequations_gt(p_nb_inequations_gt),
-    m_nb_base_variables(p_nb_inequations_lt + p_nb_inequations_gt),
+    m_nb_adjustment_variable(p_nb_inequations_lt + p_nb_inequations_gt),
     m_nb_defined_adjustment_variables(0),
-    m_nb_all_variables(p_nb_variables + m_nb_base_variables),
+    m_nb_all_variables(p_nb_variables + m_nb_adjustment_variable),
     m_nb_total_equations(p_nb_inequations_lt + p_nb_equations + p_nb_inequations_gt),
     m_equation_coefs(new COEF_TYPE[m_nb_all_variables * m_nb_total_equations]),
     m_b_coefs(new COEF_TYPE[m_nb_total_equations]),
     m_z_coefs(new COEF_TYPE[m_nb_all_variables]),
     m_z0(0),
-    m_equation_types(new t_equation_type[m_nb_total_equations])
+    m_equation_types(new t_equation_type[m_nb_total_equations]),
+    m_base_variables(new unsigned int[m_nb_total_equations]),
+    m_base_variables_position(new unsigned int[m_nb_all_variables]),
+    m_nb_base_variables_defined(0)
       {
 	static_assert(std::is_signed<COEF_TYPE>::value,"Simplex template parameter shoudl be signed");
 	memset(m_equation_coefs,0,m_nb_all_variables * m_nb_total_equations * sizeof(COEF_TYPE));
 	memset(m_b_coefs,0,m_nb_total_equations * sizeof(COEF_TYPE));
 	memset(m_z_coefs,0,m_nb_all_variables * sizeof(COEF_TYPE));
 	memset(m_equation_types, 0, m_nb_total_equations * sizeof(t_equation_type));
+	for(unsigned int l_index = 0;
+	    l_index < m_nb_total_equations;
+	    ++l_index
+	    )
+	  {
+	    m_base_variables[l_index] = std::numeric_limits<unsigned int>::max();
+	  }
+	memset(m_base_variables_position, 0xFF, m_nb_all_variables * sizeof(unsigned int));
       }
 
   //----------------------------------------------------------------------------
@@ -459,7 +500,23 @@ namespace simplex
 	 ++l_row_index
 	 )
        {
-	 p_stream << " \t";
+	 unsigned int l_var_index = m_base_variables[l_row_index];
+	 if(std::numeric_limits<unsigned int>::max() != l_var_index)
+	   {
+	     if(l_var_index < m_nb_variables)
+	       {
+		 p_stream << "X" << 1 + l_var_index;
+	       }
+	     else
+	       {
+		 p_stream << "E" << 1 + l_var_index - m_nb_variables;
+	       }
+	   }
+	 else
+	   {
+		 p_stream << " ";
+	   }
+	 p_stream << "\t";
 	 for(unsigned int l_index = 0;
 	     l_index < m_nb_all_variables;
 	     ++l_index
@@ -480,6 +537,10 @@ namespace simplex
     {
       unsigned int l_column_index = m_nb_variables + m_nb_defined_adjustment_variables;
       set_internal_coef(p_equation_index, l_column_index, p_value);
+      if(!m_nb_equations)
+	{
+	  define_base_variable(l_column_index);
+	}
       ++m_nb_defined_adjustment_variables;
     }
 
@@ -521,8 +582,8 @@ namespace simplex
 
   //----------------------------------------------------------------------------
   template <typename COEF_TYPE>
-  bool simplex<COEF_TYPE>::get_output_variable_index(unsigned int p_input_variable_index,
-							 unsigned int & p_variable_index
+  bool simplex<COEF_TYPE>::get_output_equation_index(unsigned int p_input_variable_index,
+						     unsigned int & p_equation_index
 							 )const
     {
       assert(p_input_variable_index < m_nb_all_variables);
@@ -540,7 +601,7 @@ namespace simplex
 	      if(l_result < l_min)
 		{
 		  l_min = l_result;
-		  p_variable_index = l_index;
+		  p_equation_index = l_index;
 		  l_found = true;
 		}
 	    }
@@ -581,15 +642,41 @@ namespace simplex
     {
       std::cout << "---------------------------------" << std::endl;
       display_array(std::cout);
+      if(m_nb_base_variables_defined != m_nb_total_equations)
+	{
+	  throw quicky_exception::quicky_runtime_exception("Not enough base variables defined : " + std::to_string(m_nb_base_variables_defined) + " < " + std::to_string(m_nb_total_equations) ,__LINE__,__FILE__);
+	}
+      for(unsigned int l_index = 0;
+	  l_index < m_nb_total_equations;
+	  ++l_index
+	  )
+	{
+	  unsigned int l_var_index = m_base_variables[l_index];
+	  assert(l_var_index != std::numeric_limits<unsigned int>::max());
+	  if(m_z_coefs[l_var_index])
+	    {
+	      throw quicky_exception::quicky_runtime_exception("Z coef of base variable in column " + std::to_string(l_var_index) + " should be 0 or this is not a base variable",__LINE__,__FILE__);
+	    }
+	}
       p_infinite = false;
       bool l_input_found = true;
       unsigned int l_input_variable_index = 0;
       while(true == (l_input_found = get_max_input_variable_index(l_input_variable_index)))
 	{
-	  unsigned int l_ouput_variable_index = 0;
-	  if(get_output_variable_index(l_input_variable_index,l_ouput_variable_index))
+	  assert(std::numeric_limits<unsigned int>::max() == m_base_variables_position[l_input_variable_index]);
+	  assert(m_z_coefs[l_input_variable_index]);
+	  unsigned int l_output_equation_index = 0;
+	  if(get_output_equation_index(l_input_variable_index,l_output_equation_index))
 	    {
-	      pivot(l_ouput_variable_index,l_input_variable_index);
+	      unsigned int l_output_variable_index = m_base_variables[l_output_equation_index];
+	      assert(l_output_equation_index == m_base_variables_position[l_output_variable_index]);
+	      assert(!m_z_coefs[l_output_variable_index]);
+	      pivot(l_output_equation_index,l_input_variable_index);
+	      assert(m_z_coefs[l_output_variable_index]);
+	      assert(!m_z_coefs[l_input_variable_index]);
+	      m_base_variables_position[l_output_variable_index] = std::numeric_limits<unsigned int>::max();
+	      m_base_variables_position[l_input_variable_index] = l_output_equation_index;
+	      m_base_variables[l_output_equation_index] = l_input_variable_index;
 	      std::cout << "---------------------------------" << std::endl;
 	      display_array(std::cout);
 	    }
@@ -605,8 +692,21 @@ namespace simplex
 
   //----------------------------------------------------------------------------
   template <typename COEF_TYPE>
+  void simplex<COEF_TYPE>::define_base_variable(const unsigned int & p_variable_index)
+  {
+    assert(p_variable_index < m_nb_all_variables);
+    assert(m_nb_base_variables_defined < m_nb_total_equations);
+    m_base_variables[m_nb_base_variables_defined] = p_variable_index;
+    m_base_variables_position[p_variable_index] = m_nb_base_variables_defined;
+    ++m_nb_base_variables_defined;
+  }
+
+  //----------------------------------------------------------------------------
+  template <typename COEF_TYPE>
   simplex<COEF_TYPE>::~simplex(void)
     {
+      delete[] m_base_variables_position;
+      delete[] m_base_variables;
       delete[] m_equation_types;
       m_equation_types = nullptr;
       delete[] m_z_coefs;
