@@ -65,84 +65,85 @@ void test_case1(void)
   l_simplex.display_array(std::cout);
 }
 
+void test_case2(void)
+{
+  // Example
+  // Max z = 1000 x1 + 1200 x2
+  // 10 x1 + 5 x2 <= 200
+  // 2 x1 + 3 x2 <= 60
+  // x1 <= 34
+  // x2 <= 14
+  // x1 x2 >= 0
+
+  unsigned int l_max = 0;
+  for(unsigned int l_x1 = 0;
+      l_x1 <= 34;
+      ++l_x1
+      )
+    {
+      for(unsigned int l_x2 = 0;
+	  l_x2 < 14;
+	  ++l_x2
+	  )
+	{
+	  if(2 * l_x1 + 3 * l_x2 <= 60 && 10 * l_x1 + 5 * l_x2 <=200)
+	    {
+	      unsigned int l_result = 1000 * l_x1 + 1200 * l_x2;
+	      if(l_result > l_max)
+		{
+		  l_max = l_result;
+		  std::cout << "(" << l_x1 << "," << l_x2 << ") = " << l_max << std::endl;
+		}
+	    }
+	}
+    }
+
+  simplex::simplex<double> l_simplex(2, // Number of variables : x1 and x2
+				     4, // Number of inequations with the form A x <= b
+				     0, // Number of equations with the form A x = b
+				     0  // Number of inequations with the form A x >= b
+				     );
+  l_simplex.set_Z_coef(0,1000);
+  l_simplex.set_Z_coef(1,1200);
+  l_simplex.set_B_coef(0,200);
+  l_simplex.set_B_coef(1,60);
+  l_simplex.set_B_coef(2,34);
+  l_simplex.set_B_coef(3,14);
+  l_simplex.set_A_coef(0,0,10);
+  l_simplex.set_A_coef(0,1,5);
+  l_simplex.set_A_coef(1,0,2);
+  l_simplex.set_A_coef(1,1,3);
+  l_simplex.set_A_coef(2,0,1);
+  l_simplex.set_A_coef(3,1,1);
+  l_simplex.define_equation_type(0,simplex::t_equation_type::INEQUATION_LT);
+  l_simplex.define_equation_type(1,simplex::t_equation_type::INEQUATION_LT);
+  l_simplex.define_equation_type(2,simplex::t_equation_type::INEQUATION_LT);
+  l_simplex.define_equation_type(3,simplex::t_equation_type::INEQUATION_LT);
+
+  std::cout << "---------------------------------" << std::endl;
+  l_simplex.display_array(std::cout);
+
+  l_simplex.pivot(0,0);
+
+  std::cout << "---------------------------------" << std::endl;
+  l_simplex.display_array(std::cout);
+
+  l_simplex.pivot(1,1);
+
+  std::cout << "---------------------------------" << std::endl;
+  l_simplex.display_array(std::cout);
+}
+
 //------------------------------------------------------------------------------
 int main(int argc,char ** argv)
 {
   try
     {
-
+      std::cout << "============ TEST CASE 1 ==============" << std::endl;
       test_case1();
-      // Example
-      // Max z = 1000 x1 + 1200 x2
-      // 10 x1 + 5 x2 <= 200
-      // 2 x1 + 3 x2 <= 60
-      // x1 <= 34
-      // x2 <= 14
-      // x1 x2 >= 0
-
-      unsigned int l_max = 0;
-      for(unsigned int l_x1 = 0;
-	  l_x1 <= 34;
-	  ++l_x1
-	  )
-	{
-	  for(unsigned int l_x2 = 0;
-	      l_x2 < 14;
-	      ++l_x2
-	      )
-	    {
-	      if(2 * l_x1 + 3 * l_x2 <= 60 && 10 * l_x1 + 5 * l_x2 <=200)
-		{
-		  unsigned int l_result = 1000 * l_x1 + 1200 * l_x2;
-		  if(l_result > l_max)
-		    {
-		      l_max = l_result;
-		      std::cout << "(" << l_x1 << "," << l_x2 << ") = " << l_max << std::endl;
-		    }
-		}
-	    }
-	}
-
-      simplex::simplex<double> l_simplex(2, // Number of variables : x1 and x2
-				      4, // Number of inequations with the form A x <= b
-				      0, // Number of equations with the form A x = b
-				      0  // Number of inequations with the form A x >= b
-				      );
-      l_simplex.set_Z_coef(0,1000);
-      l_simplex.set_Z_coef(1,1200);
-      l_simplex.set_B_coef(0,200);
-      l_simplex.set_B_coef(1,60);
-      l_simplex.set_B_coef(2,34);
-      l_simplex.set_B_coef(3,14);
-      l_simplex.set_A_coef(0,0,10);
-      l_simplex.set_A_coef(0,1,5);
-      l_simplex.set_A_coef(1,0,2);
-      l_simplex.set_A_coef(1,1,3);
-      l_simplex.set_A_coef(2,0,1);
-      l_simplex.set_A_coef(3,1,1);
-      l_simplex.define_equation_type(0,simplex::t_equation_type::INEQUATION_LT);
-      l_simplex.define_equation_type(1,simplex::t_equation_type::INEQUATION_LT);
-      l_simplex.define_equation_type(2,simplex::t_equation_type::INEQUATION_LT);
-      l_simplex.define_equation_type(3,simplex::t_equation_type::INEQUATION_LT);
-
-      std::cout << "---------------------------------" << std::endl;
-      l_simplex.display_array(std::cout);
-
-      l_simplex.pivot(0,0);
-
-      std::cout << "---------------------------------" << std::endl;
-      l_simplex.display_array(std::cout);
-
-      l_simplex.pivot(1,1);
-
-      std::cout << "---------------------------------" << std::endl;
-      l_simplex.display_array(std::cout);
-
-      l_simplex.pivot(0,2);
-
-      std::cout << "---------------------------------" << std::endl;
-      l_simplex.display_array(std::cout);
-   }
+      std::cout << "============ TEST CASE 2 ==============" << std::endl;
+      test_case2();
+    }
   catch(quicky_exception::quicky_runtime_exception & e)
     {
       std::cout << "ERROR : " << e.what() << std::endl ;
