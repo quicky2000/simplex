@@ -127,6 +127,32 @@ namespace simplex
 		      );
 
   private:
+    /**
+       Define coefficient for A coefficients in A x = b
+       @param p_equation_index : the value should be less than total number of equations
+       @param p_variable_index : the value should be less than total number of variables
+       including adjustment variables
+       @param value : value of coefficient in A
+    */
+    inline void set_internal_coef(const unsigned int p_equation_index,
+				  const unsigned int p_variable_index,
+				  const COEF_TYPE & p_value
+				  );
+
+    /**
+       Return coefficient for A coefficients in A x = b
+       @param p_equation_index : the value should be less than total number of equations
+       @param p_variable_index : the value should be less than total number of variables
+       including adjustment variables
+       @return value : value of coefficient in A
+    */
+    inline
+      const COEF_TYPE &
+      get_internal_coef(const unsigned int p_equation_index,
+			const unsigned int p_variable_index
+			) const;
+
+
     simplex(void) = delete;
 
     /**
@@ -303,6 +329,32 @@ namespace simplex
       assert(m_equation_coefs);
       assert(p_equation_index < m_nb_total_equations);
       assert(p_variable_index < m_nb_variables);
+      return m_equation_coefs[p_equation_index * m_nb_all_variables + p_variable_index];
+    }
+
+  //----------------------------------------------------------------------------
+  template <typename COEF_TYPE>
+  void simplex<COEF_TYPE>::set_internal_coef(const unsigned int p_equation_index,
+					     const unsigned int p_variable_index,
+					     const COEF_TYPE & p_value
+					     )
+  {
+    assert(m_equation_coefs);
+    assert(p_equation_index < m_nb_total_equations);
+    assert(p_variable_index < m_nb_all_variables);
+    m_equation_coefs[p_equation_index * m_nb_all_variables + p_variable_index] = p_value;
+  }
+
+  //----------------------------------------------------------------------------
+  template <typename COEF_TYPE>
+    const COEF_TYPE &
+    simplex<COEF_TYPE>::get_internal_coef(const unsigned int p_equation_index,
+					  const unsigned int p_variable_index
+					  )const
+    {
+      assert(m_equation_coefs);
+      assert(p_equation_index < m_nb_total_equations);
+      assert(p_variable_index < m_nb_all_variables);
       return m_equation_coefs[p_equation_index * m_nb_all_variables + p_variable_index];
     }
 
