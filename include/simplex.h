@@ -366,7 +366,7 @@ namespace simplex
   {
     assert(p_row_index < m_nb_total_equations);
     assert(p_column_index < m_nb_all_variables);
-    COEF_TYPE l_pivot = m_equation_coefs[p_row_index * m_nb_all_variables + p_column_index ];
+    COEF_TYPE l_pivot = get_internal_coef(p_row_index,p_column_index);
     assert(l_pivot);
 
     // Pivoting Z
@@ -376,7 +376,7 @@ namespace simplex
 	 ++l_index
 	 )
        {
-	 COEF_TYPE l_u = m_equation_coefs[p_row_index * m_nb_all_variables + l_index];
+	 COEF_TYPE l_u = get_internal_coef(p_row_index,l_index);
 	 m_z_coefs[l_index] = m_z_coefs[l_index] - (l_q * l_u) / l_pivot;
        }
      m_z0 = m_z0 - (l_q * m_b_coefs[p_row_index]) / l_pivot;
@@ -389,15 +389,15 @@ namespace simplex
       {
 	if(l_row_index != p_row_index)
 	  {
-	    COEF_TYPE l_q = m_equation_coefs[l_row_index * m_nb_all_variables + p_column_index];
+	    COEF_TYPE l_q = get_internal_coef(l_row_index,p_column_index);
 	    m_b_coefs[l_row_index] = m_b_coefs[l_row_index] - (l_q * m_b_coefs[p_row_index]) / l_pivot;
 	    for(unsigned int l_index = 0;
 		l_index < m_nb_all_variables;
 		++l_index
 		)
 	      {
-		COEF_TYPE l_u = m_equation_coefs[p_row_index * m_nb_all_variables + l_index];
-		m_equation_coefs[l_row_index * m_nb_all_variables + l_index] = m_equation_coefs[l_row_index * m_nb_all_variables + l_index] - (l_q * l_u) / l_pivot;
+		COEF_TYPE l_u = get_internal_coef(p_row_index,l_index);
+		set_internal_coef(l_row_index, l_index, get_internal_coef(l_row_index,l_index) - (l_q * l_u) / l_pivot);
 	      }
 	  }
       }
@@ -408,7 +408,7 @@ namespace simplex
 	++l_index
 	)
       {
-	m_equation_coefs[p_row_index * m_nb_all_variables + l_index] = m_equation_coefs[p_row_index * m_nb_all_variables + l_index] / l_pivot;
+	set_internal_coef(p_row_index,l_index,get_internal_coef(p_row_index,l_index) / l_pivot);
       }
     m_b_coefs[p_row_index] = m_b_coefs[p_row_index] / l_pivot;
   }
@@ -437,7 +437,7 @@ namespace simplex
 	     ++l_index
 	     )
 	   {
-	     p_stream << m_equation_coefs[l_row_index * m_nb_all_variables + l_index] << "\t";
+	     p_stream << get_internal_coef(l_row_index, l_index) << "\t";
 	   }
 	 p_stream << "|\t" << m_b_coefs[l_row_index] << std::endl;
       }
@@ -451,7 +451,7 @@ namespace simplex
 						    )
     {
       unsigned int l_column_index = m_nb_variables + m_nb_defined_adjustment_variables;
-      m_equation_coefs[p_equation_index * m_nb_all_variables + l_column_index] = p_value;
+      set_internal_coef(p_equation_index, l_column_index, p_value);
       ++m_nb_defined_adjustment_variables;
     }
 
