@@ -74,6 +74,7 @@ namespace simplex
   void simplex_listener<COEF_TYPE>::new_Z0(const COEF_TYPE p_z0)
   {
     std::cout << "Iteration[" << m_nb_iteration << "] : New Z0 : " << p_z0 << std::endl;
+    m_simplex.display_array(std::cout);
   }
 
 }

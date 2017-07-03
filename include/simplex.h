@@ -643,8 +643,6 @@ namespace simplex
   template <class LISTENER>
     bool simplex<COEF_TYPE>::find_max(COEF_TYPE & p_max, bool & p_infinite,LISTENER * p_listener)
     {
-      std::cout << "---------------------------------" << std::endl;
-      display_array(std::cout);
       if(m_nb_base_variables_defined != m_nb_total_equations)
 	{
 	  throw quicky_exception::quicky_runtime_exception("Not enough base variables defined : " + std::to_string(m_nb_base_variables_defined) + " < " + std::to_string(m_nb_total_equations) ,__LINE__,__FILE__);
@@ -696,8 +694,6 @@ namespace simplex
 		{
 		  p_listener->new_Z0(m_z0);
 		}
-	      std::cout << "---------------------------------" << std::endl;
-	      display_array(std::cout);
 	    }
 	  else
 	    {
