@@ -108,7 +108,7 @@ namespace simplex
        @param p_stream stream where the display should be done
        @return the modified stream
      */
-    inline std::ostream & display_array(std::ostream & p_stream);
+    inline std::ostream & display_array(std::ostream & p_stream)const;
 
     /**
        Define equation type
@@ -486,7 +486,7 @@ namespace simplex
 
   //----------------------------------------------------------------------------
   template <typename COEF_TYPE>
-  std::ostream & simplex<COEF_TYPE>::display_array(std::ostream & p_stream)
+  std::ostream & simplex<COEF_TYPE>::display_array(std::ostream & p_stream)const
     {
       p_stream << "Z\t";
      for(unsigned int l_index = 0;
