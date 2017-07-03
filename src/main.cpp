@@ -51,7 +51,7 @@ void test_case1(void)
 
   double l_max = 0;
   bool l_infinite = false;
-  simplex::simplex_listener l_listener;
+  simplex::simplex_listener<double> l_listener(l_simplex);
   if(l_simplex.find_max(l_max,l_infinite,&l_listener))
     {
       std::cout << "Max = " << l_max << std::endl ;

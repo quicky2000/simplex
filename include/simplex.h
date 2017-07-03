@@ -136,7 +136,7 @@ namespace simplex
        is infinite
        @return value indicating if a max was found
      */
-    template <class LISTENER=simplex_listener>
+    template <class LISTENER=simplex_listener<COEF_TYPE>>
     bool find_max(COEF_TYPE & p_max, bool & p_infinite,LISTENER * p_listener = NULL);
 
     /**
