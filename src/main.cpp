@@ -15,6 +15,7 @@
       along with this program.  If not, see <http://www.gnu.org/licenses/>
 */
 #include "quicky_exception.h"
+#include "simplex_listener.h"
 #include "simplex.h"
 #include <iostream>
 #include <fstream>
@@ -50,7 +51,8 @@ void test_case1(void)
 
   double l_max = 0;
   bool l_infinite = false;
-  if(l_simplex.find_max(l_max,l_infinite))
+  simplex::simplex_listener l_listener;
+  if(l_simplex.find_max(l_max,l_infinite,&l_listener))
     {
       std::cout << "Max = " << l_max << std::endl ;
     }

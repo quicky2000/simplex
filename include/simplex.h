@@ -17,6 +17,7 @@
 #ifndef _SIMPLEX_H_
 #define _SIMPLEX_H_
 
+#include "simplex_listener.h"
 #include <quicky_exception.h>
 #include <cstring>
 #include <type_traits>
@@ -135,7 +136,8 @@ namespace simplex
        is infinite
        @return value indicating if a max was found
      */
-    inline bool find_max(COEF_TYPE & p_max, bool & p_infinite);
+    template <class LISTENER=simplex_listener>
+    bool find_max(COEF_TYPE & p_max, bool & p_infinite,LISTENER * p_listener = NULL);
 
     /**
        Declare that a variable is a base variable
@@ -638,7 +640,8 @@ namespace simplex
 
   //----------------------------------------------------------------------------
   template <typename COEF_TYPE>
-  bool simplex<COEF_TYPE>::find_max(COEF_TYPE & p_max, bool & p_infinite)
+  template <class LISTENER>
+    bool simplex<COEF_TYPE>::find_max(COEF_TYPE & p_max, bool & p_infinite,LISTENER * p_listener)
     {
       std::cout << "---------------------------------" << std::endl;
       display_array(std::cout);
@@ -661,14 +664,25 @@ namespace simplex
       p_infinite = false;
       bool l_input_found = true;
       unsigned int l_input_variable_index = 0;
+      unsigned int l_nb_iteration = 0;
       while(true == (l_input_found = get_max_input_variable_index(l_input_variable_index)))
 	{
+
+	  if(p_listener)
+	    {
+	      p_listener->start_iteration(l_nb_iteration);
+	      p_listener->new_input_var_event(l_input_variable_index);
+	    }
 	  assert(std::numeric_limits<unsigned int>::max() == m_base_variables_position[l_input_variable_index]);
 	  assert(m_z_coefs[l_input_variable_index]);
 	  unsigned int l_output_equation_index = 0;
 	  if(get_output_equation_index(l_input_variable_index,l_output_equation_index))
 	    {
 	      unsigned int l_output_variable_index = m_base_variables[l_output_equation_index];
+	      if(p_listener)
+		{
+		  p_listener->new_output_var_event(l_output_variable_index);
+		}
 	      assert(l_output_equation_index == m_base_variables_position[l_output_variable_index]);
 	      assert(!m_z_coefs[l_output_variable_index]);
 	      pivot(l_output_equation_index,l_input_variable_index);
@@ -677,6 +691,11 @@ namespace simplex
 	      m_base_variables_position[l_output_variable_index] = std::numeric_limits<unsigned int>::max();
 	      m_base_variables_position[l_input_variable_index] = l_output_equation_index;
 	      m_base_variables[l_output_equation_index] = l_input_variable_index;
+
+	      if(p_listener)
+		{
+		  p_listener->new_Z0(m_z0);
+		}
 	      std::cout << "---------------------------------" << std::endl;
 	      display_array(std::cout);
 	    }
@@ -685,6 +704,7 @@ namespace simplex
 	      p_infinite = true;
 	      return false;
 	    }
+	  ++l_nb_iteration;
 	}
       p_max = m_z0;
       return true;
