@@ -781,11 +781,11 @@ void test_case3(void)
       throw quicky_exception::quicky_runtime_exception("Unable to open file test_case3.log",__LINE__,__FILE__);
     }
   l_simplex.display_array(l_output_file);
-  l_output_file.close();
 
   double l_max = 0;
   bool l_infinite = false;
-  if(l_simplex.find_max(l_max,l_infinite))
+  simplex::simplex_listener<double> l_listener(l_simplex,l_output_file);
+  if(l_simplex.find_max(l_max,l_infinite,&l_listener))
     {
       std::cout << "Max = " << l_max << std::endl ;
     }
@@ -797,6 +797,7 @@ void test_case3(void)
     {
       std::cout << "No Max found !?" << std::endl;
     }
+  l_output_file.close();
 }
 
 //------------------------------------------------------------------------------

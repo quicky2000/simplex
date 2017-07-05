@@ -28,7 +28,9 @@ namespace simplex
   class simplex_listener
   {
     public:
-    inline simplex_listener(const simplex<COEF_TYPE> & p_simplex);
+    inline simplex_listener(const simplex<COEF_TYPE> & p_simplex,
+			    std::ostream & p_ostream = std::cout
+			    );
     inline void start_iteration(const unsigned int & p_nb_iteration);
     inline void new_input_var_event(const unsigned int & p_input_variable_index);
     inline void new_output_var_event(const unsigned int & p_input_variable_index);
@@ -36,13 +38,17 @@ namespace simplex
     private:
     unsigned int m_nb_iteration;
     const simplex<COEF_TYPE> & m_simplex;
+    std::ostream & m_ostream;
   };
 
   //----------------------------------------------------------------------------
   template <typename COEF_TYPE>
-  simplex_listener<COEF_TYPE>::simplex_listener(const simplex<COEF_TYPE> & p_simplex):
+  simplex_listener<COEF_TYPE>::simplex_listener(const simplex<COEF_TYPE> & p_simplex,
+						std::ostream & p_ostream
+						):
     m_nb_iteration(0),
-    m_simplex(p_simplex)
+    m_simplex(p_simplex),
+    m_ostream(p_ostream)
   {
   }
 
@@ -58,7 +64,7 @@ namespace simplex
   void simplex_listener<COEF_TYPE>::new_input_var_event(const unsigned int & p_input_variable_index
 					     )
   {
-    std::cout << "Iteration[" << m_nb_iteration << "] : New input variable selected : " << p_input_variable_index << std::endl;
+    m_ostream << "Iteration[" << m_nb_iteration << "] : New input variable selected : " << p_input_variable_index << std::endl;
   }
   
   //----------------------------------------------------------------------------
@@ -66,15 +72,15 @@ namespace simplex
   void simplex_listener<COEF_TYPE>::new_output_var_event(const unsigned int & p_output_variable_index
 					     )
   {
-    std::cout << "Iteration[" << m_nb_iteration << "] : New output variable selected : " << p_output_variable_index << std::endl;
+    m_ostream << "Iteration[" << m_nb_iteration << "] : New output variable selected : " << p_output_variable_index << std::endl;
   }
 
   //----------------------------------------------------------------------------
   template<typename COEF_TYPE>
   void simplex_listener<COEF_TYPE>::new_Z0(const COEF_TYPE p_z0)
   {
-    std::cout << "Iteration[" << m_nb_iteration << "] : New Z0 : " << p_z0 << std::endl;
-    m_simplex.display_array(std::cout);
+    m_ostream << "Iteration[" << m_nb_iteration << "] : New Z0 : " << p_z0 << std::endl;
+    m_simplex.display_array(m_ostream);
   }
 
 }
