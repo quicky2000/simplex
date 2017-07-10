@@ -14,6 +14,7 @@
       You should have received a copy of the GNU General Public License
       along with this program.  If not, see <http://www.gnu.org/licenses/>
 */
+#ifdef SIMPLEX_SELF_TEST
 #include "quicky_exception.h"
 #include "simplex_listener.h"
 #include "simplex.h"
@@ -825,4 +826,5 @@ int main(int argc,char ** argv)
   return 0;
   
 }
+#endif // SIMPLEX_SELF_TEST
 //EOF
