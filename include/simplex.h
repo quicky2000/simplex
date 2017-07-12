@@ -145,6 +145,18 @@ namespace simplex
     */
     inline void define_base_variable(const unsigned int & p_variable_index);
 
+    /**
+       Return variable index stored as base variable defined by parameter
+       @param index of base variable
+       @return index of variable used as base variable
+    */
+    inline const unsigned int & get_base_variable(const unsigned int & p_index)const;
+
+    /**
+       Return total number of equations ( <= + >= + = )
+     */
+    inline const unsigned int get_total_nb_equation(void)const;
+
   private:
     /**
        Define coefficient for A coefficients in A x = b
@@ -715,6 +727,21 @@ namespace simplex
     m_base_variables[m_nb_base_variables_defined] = p_variable_index;
     m_base_variables_position[p_variable_index] = m_nb_base_variables_defined;
     ++m_nb_base_variables_defined;
+  }
+
+  //----------------------------------------------------------------------------
+  template <typename COEF_TYPE>
+  const unsigned int & simplex<COEF_TYPE>::get_base_variable(const unsigned int & p_index)const
+  {
+    assert(p_index < m_nb_total_equations);
+    return m_base_variables[p_index];
+  }
+
+  //----------------------------------------------------------------------------
+  template <typename COEF_TYPE>
+  const unsigned int simplex<COEF_TYPE>::get_total_nb_equation(void)const
+  {
+    return m_nb_total_equations;
   }
 
   //----------------------------------------------------------------------------
