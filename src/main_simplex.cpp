@@ -65,6 +65,7 @@ void test_case1(void)
     {
       std::cout << "No Max found !?" << std::endl;
     }
+  assert(l_max == 10);
 }
 
 void test_case2(void)
@@ -139,6 +140,7 @@ void test_case2(void)
     {
       std::cout << "No Max found !?" << std::endl;
     }
+  assert(27000 == l_max );
 }
 
 // 
@@ -798,6 +800,7 @@ void test_case3(void)
     {
       std::cout << "No Max found !?" << std::endl;
     }
+  assert(3 == l_max);
   l_output_file.close();
 }
 
