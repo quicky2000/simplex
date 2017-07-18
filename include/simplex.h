@@ -18,6 +18,7 @@
 #define _SIMPLEX_H_
 
 #include "simplex_listener.h"
+#include "simplex_array.h"
 #include <quicky_exception.h>
 #include <cstring>
 #include <type_traits>
@@ -262,24 +263,9 @@ namespace simplex
     unsigned int m_nb_total_equations;
 
     /**
-       Matrix A coefficients in Ax = b
-     */
-    COEF_TYPE * m_equation_coefs;
-
-    /**
-       b coefficients in Ax = b
-     */
-    COEF_TYPE * m_b_coefs;
-
-    /**
-       Coefficients of objective function in the form Z - SUM(Cj * X) = 0
+       Array storing equations
     */
-    COEF_TYPE * m_z_coefs;
-
-    /**
-       Z0 coefficient
-    */
-    COEF_TYPE m_z0;
+    simplex_array<COEF_TYPE> m_array;
 
     /**
        Equation types
@@ -342,20 +328,13 @@ namespace simplex
     m_nb_defined_adjustment_variables(0),
     m_nb_all_variables(p_nb_variables + m_nb_adjustment_variable),
     m_nb_total_equations(p_nb_inequations_lt + p_nb_equations + p_nb_inequations_gt),
-    m_equation_coefs(new COEF_TYPE[m_nb_all_variables * m_nb_total_equations]),
-    m_b_coefs(new COEF_TYPE[m_nb_total_equations]),
-    m_z_coefs(new COEF_TYPE[m_nb_all_variables]),
-    m_z0(0),
+    m_array(m_nb_total_equations,m_nb_all_variables),
     m_equation_types(new t_equation_type[m_nb_total_equations]),
     m_base_variables(new unsigned int[m_nb_total_equations]),
     m_base_variables_position(new unsigned int[m_nb_all_variables]),
     m_nb_base_variables_defined(0)
       {
 	static_assert(std::is_signed<COEF_TYPE>::value,"Simplex template parameter shoudl be signed");
-	memset(m_equation_coefs,0,m_nb_all_variables * m_nb_total_equations * sizeof(COEF_TYPE));
-	memset(m_b_coefs,0,m_nb_total_equations * sizeof(COEF_TYPE));
-	memset(m_z_coefs,0,m_nb_all_variables * sizeof(COEF_TYPE));
-	memset(m_equation_types, 0, m_nb_total_equations * sizeof(t_equation_type));
 	for(unsigned int l_index = 0;
 	    l_index < m_nb_total_equations;
 	    ++l_index
@@ -364,6 +343,7 @@ namespace simplex
 	    m_base_variables[l_index] = std::numeric_limits<unsigned int>::max();
 	  }
 	memset(m_base_variables_position, 0xFF, m_nb_all_variables * sizeof(unsigned int));
+	memset(m_equation_types, 0, m_nb_total_equations * sizeof(t_equation_type));
       }
 
   //----------------------------------------------------------------------------
@@ -372,10 +352,8 @@ namespace simplex
 				      const COEF_TYPE & p_value
 				      )
     {
-      assert(m_z_coefs);
       assert(p_index < m_nb_variables);
-      // Negate version of value due to the change of Z form between function call and storage variable
-      m_z_coefs[p_index] = - p_value;
+      m_array.set_Z_coef(p_index,-p_value);
     }
 
   //----------------------------------------------------------------------------
@@ -384,9 +362,7 @@ namespace simplex
 				      const COEF_TYPE & p_value
 				      )
     {
-      assert(m_b_coefs);
-      assert(p_index < m_nb_total_equations);
-      m_b_coefs[p_index] = p_value;
+      m_array.set_B_coef(p_index, p_value);
     }
 
   //----------------------------------------------------------------------------
@@ -396,10 +372,9 @@ namespace simplex
 				      const COEF_TYPE & p_value
 				      )
   {
-    assert(m_equation_coefs);
-    assert(p_equation_index < m_nb_total_equations);
+    // Keep assert because we differentiate access to internal coefs
     assert(p_variable_index < m_nb_variables);
-    m_equation_coefs[p_equation_index * m_nb_all_variables + p_variable_index] = p_value;
+    m_array.set_A_coef(p_equation_index,p_variable_index,p_value);
   }
 
   //----------------------------------------------------------------------------
@@ -409,10 +384,9 @@ namespace simplex
 				   const unsigned int p_variable_index
 				   )const
     {
-      assert(m_equation_coefs);
-      assert(p_equation_index < m_nb_total_equations);
+    // Keep assert because we differentiate access to internal coefs
       assert(p_variable_index < m_nb_variables);
-      return m_equation_coefs[p_equation_index * m_nb_all_variables + p_variable_index];
+      return m_array.get_A_coef(p_equation_index,p_variable_index);
     }
 
   //----------------------------------------------------------------------------
@@ -422,10 +396,10 @@ namespace simplex
 					     const COEF_TYPE & p_value
 					     )
   {
-    assert(m_equation_coefs);
-    assert(p_equation_index < m_nb_total_equations);
+    // Keep assert because we differentiate access to internal coefs
     assert(p_variable_index < m_nb_all_variables);
-    m_equation_coefs[p_equation_index * m_nb_all_variables + p_variable_index] = p_value;
+    //    assert(p_variable_index >= m_nb_variables);
+    m_array.set_A_coef(p_equation_index, p_variable_index, p_value);
   }
 
   //----------------------------------------------------------------------------
@@ -435,10 +409,10 @@ namespace simplex
 					  const unsigned int p_variable_index
 					  )const
     {
-      assert(m_equation_coefs);
-      assert(p_equation_index < m_nb_total_equations);
+    // Keep assert because we differentiate access to internal coefs
       assert(p_variable_index < m_nb_all_variables);
-      return m_equation_coefs[p_equation_index * m_nb_all_variables + p_variable_index];
+      //      assert(p_variable_index >= m_nb_variables);
+      return m_array.get_A_coef(p_equation_index, p_variable_index);
     }
 
   //----------------------------------------------------------------------------
@@ -453,16 +427,16 @@ namespace simplex
     assert(l_pivot);
 
     // Pivoting Z
-     COEF_TYPE l_q = m_z_coefs[p_column_index];
+    COEF_TYPE l_q = m_array.get_Z_coef(p_column_index);
      for(unsigned int l_index = 0;
 	 l_index < m_nb_all_variables;
 	 ++l_index
 	 )
        {
 	 COEF_TYPE l_u = get_internal_coef(p_row_index,l_index);
-	 m_z_coefs[l_index] = m_z_coefs[l_index] - (l_q * l_u) / l_pivot;
+	 m_array.set_Z_coef(l_index, m_array.get_Z_coef(l_index) - (l_q * l_u) / l_pivot);
        }
-     m_z0 = m_z0 - (l_q * m_b_coefs[p_row_index]) / l_pivot;
+     m_array.set_Z0_coef(m_array.get_Z0_coef() - (l_q * m_array.get_B_coef(p_row_index)) / l_pivot);
 
     // Pivoting other rows
     for(unsigned int l_row_index = 0;
@@ -473,7 +447,7 @@ namespace simplex
 	if(l_row_index != p_row_index)
 	  {
 	    COEF_TYPE l_q = get_internal_coef(l_row_index,p_column_index);
-	    m_b_coefs[l_row_index] = m_b_coefs[l_row_index] - (l_q * m_b_coefs[p_row_index]) / l_pivot;
+	    m_array.set_B_coef(l_row_index, m_array.get_B_coef(l_row_index) - (l_q * m_array.get_B_coef(p_row_index)) / l_pivot);
 	    for(unsigned int l_index = 0;
 		l_index < m_nb_all_variables;
 		++l_index
@@ -493,7 +467,7 @@ namespace simplex
       {
 	set_internal_coef(p_row_index,l_index,get_internal_coef(p_row_index,l_index) / l_pivot);
       }
-    m_b_coefs[p_row_index] = m_b_coefs[p_row_index] / l_pivot;
+    m_array.set_B_coef(p_row_index, m_array.get_B_coef(p_row_index) / l_pivot);
   }
 
   //----------------------------------------------------------------------------
@@ -506,9 +480,9 @@ namespace simplex
 	 ++l_index
 	 )
        {
-	 p_stream << m_z_coefs[l_index] << "\t";
+	 p_stream << m_array.get_Z_coef(l_index) << "\t";
        }
-     p_stream << "|\t" << m_z0 << std::endl;
+     p_stream << "|\t" << m_array.get_Z0_coef() << std::endl;
      for(unsigned int l_row_index = 0;
 	 l_row_index < m_nb_total_equations;
 	 ++l_row_index
@@ -538,7 +512,7 @@ namespace simplex
 	   {
 	     p_stream << get_internal_coef(l_row_index, l_index) << "\t";
 	   }
-	 p_stream << "|\t" << m_b_coefs[l_row_index] << std::endl;
+	 p_stream << "|\t" << m_array.get_B_coef(l_row_index) << std::endl;
       }
      return p_stream;
     }
@@ -567,7 +541,7 @@ namespace simplex
 	  ++l_index
 	  )
 	{
-	  if(m_z_coefs[l_index] < 0)
+	  if(m_array.get_Z_coef(l_index) < 0)
 	    {
 	      p_variable_index = l_index;
 	      return true;
@@ -585,7 +559,7 @@ namespace simplex
 	  ++l_index
 	  )
 	{
-	  if(m_z_coefs[l_index] > 0)
+	  if(m_array.get_Z_coef(l_index) > 0)
 	    {
 	      p_variable_index = l_index;
 	      return true;
@@ -611,7 +585,7 @@ namespace simplex
 	  COEF_TYPE l_divider = get_internal_coef(l_index,p_input_variable_index);
 	  if(l_divider > 0)
 	    {
-	      COEF_TYPE l_result = m_b_coefs[l_index] / l_divider;
+	      COEF_TYPE l_result = m_array.get_B_coef(l_index) / l_divider;
 	      if(l_result < l_min)
 		{
 		  l_min = l_result;
@@ -666,7 +640,7 @@ namespace simplex
 	{
 	  unsigned int l_var_index = m_base_variables[l_index];
 	  assert(l_var_index != std::numeric_limits<unsigned int>::max());
-	  if(m_z_coefs[l_var_index])
+	  if(m_array.get_Z_coef(l_var_index))
 	    {
 	      throw quicky_exception::quicky_runtime_exception("Z coef of base variable in column " + std::to_string(l_var_index) + " should be 0 or this is not a base variable",__LINE__,__FILE__);
 	    }
@@ -684,7 +658,7 @@ namespace simplex
 	      p_listener->new_input_var_event(l_input_variable_index);
 	    }
 	  assert(std::numeric_limits<unsigned int>::max() == m_base_variables_position[l_input_variable_index]);
-	  assert(m_z_coefs[l_input_variable_index]);
+	  assert(m_array.get_Z_coef(l_input_variable_index));
 	  unsigned int l_output_equation_index = 0;
 	  if(get_output_equation_index(l_input_variable_index,l_output_equation_index))
 	    {
@@ -694,17 +668,17 @@ namespace simplex
 		  p_listener->new_output_var_event(l_output_variable_index);
 		}
 	      assert(l_output_equation_index == m_base_variables_position[l_output_variable_index]);
-	      assert(!m_z_coefs[l_output_variable_index]);
+	      assert(!m_array.get_Z_coef(l_output_variable_index));
 	      pivot(l_output_equation_index,l_input_variable_index);
-	      assert(m_z_coefs[l_output_variable_index]);
-	      assert(!m_z_coefs[l_input_variable_index]);
+	      assert(m_array.get_Z_coef(l_output_variable_index));
+	      assert(!m_array.get_Z_coef(l_input_variable_index));
 	      m_base_variables_position[l_output_variable_index] = std::numeric_limits<unsigned int>::max();
 	      m_base_variables_position[l_input_variable_index] = l_output_equation_index;
 	      m_base_variables[l_output_equation_index] = l_input_variable_index;
 
 	      if(p_listener)
 		{
-		  p_listener->new_Z0(m_z0);
+		  p_listener->new_Z0(m_array.get_Z0_coef());
 		}
 	    }
 	  else
@@ -714,7 +688,7 @@ namespace simplex
 	    }
 	  ++l_nb_iteration;
 	}
-      p_max = m_z0;
+      p_max = m_array.get_Z0_coef();
       return true;
     }
 
@@ -752,12 +726,6 @@ namespace simplex
       delete[] m_base_variables;
       delete[] m_equation_types;
       m_equation_types = nullptr;
-      delete[] m_z_coefs;
-      m_z_coefs = nullptr;
-      delete[] m_b_coefs;
-      m_b_coefs = nullptr;
-      delete[] m_equation_coefs;
-      m_equation_coefs = nullptr;
     }
 }
 
