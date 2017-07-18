@@ -17,13 +17,14 @@
 #ifndef _SIMPLEX_ARRAY_H_
 #define _SIMPLEX_ARRAY_H_
 
+#include "simplex_array_base.h"
 #include <cstring>
 #include <cassert>
 
 namespace simplex
 {
   template <typename COEF_TYPE>
-  class simplex_array
+    class simplex_array: public simplex_array_base
   {
   public:
     simplex_array(const unsigned int & p_nb_equations,
@@ -108,16 +109,6 @@ namespace simplex
 
   private:
     /**
-       Number of lines
-    */
-    unsigned int m_nb_equations;
-
-    /**
-       Number of columns
-    */
-    unsigned int m_nb_variables;
-
-    /**
        Matrix A coefficients in Ax = b
      */
     COEF_TYPE * m_equation_coefs;
@@ -143,16 +134,15 @@ namespace simplex
   simplex_array<COEF_TYPE>::simplex_array(const unsigned int & p_nb_equations,
 					  const unsigned int & p_nb_variables
 					  ):
-    m_nb_equations(p_nb_equations),
-    m_nb_variables(p_nb_variables),
+    simplex_array_base(p_nb_equations,p_nb_variables),
     m_equation_coefs(new COEF_TYPE[p_nb_variables * p_nb_equations]),
     m_b_coefs(new COEF_TYPE[p_nb_equations]),
     m_z_coefs(new COEF_TYPE[p_nb_variables]),
     m_z0(0)
     {
-      memset(m_equation_coefs,0,m_nb_variables * m_nb_equations * sizeof(COEF_TYPE));
-      memset(m_b_coefs,0,m_nb_equations * sizeof(COEF_TYPE));
-      memset(m_z_coefs,0,m_nb_variables * sizeof(COEF_TYPE));
+      memset(m_equation_coefs,0,p_nb_variables * p_nb_equations * sizeof(COEF_TYPE));
+      memset(m_b_coefs,0,p_nb_equations * sizeof(COEF_TYPE));
+      memset(m_z_coefs,0,p_nb_variables * sizeof(COEF_TYPE));
     }
 
   //----------------------------------------------------------------------------
@@ -162,7 +152,7 @@ namespace simplex
 				      )
     {
       assert(m_z_coefs);
-      assert(p_index < m_nb_variables);
+      assert(p_index < get_nb_variables());
       m_z_coefs[p_index] = p_value;
     }
 
@@ -172,7 +162,7 @@ namespace simplex
 							 )const
     {
       assert(m_z_coefs);
-      assert(p_index < m_nb_variables);
+      assert(p_index < get_nb_variables());
       return m_z_coefs[p_index];
     }
 
@@ -198,7 +188,7 @@ namespace simplex
 					      )
     {
       assert(m_b_coefs);
-      assert(p_index < m_nb_equations);
+      assert(p_index < get_nb_equations());
       m_b_coefs[p_index] = p_value;
     }
 
@@ -208,7 +198,7 @@ namespace simplex
 							   )const
     {
       assert(m_b_coefs);
-      assert(p_index < m_nb_equations);
+      assert(p_index < get_nb_equations());
       return m_b_coefs[p_index];
     }
 
@@ -220,9 +210,9 @@ namespace simplex
 					    )
   {
     assert(m_equation_coefs);
-    assert(p_equation_index < m_nb_equations);
-    assert(p_variable_index < m_nb_variables);
-    m_equation_coefs[p_equation_index * m_nb_variables + p_variable_index] = p_value;
+    assert(p_equation_index < get_nb_equations());
+    assert(p_variable_index < get_nb_variables());
+    m_equation_coefs[p_equation_index * get_nb_variables() + p_variable_index] = p_value;
   }
 
   //----------------------------------------------------------------------------
@@ -233,9 +223,9 @@ namespace simplex
 				       )const
     {
       assert(m_equation_coefs);
-      assert(p_equation_index < m_nb_equations);
-      assert(p_variable_index < m_nb_variables);
-      return m_equation_coefs[p_equation_index * m_nb_variables + p_variable_index];
+      assert(p_equation_index < get_nb_equations());
+      assert(p_variable_index < get_nb_variables());
+      return m_equation_coefs[p_equation_index * get_nb_variables() + p_variable_index];
     }
 
   //----------------------------------------------------------------------------
