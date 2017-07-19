@@ -56,6 +56,13 @@ void test_case1(void)
   if(l_simplex.find_max(l_max,l_infinite,&l_listener))
     {
       std::cout << "Max = " << l_max << std::endl ;
+      for(unsigned int l_index = 0;
+	  l_index < l_simplex.get_total_nb_equation();
+	  ++l_index
+	  )
+	{
+	  std::cout << "Base variable[" << l_index << "] is X" << l_simplex.get_base_variable(l_index) + 1 << std::endl;
+	}
     }
   else if(l_infinite)
     {
