@@ -19,9 +19,12 @@
 
 namespace simplex
 {
+  template <typename COEF_TYPE>
   class simplex_array_base
   {
   public:
+    typedef COEF_TYPE t_coef_type;
+
     inline simplex_array_base(const unsigned int & p_nb_equations,
 			      const unsigned int & p_nb_variables
 			      );
@@ -40,25 +43,28 @@ namespace simplex
   };
 
   //----------------------------------------------------------------------------
-  simplex_array_base::simplex_array_base(const unsigned int & p_nb_equations,
-					 const unsigned int & p_nb_variables
-					 ):
+  template <typename COEF_TYPE>
+  simplex_array_base<COEF_TYPE>::simplex_array_base(const unsigned int & p_nb_equations,
+						    const unsigned int & p_nb_variables
+						    ):
     m_nb_equations(p_nb_equations),
     m_nb_variables(p_nb_variables)
     {
     }
 
   //----------------------------------------------------------------------------
-  const unsigned int & simplex_array_base::get_nb_equations(void)const
-    {
-      return m_nb_equations;
-    }
+  template <typename COEF_TYPE>
+  const unsigned int & simplex_array_base<COEF_TYPE>::get_nb_equations(void)const
+  {
+    return m_nb_equations;
+  }
 
   //----------------------------------------------------------------------------
-  const unsigned int & simplex_array_base::get_nb_variables(void)const
-    {
-      return m_nb_variables;
-    }
+  template <typename COEF_TYPE>
+  const unsigned int & simplex_array_base<COEF_TYPE>::get_nb_variables(void)const
+  {
+    return m_nb_variables;
+  }
 }
 #endif // _SIMPLEX_ARRAY_BASE_H_
 // EOF
