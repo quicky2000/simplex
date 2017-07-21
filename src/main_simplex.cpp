@@ -17,7 +17,7 @@
 #ifdef SIMPLEX_SELF_TEST
 #include "quicky_exception.h"
 #include "simplex_listener.h"
-#include "simplex_array.h"
+#include "simplex_map.h"
 #include "simplex.h"
 #include <iostream>
 #include <fstream>
@@ -28,11 +28,11 @@ void test_case1(void)
   // Max Z -1 * X1 - 4 * X2 - 3 * X3           = 0
   //        2 * X1 + 2 * X2 + 1 * X3 + X4      = 4
   //            X1 + 2 * X2 + 2 * X3 +    + X5 = 6
-  simplex::simplex<simplex::simplex_array<double>> l_simplex(5, // Number of variables : x1 and x2
-				  0, // Number of inequations with the form A x <= b
-				  2, // Number of equations with the form A x = b
-				  0  // Number of inequations with the form A x >= b
-				  );
+  simplex::simplex<double,simplex::simplex_map<double>> l_simplex(5, // Number of variables : x1 and x2
+				     0, // Number of inequations with the form A x <= b
+				     2, // Number of equations with the form A x = b
+				     0  // Number of inequations with the form A x >= b
+				     );
   l_simplex.set_Z_coef(0,1);
   l_simplex.set_Z_coef(1,4);
   l_simplex.set_Z_coef(2,3);
@@ -53,7 +53,7 @@ void test_case1(void)
 
   double l_max = 0;
   bool l_infinite = false;
-  simplex::simplex_listener<simplex::simplex_array<double>> l_listener(l_simplex);
+  simplex::simplex_listener<double,simplex::simplex_map<double>> l_listener(l_simplex);
   if(l_simplex.find_max(l_max,l_infinite,&l_listener))
     {
       std::cout << "Max = " << l_max << std::endl ;
@@ -112,7 +112,7 @@ void test_case2(void)
       }
   }
 
-  simplex::simplex<simplex::simplex_array<double>> l_simplex(2, // Number of variables : x1 and x2
+  simplex::simplex<double> l_simplex(2, // Number of variables : x1 and x2
 				     4, // Number of inequations with the form A x <= b
 				     0, // Number of equations with the form A x = b
 				     0  // Number of inequations with the form A x >= b
@@ -320,11 +320,11 @@ void test_case3(void)
   
   // 18 variables : 3 pieces at 3 positions with 2 orientations : 3*3*2
   // 54 equations : 48 : (3pieces * 2orientations) * (2pieces * 2orientations) * 2 segments
-  simplex::simplex<simplex::simplex_array<double>> l_simplex(18, // Number of variables : x1 and x2
-						    54, // Number of inequations with the form A x <= b
-						    0, // Number of equations with the form A x = b
-						    0  // Number of inequations with the form A x >= b
-						    );
+  simplex::simplex<double> l_simplex(18, // Number of variables : x1 and x2
+				     54, // Number of inequations with the form A x <= b
+				     0, // Number of equations with the form A x = b
+				     0  // Number of inequations with the form A x >= b
+				     );
   for(unsigned int l_index = 0;
       l_index < 18;
       ++l_index
@@ -795,7 +795,7 @@ void test_case3(void)
 
   double l_max = 0;
   bool l_infinite = false;
-  simplex::simplex_listener<simplex::simplex_array<double>> l_listener(l_simplex,l_output_file);
+  simplex::simplex_listener<double> l_listener(l_simplex,l_output_file);
   if(l_simplex.find_max(l_max,l_infinite,&l_listener))
     {
       std::cout << "Max = " << l_max << std::endl ;

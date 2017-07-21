@@ -39,11 +39,10 @@ namespace simplex
     } t_equation_type;
 
 
-  template <typename ARRAY_TYPE>
+  template <typename COEF_TYPE,typename ARRAY_TYPE=simplex_array<COEF_TYPE>>
   class simplex
   {
   public:
-    typedef typename ARRAY_TYPE::t_coef_type t_coef_type;
 
     /**
        This constructor prepare a simplex in Canonical form
@@ -69,7 +68,7 @@ namespace simplex
        @param value : value of coefficient in the formula Z = SUM(Cj * x)
     */
     inline void set_Z_coef(const unsigned int p_index,
-			   const t_coef_type & p_value
+			   const COEF_TYPE & p_value
 			   );
     /**
        Define coefficient for B coefficients in A x = b
@@ -77,7 +76,7 @@ namespace simplex
        @param value : value of coefficient in b
     */
     inline void set_B_coef(const unsigned int p_index,
-			   const t_coef_type & p_value
+			   const COEF_TYPE & p_value
 			   );
 
     /**
@@ -88,7 +87,7 @@ namespace simplex
     */
     inline void set_A_coef(const unsigned int p_equation_index,
 			   const unsigned int p_variable_index,
-			   const t_coef_type & p_value
+			   const COEF_TYPE & p_value
 			   );
 
     /**
@@ -98,7 +97,7 @@ namespace simplex
        @return value : value of coefficient in A
     */
     inline
-      const t_coef_type &
+      const COEF_TYPE &
       get_A_coef(const unsigned int p_equation_index,
 		 const unsigned int p_variable_index
 		 ) const;
@@ -138,8 +137,8 @@ namespace simplex
        is infinite
        @return value indicating if a max was found
      */
-    template <class LISTENER=simplex_listener<ARRAY_TYPE>>
-    bool find_max(t_coef_type & p_max, bool & p_infinite,LISTENER * p_listener = NULL);
+  template <class LISTENER=simplex_listener<COEF_TYPE,ARRAY_TYPE>>
+    bool find_max(COEF_TYPE & p_max, bool & p_infinite,LISTENER * p_listener = NULL);
 
     /**
        Declare that a variable is a base variable
@@ -169,7 +168,7 @@ namespace simplex
     */
     inline void set_internal_coef(const unsigned int p_equation_index,
 				  const unsigned int p_variable_index,
-				  const t_coef_type & p_value
+				  const COEF_TYPE & p_value
 				  );
 
     /**
@@ -180,7 +179,7 @@ namespace simplex
        @return value : value of coefficient in A
     */
     inline
-      const t_coef_type &
+      const COEF_TYPE &
       get_internal_coef(const unsigned int p_equation_index,
 			const unsigned int p_variable_index
 			) const;
@@ -194,7 +193,7 @@ namespace simplex
        @param value to set as coefficient
     */
     inline void set_adjustement_variable(const unsigned int & p_equation_index,
-					 const t_coef_type & p_value
+					 const COEF_TYPE & p_value
 					 );
     /**
        Method to determine the next input variable for pivot operation
@@ -315,12 +314,12 @@ namespace simplex
     }
 
   //----------------------------------------------------------------------------
-  template <typename ARRAY_TYPE>
-  simplex<ARRAY_TYPE>::simplex(unsigned int p_nb_variables,
-			      unsigned int p_nb_inequations_lt,
-			      unsigned int p_nb_equations,
-			      unsigned int p_nb_inequations_gt
-		   ):
+  template <typename COEF_TYPE,typename ARRAY_TYPE>
+  simplex<COEF_TYPE,ARRAY_TYPE>::simplex(unsigned int p_nb_variables,
+					 unsigned int p_nb_inequations_lt,
+					 unsigned int p_nb_equations,
+					 unsigned int p_nb_inequations_gt
+					 ):
     m_nb_variables(p_nb_variables),
     m_nb_inequations_lt(p_nb_inequations_lt),
     m_nb_equations(p_nb_equations),
@@ -335,7 +334,7 @@ namespace simplex
     m_base_variables_position(new unsigned int[m_nb_all_variables]),
     m_nb_base_variables_defined(0)
       {
-	static_assert(std::is_signed<t_coef_type>::value,"Simplex template parameter shoudl be signed");
+	static_assert(std::is_signed<COEF_TYPE>::value,"Simplex template parameter shoudl be signed");
 	for(unsigned int l_index = 0;
 	    l_index < m_nb_total_equations;
 	    ++l_index
@@ -348,30 +347,30 @@ namespace simplex
       }
 
   //----------------------------------------------------------------------------
-  template <typename ARRAY_TYPE>
-  void simplex<ARRAY_TYPE>::set_Z_coef(const unsigned int p_index,
-				      const t_coef_type & p_value
-				      )
+  template <typename COEF_TYPE,typename ARRAY_TYPE>
+  void simplex<COEF_TYPE,ARRAY_TYPE>::set_Z_coef(const unsigned int p_index,
+						 const COEF_TYPE & p_value
+						 )
     {
       assert(p_index < m_nb_variables);
       m_array.set_Z_coef(p_index,-p_value);
     }
 
   //----------------------------------------------------------------------------
-  template <typename ARRAY_TYPE>
-  void simplex<ARRAY_TYPE>::set_B_coef(const unsigned int p_index,
-				      const t_coef_type & p_value
-				      )
+  template <typename COEF_TYPE,typename ARRAY_TYPE>
+  void simplex<COEF_TYPE,ARRAY_TYPE>::set_B_coef(const unsigned int p_index,
+						 const COEF_TYPE & p_value
+						 )
     {
       m_array.set_B_coef(p_index, p_value);
     }
 
   //----------------------------------------------------------------------------
-  template <typename ARRAY_TYPE>
-  void simplex<ARRAY_TYPE>::set_A_coef(const unsigned int p_equation_index,
-				      const unsigned int p_variable_index,
-				      const t_coef_type & p_value
-				      )
+  template <typename COEF_TYPE,typename ARRAY_TYPE>
+  void simplex<COEF_TYPE,ARRAY_TYPE>::set_A_coef(const unsigned int p_equation_index,
+						 const unsigned int p_variable_index,
+						 const COEF_TYPE & p_value
+						 )
   {
     // Keep assert because we differentiate access to internal coefs
     assert(p_variable_index < m_nb_variables);
@@ -379,11 +378,11 @@ namespace simplex
   }
 
   //----------------------------------------------------------------------------
-  template <typename ARRAY_TYPE>
-  const typename simplex<ARRAY_TYPE>::t_coef_type &
-  simplex<ARRAY_TYPE>::get_A_coef(const unsigned int p_equation_index,
-				   const unsigned int p_variable_index
-				   )const
+  template <typename COEF_TYPE,typename ARRAY_TYPE>
+  const COEF_TYPE &
+  simplex<COEF_TYPE,ARRAY_TYPE>::get_A_coef(const unsigned int p_equation_index,
+					    const unsigned int p_variable_index
+					    )const
     {
     // Keep assert because we differentiate access to internal coefs
       assert(p_variable_index < m_nb_variables);
@@ -391,11 +390,11 @@ namespace simplex
     }
 
   //----------------------------------------------------------------------------
-  template <typename ARRAY_TYPE>
-  void simplex<ARRAY_TYPE>::set_internal_coef(const unsigned int p_equation_index,
-					     const unsigned int p_variable_index,
-					     const t_coef_type & p_value
-					     )
+  template <typename COEF_TYPE,typename ARRAY_TYPE>
+  void simplex<COEF_TYPE,ARRAY_TYPE>::set_internal_coef(const unsigned int p_equation_index,
+							const unsigned int p_variable_index,
+							const COEF_TYPE & p_value
+							)
   {
     // Keep assert because we differentiate access to internal coefs
     assert(p_variable_index < m_nb_all_variables);
@@ -404,37 +403,37 @@ namespace simplex
   }
 
   //----------------------------------------------------------------------------
-  template <typename ARRAY_TYPE>
-  const typename simplex<ARRAY_TYPE>::t_coef_type &
-  simplex<ARRAY_TYPE>::get_internal_coef(const unsigned int p_equation_index,
-					  const unsigned int p_variable_index
-					  )const
+  template <typename COEF_TYPE,typename ARRAY_TYPE>
+  const COEF_TYPE &
+  simplex<COEF_TYPE,ARRAY_TYPE>::get_internal_coef(const unsigned int p_equation_index,
+						   const unsigned int p_variable_index
+						   )const
     {
-    // Keep assert because we differentiate access to internal coefs
+      // Keep assert because we differentiate access to internal coefs
       assert(p_variable_index < m_nb_all_variables);
       //      assert(p_variable_index >= m_nb_variables);
       return m_array.get_A_coef(p_equation_index, p_variable_index);
     }
 
   //----------------------------------------------------------------------------
-  template <typename ARRAY_TYPE>
-  void simplex<ARRAY_TYPE>::pivot(const unsigned int p_row_index,
-				 const unsigned int p_column_index
-				 )
+  template <typename COEF_TYPE,typename ARRAY_TYPE>
+  void simplex<COEF_TYPE,ARRAY_TYPE>::pivot(const unsigned int p_row_index,
+					    const unsigned int p_column_index
+					    )
   {
     assert(p_row_index < m_nb_total_equations);
     assert(p_column_index < m_nb_all_variables);
-    simplex<ARRAY_TYPE>::t_coef_type l_pivot = get_internal_coef(p_row_index,p_column_index);
+    COEF_TYPE l_pivot = get_internal_coef(p_row_index,p_column_index);
     assert(l_pivot);
 
     // Pivoting Z
-    t_coef_type l_q = m_array.get_Z_coef(p_column_index);
+    COEF_TYPE l_q = m_array.get_Z_coef(p_column_index);
      for(unsigned int l_index = 0;
 	 l_index < m_nb_all_variables;
 	 ++l_index
 	 )
        {
-	 t_coef_type l_u = get_internal_coef(p_row_index,l_index);
+	 COEF_TYPE l_u = get_internal_coef(p_row_index,l_index);
 	 m_array.set_Z_coef(l_index, m_array.get_Z_coef(l_index) - (l_q * l_u) / l_pivot);
        }
      m_array.set_Z0_coef(m_array.get_Z0_coef() - (l_q * m_array.get_B_coef(p_row_index)) / l_pivot);
@@ -447,14 +446,14 @@ namespace simplex
       {
 	if(l_row_index != p_row_index)
 	  {
-	    t_coef_type l_q = get_internal_coef(l_row_index,p_column_index);
+	    COEF_TYPE l_q = get_internal_coef(l_row_index,p_column_index);
 	    m_array.set_B_coef(l_row_index, m_array.get_B_coef(l_row_index) - (l_q * m_array.get_B_coef(p_row_index)) / l_pivot);
 	    for(unsigned int l_index = 0;
 		l_index < m_nb_all_variables;
 		++l_index
 		)
 	      {
-		t_coef_type l_u = get_internal_coef(p_row_index,l_index);
+		COEF_TYPE l_u = get_internal_coef(p_row_index,l_index);
 		set_internal_coef(l_row_index, l_index, get_internal_coef(l_row_index,l_index) - (l_q * l_u) / l_pivot);
 	      }
 	  }
@@ -472,8 +471,8 @@ namespace simplex
   }
 
   //----------------------------------------------------------------------------
-  template <typename ARRAY_TYPE>
-  std::ostream & simplex<ARRAY_TYPE>::display_array(std::ostream & p_stream)const
+  template <typename COEF_TYPE,typename ARRAY_TYPE>
+  std::ostream & simplex<COEF_TYPE,ARRAY_TYPE>::display_array(std::ostream & p_stream)const
     {
       p_stream << "Z\t";
      for(unsigned int l_index = 0;
@@ -519,10 +518,10 @@ namespace simplex
     }
 
   //----------------------------------------------------------------------------
-  template <typename ARRAY_TYPE>
-  void simplex<ARRAY_TYPE>::set_adjustement_variable(const unsigned int & p_equation_index,
-						    const t_coef_type & p_value
-						    )
+  template <typename COEF_TYPE,typename ARRAY_TYPE>
+  void simplex<COEF_TYPE,ARRAY_TYPE>::set_adjustement_variable(const unsigned int & p_equation_index,
+							       const COEF_TYPE & p_value
+							       )
     {
       unsigned int l_column_index = m_nb_variables + m_nb_defined_adjustment_variables;
       set_internal_coef(p_equation_index, l_column_index, p_value);
@@ -534,8 +533,8 @@ namespace simplex
     }
 
   //----------------------------------------------------------------------------
-  template <typename ARRAY_TYPE>
-  bool simplex<ARRAY_TYPE>::get_max_input_variable_index(unsigned int & p_variable_index) const
+  template <typename COEF_TYPE,typename ARRAY_TYPE>
+  bool simplex<COEF_TYPE,ARRAY_TYPE>::get_max_input_variable_index(unsigned int & p_variable_index) const
     {
       for(unsigned int l_index = 0;
 	  l_index < m_nb_all_variables;
@@ -552,8 +551,8 @@ namespace simplex
     }
 
   //----------------------------------------------------------------------------
-  template <typename ARRAY_TYPE>
-  bool simplex<ARRAY_TYPE>::get_min_input_variable_index(unsigned int & p_variable_index) const
+  template <typename COEF_TYPE,typename ARRAY_TYPE>
+  bool simplex<COEF_TYPE,ARRAY_TYPE>::get_min_input_variable_index(unsigned int & p_variable_index) const
     {
       for(unsigned int l_index = 0;
 	  l_index < m_nb_all_variables;
@@ -570,23 +569,23 @@ namespace simplex
     }
 
   //----------------------------------------------------------------------------
-  template <typename ARRAY_TYPE>
-  bool simplex<ARRAY_TYPE>::get_output_equation_index(unsigned int p_input_variable_index,
-						     unsigned int & p_equation_index
-							 )const
+  template <typename COEF_TYPE,typename ARRAY_TYPE>
+  bool simplex<COEF_TYPE,ARRAY_TYPE>::get_output_equation_index(unsigned int p_input_variable_index,
+								unsigned int & p_equation_index
+								)const
     {
       assert(p_input_variable_index < m_nb_all_variables);
       bool l_found = false;
-      t_coef_type l_min = std::numeric_limits<t_coef_type>::max();
+      COEF_TYPE l_min = std::numeric_limits<COEF_TYPE>::max();
       for(unsigned int l_index = 0;
 	  l_index < m_nb_total_equations;
 	  ++l_index
 	  )
 	{
-	  t_coef_type l_divider = get_internal_coef(l_index,p_input_variable_index);
+	  COEF_TYPE l_divider = get_internal_coef(l_index,p_input_variable_index);
 	  if(l_divider > 0)
 	    {
-	      t_coef_type l_result = m_array.get_B_coef(l_index) / l_divider;
+	      COEF_TYPE l_result = m_array.get_B_coef(l_index) / l_divider;
 	      if(l_result < l_min)
 		{
 		  l_min = l_result;
@@ -599,10 +598,10 @@ namespace simplex
     }
 
   //----------------------------------------------------------------------------
-  template <typename ARRAY_TYPE>
-  void simplex<ARRAY_TYPE>::define_equation_type(const unsigned int & p_equation_index,
-						const t_equation_type & p_equation_type
-						)
+  template <typename COEF_TYPE,typename ARRAY_TYPE>
+  void simplex<COEF_TYPE,ARRAY_TYPE>::define_equation_type(const unsigned int & p_equation_index,
+							   const t_equation_type & p_equation_type
+							   )
     {
       assert(p_equation_index < m_nb_total_equations);
       m_equation_types[p_equation_index] = p_equation_type;
@@ -626,9 +625,9 @@ namespace simplex
     }
 
   //----------------------------------------------------------------------------
-  template <typename ARRAY_TYPE>
+  template <typename COEF_TYPE,typename ARRAY_TYPE>
   template <class LISTENER>
-    bool simplex<ARRAY_TYPE>::find_max(t_coef_type & p_max, bool & p_infinite,LISTENER * p_listener)
+  bool simplex<COEF_TYPE,ARRAY_TYPE>::find_max(COEF_TYPE & p_max, bool & p_infinite,LISTENER * p_listener)
     {
       if(m_nb_base_variables_defined != m_nb_total_equations)
 	{
@@ -694,8 +693,8 @@ namespace simplex
     }
 
   //----------------------------------------------------------------------------
-  template <typename ARRAY_TYPE>
-  void simplex<ARRAY_TYPE>::define_base_variable(const unsigned int & p_variable_index)
+  template <typename COEF_TYPE,typename ARRAY_TYPE>
+  void simplex<COEF_TYPE,ARRAY_TYPE>::define_base_variable(const unsigned int & p_variable_index)
   {
     assert(p_variable_index < m_nb_all_variables);
     assert(m_nb_base_variables_defined < m_nb_total_equations);
@@ -705,23 +704,23 @@ namespace simplex
   }
 
   //----------------------------------------------------------------------------
-  template <typename ARRAY_TYPE>
-  const unsigned int & simplex<ARRAY_TYPE>::get_base_variable(const unsigned int & p_index)const
+  template <typename COEF_TYPE,typename ARRAY_TYPE>
+  const unsigned int & simplex<COEF_TYPE,ARRAY_TYPE>::get_base_variable(const unsigned int & p_index)const
   {
     assert(p_index < m_nb_total_equations);
     return m_base_variables[p_index];
   }
 
   //----------------------------------------------------------------------------
-  template <typename ARRAY_TYPE>
-  const unsigned int simplex<ARRAY_TYPE>::get_total_nb_equation(void)const
+  template <typename COEF_TYPE,typename ARRAY_TYPE>
+  const unsigned int simplex<COEF_TYPE,ARRAY_TYPE>::get_total_nb_equation(void)const
   {
     return m_nb_total_equations;
   }
 
   //----------------------------------------------------------------------------
-  template <typename ARRAY_TYPE>
-  simplex<ARRAY_TYPE>::~simplex(void)
+  template <typename COEF_TYPE,typename ARRAY_TYPE>
+  simplex<COEF_TYPE,ARRAY_TYPE>::~simplex(void)
     {
       delete[] m_base_variables_position;
       delete[] m_base_variables;

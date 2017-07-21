@@ -24,7 +24,7 @@
 namespace simplex
 {
   template <typename COEF_TYPE>
-    class simplex_map: public simplex_array_base
+    class simplex_map: public simplex_array_base<COEF_TYPE>
   {
   public:
     simplex_map(const unsigned int & p_nb_equations,
@@ -129,7 +129,7 @@ namespace simplex
   simplex_map<COEF_TYPE>::simplex_map(const unsigned int & p_nb_equations,
 				       const unsigned int & p_nb_variables
 				       ):
-    simplex_array_base(p_nb_equations,p_nb_variables),
+    simplex_array_base<COEF_TYPE>(p_nb_equations,p_nb_variables),
     m_coefs(new std::map<unsigned int,COEF_TYPE>[p_nb_equations + 1]),
     m_zero(0)
     {
@@ -143,7 +143,7 @@ namespace simplex
 					const COEF_TYPE & p_value
 					)
   {
-    assert(p_equation_index <= simplex_array_base::get_nb_equations());
+    assert(p_equation_index <= simplex_array_base<COEF_TYPE>::get_nb_equations());
     assert(m_coefs);
     typename std::map<unsigned int,COEF_TYPE> & l_line = m_coefs[p_equation_index];
     typename std::map<unsigned int,COEF_TYPE>::iterator l_iter = l_line.find(p_variable_index);
@@ -173,7 +173,7 @@ namespace simplex
 						     const unsigned int & p_column_index
 						     )const
   {
-    assert(p_line_index <= get_nb_equations());
+    assert(p_line_index <= simplex_array_base<COEF_TYPE>::get_nb_equations());
     assert(m_coefs);
     typename std::map<unsigned int,COEF_TYPE>::iterator l_iter = m_coefs[p_line_index].find(p_column_index);
     if(l_iter != m_coefs[p_line_index].end())
@@ -189,8 +189,8 @@ namespace simplex
 					  const COEF_TYPE & p_value
 					  )
     {
-      assert(p_index < get_nb_variables());
-      set_coef(get_nb_equations(),p_index,p_value);
+      assert(p_index < simplex_array_base<COEF_TYPE>::get_nb_variables());
+      set_coef(simplex_array_base<COEF_TYPE>::get_nb_equations(),p_index,p_value);
     }
 
   //----------------------------------------------------------------------------
@@ -198,8 +198,8 @@ namespace simplex
   const COEF_TYPE & simplex_map<COEF_TYPE>::get_Z_coef(const unsigned int p_index
 							 )const
     {
-      assert(p_index < get_nb_variables());
-      return get_coef(get_nb_equations(),p_index);
+      assert(p_index < simplex_array_base<COEF_TYPE>::get_nb_variables());
+      return get_coef(simplex_array_base<COEF_TYPE>::get_nb_equations(),p_index);
     }
 
   //----------------------------------------------------------------------------
@@ -207,14 +207,14 @@ namespace simplex
   void simplex_map<COEF_TYPE>::set_Z0_coef(const COEF_TYPE & p_value
 					     )
     {
-      set_coef(get_nb_equations(),get_nb_variables(),p_value);
+      set_coef(simplex_array_base<COEF_TYPE>::get_nb_equations(),simplex_array_base<COEF_TYPE>::get_nb_variables(),p_value);
     }
 
   //----------------------------------------------------------------------------
   template <typename COEF_TYPE>
   const COEF_TYPE & simplex_map<COEF_TYPE>::get_Z0_coef(void)const
     {
-      return get_coef(get_nb_equations(),get_nb_variables());
+      return get_coef(simplex_array_base<COEF_TYPE>::get_nb_equations(),simplex_array_base<COEF_TYPE>::get_nb_variables());
     }
 
   //----------------------------------------------------------------------------
@@ -223,8 +223,8 @@ namespace simplex
 					      const COEF_TYPE & p_value
 					      )
     {
-      assert(p_index < get_nb_equations());
-      set_coef(p_index,get_nb_variables(),p_value);
+      assert(p_index < simplex_array_base<COEF_TYPE>::get_nb_equations());
+      set_coef(p_index,simplex_array_base<COEF_TYPE>::get_nb_variables(),p_value);
     }
 
   //----------------------------------------------------------------------------
@@ -232,8 +232,8 @@ namespace simplex
     const COEF_TYPE & simplex_map<COEF_TYPE>::get_B_coef(const unsigned int p_index
 							   )const
     {
-      assert(p_index < get_nb_equations());
-      return get_coef(p_index,get_nb_variables());
+      assert(p_index < simplex_array_base<COEF_TYPE>::get_nb_equations());
+      return get_coef(p_index,simplex_array_base<COEF_TYPE>::get_nb_variables());
     }
 
   //----------------------------------------------------------------------------
@@ -243,8 +243,8 @@ namespace simplex
 					    const COEF_TYPE & p_value
 					    )
   {
-    assert(p_equation_index < get_nb_equations());
-    assert(p_variable_index < get_nb_variables());
+    assert(p_equation_index < simplex_array_base<COEF_TYPE>::get_nb_equations());
+    assert(p_variable_index < simplex_array_base<COEF_TYPE>::get_nb_variables());
     set_coef(p_equation_index,p_variable_index, p_value);
   }
 
@@ -255,8 +255,8 @@ namespace simplex
 				       const unsigned int p_variable_index
 				       )const
     {
-      assert(p_equation_index < get_nb_equations());
-      assert(p_variable_index < get_nb_variables());
+      assert(p_equation_index < simplex_array_base<COEF_TYPE>::get_nb_equations());
+      assert(p_variable_index < simplex_array_base<COEF_TYPE>::get_nb_variables());
       return get_coef(p_equation_index, p_variable_index);
     }
 
