@@ -27,4 +27,5 @@ before_install:
 script:
   - generate_makefile simplex
   - make test
+  - ./bin/simplex.exe
 #EOF
