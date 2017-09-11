@@ -26,6 +26,7 @@ MY_LOCATION=`pwd`
 cd $MY_LOCATION/repositories
 git clone https://github.com/quicky2000/quicky_tools.git
 git clone https://github.com/quicky2000/quicky_exception.git
+git clone https://github.com/quicky2000/quicky_utils.git
 cd quicky_tools/setup
 . setup.sh
 cd $MY_LOCATION
