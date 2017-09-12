@@ -135,14 +135,11 @@ namespace simplex
 					  const unsigned int & p_nb_variables
 					  ):
     simplex_array_base<COEF_TYPE>(p_nb_equations,p_nb_variables),
-    m_equation_coefs(new COEF_TYPE[p_nb_variables * p_nb_equations]),
-    m_b_coefs(new COEF_TYPE[p_nb_equations]),
-    m_z_coefs(new COEF_TYPE[p_nb_variables]),
+    m_equation_coefs(new COEF_TYPE[p_nb_variables * p_nb_equations]()),
+    m_b_coefs(new COEF_TYPE[p_nb_equations]()),
+    m_z_coefs(new COEF_TYPE[p_nb_variables]()),
     m_z0(0)
     {
-      memset(m_equation_coefs,0,p_nb_variables * p_nb_equations * sizeof(COEF_TYPE));
-      memset(m_b_coefs,0,p_nb_equations * sizeof(COEF_TYPE));
-      memset(m_z_coefs,0,p_nb_variables * sizeof(COEF_TYPE));
     }
 
   //----------------------------------------------------------------------------
