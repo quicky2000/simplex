@@ -474,7 +474,24 @@ namespace simplex
   template <typename COEF_TYPE,typename ARRAY_TYPE>
   std::ostream & simplex_solver<COEF_TYPE,ARRAY_TYPE>::display_array(std::ostream & p_stream)const
     {
-      p_stream << "Z\t";
+     p_stream << "Z\t";
+     for(unsigned int l_index = 0;
+	 l_index < m_nb_all_variables;
+	 ++l_index
+	 )
+       {
+	 if(l_index < m_nb_variables)
+	   {
+	     p_stream << "X" << 1 + l_index;
+	   }
+	 else
+	   {
+	     p_stream << "E" << 1 + l_index - m_nb_variables;
+	   }
+	 p_stream << "\t" ;
+       }
+     p_stream << std::endl;
+     p_stream << "Z\t";
      for(unsigned int l_index = 0;
 	 l_index < m_nb_all_variables;
 	 ++l_index
