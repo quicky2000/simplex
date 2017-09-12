@@ -40,6 +40,7 @@ namespace simplex
     unsigned int m_nb_iteration;
     const simplex_solver<COEF_TYPE,ARRAY_TYPE> & m_simplex;
     std::ostream & m_ostream;
+    bool m_start;
   };
 
   //----------------------------------------------------------------------------
@@ -49,7 +50,8 @@ namespace simplex
 							   ):
     m_nb_iteration(0),
     m_simplex(p_simplex),
-    m_ostream(p_ostream)
+    m_ostream(p_ostream),
+    m_start(true)
   {
   }
 
@@ -58,6 +60,11 @@ namespace simplex
   void simplex_listener<COEF_TYPE,ARRAY_TYPE>::start_iteration(const unsigned int & p_nb_iteration)
   {
     m_nb_iteration = p_nb_iteration;
+    if(m_start)
+      {
+	m_simplex.display_array(m_ostream);
+	m_start = false;
+      }
   }
  
   //----------------------------------------------------------------------------
