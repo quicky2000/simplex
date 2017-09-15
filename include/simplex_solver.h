@@ -434,7 +434,7 @@ namespace simplex
 	 )
        {
 	 COEF_TYPE l_u = get_internal_coef(p_row_index,l_index);
-	 m_array.set_Z_coef(l_index, m_array.get_Z_coef(l_index) - (l_q * l_u) / l_pivot);
+	 m_array.set_Z_coef(l_index, m_array.get_Z_coef(l_index) - l_q * (l_u / l_pivot));
        }
      m_array.set_Z0_coef(m_array.get_Z0_coef() - (l_q * m_array.get_B_coef(p_row_index)) / l_pivot);
 
