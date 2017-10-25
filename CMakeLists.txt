@@ -9,8 +9,7 @@ set(MY_SOURCE_FILES
     include/simplex_array_base.h
     include/simplex_listener.h
     include/simplex_map.h
-    include/simplex_solver.h
-    src/main_simplex.cpp)
+    include/simplex_solver.h)
 
 # List header directories in project
 set(MY_INCLUDE_DIRECTORIES
