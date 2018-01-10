@@ -23,13 +23,14 @@
 #include <iostream>
 #include <fstream>
 
+template <typename SIMPLEX_TYPE>
 void test_case1(void)
 {
   // Example
   // Max Z -1 * X1 - 4 * X2 - 3 * X3           = 0
   //        2 * X1 + 2 * X2 + 1 * X3 + X4      = 4
   //            X1 + 2 * X2 + 2 * X3 +    + X5 = 6
-  simplex::simplex_solver<quicky_utils::fract<uint32_t>,simplex::simplex_map<quicky_utils::fract<uint32_t>>> l_simplex(5, // Number of variables : x1 and x2
+  simplex::simplex_solver<SIMPLEX_TYPE,simplex::simplex_map<SIMPLEX_TYPE>> l_simplex(5, // Number of variables : x1 and x2
 									 0, // Number of inequations with the form A x <= b
 									 2, // Number of equations with the form A x = b
 									 0  // Number of inequations with the form A x >= b
@@ -52,9 +53,9 @@ void test_case1(void)
   l_simplex.define_base_variable(3);
   l_simplex.define_base_variable(4);
 
-  quicky_utils::fract<uint32_t> l_max = 0;
+  SIMPLEX_TYPE l_max = 0;
   bool l_infinite = false;
-  simplex::simplex_listener<quicky_utils::fract<uint32_t>,simplex::simplex_map<quicky_utils::fract<uint32_t>>> l_listener(l_simplex);
+  simplex::simplex_listener<SIMPLEX_TYPE,simplex::simplex_map<SIMPLEX_TYPE>> l_listener(l_simplex);
   if(l_simplex.find_max(l_max,l_infinite,&l_listener))
     {
       std::cout << "Max = " << l_max << std::endl ;
@@ -77,6 +78,7 @@ void test_case1(void)
   assert(l_max == 10);
 }
 
+template <typename SIMPLEX_TYPE>
 void test_case2(void)
 {
   // Example
@@ -113,7 +115,7 @@ void test_case2(void)
       }
   }
 
-  simplex::simplex_solver<double> l_simplex(2, // Number of variables : x1 and x2
+  simplex::simplex_solver<SIMPLEX_TYPE> l_simplex(2, // Number of variables : x1 and x2
 					    4, // Number of inequations with the form A x <= b
 					    0, // Number of equations with the form A x = b
 					    0  // Number of inequations with the form A x >= b
@@ -135,7 +137,7 @@ void test_case2(void)
   l_simplex.define_equation_type(2,simplex::t_equation_type::INEQUATION_LT);
   l_simplex.define_equation_type(3,simplex::t_equation_type::INEQUATION_LT);
 
-  double l_max = 0;
+  SIMPLEX_TYPE l_max = 0;
   bool l_infinite = false;
   if(l_simplex.find_max(l_max,l_infinite))
     {
@@ -314,6 +316,7 @@ typedef enum class yes_no
   YES
 } t_yes_no;
 
+template <typename SIMPLEX_TYPE>
 void test_case3(void)
 {
   // 3 position equations
@@ -321,7 +324,7 @@ void test_case3(void)
   
   // 18 variables : 3 pieces at 3 positions with 2 orientations : 3*3*2
   // 54 equations : 48 : (3pieces * 2orientations) * (2pieces * 2orientations) * 2 segments
-  simplex::simplex_solver<double> l_simplex(18, // Number of variables : x1 and x2
+  simplex::simplex_solver<SIMPLEX_TYPE> l_simplex(18, // Number of variables : x1 and x2
 					    54, // Number of inequations with the form A x <= b
 					    0, // Number of equations with the form A x = b
 					    0  // Number of inequations with the form A x >= b
@@ -533,242 +536,242 @@ void test_case3(void)
 
   l_simplex.set_A_coef((unsigned int)t_equation::P1_0_P2_1,(unsigned int)t_variable::P1_0,1);
   l_simplex.set_A_coef((unsigned int)t_equation::P1_0_P2_1,(unsigned int)t_variable::P2_1,1);
-  l_simplex.set_B_coef((unsigned int)t_equation::P1_0_P2_1,(double)t_yes_no::NO);
+  l_simplex.set_B_coef((unsigned int)t_equation::P1_0_P2_1,(SIMPLEX_TYPE)t_yes_no::NO);
   l_simplex.define_equation_type((unsigned int)t_equation::P1_0_P2_1,simplex::t_equation_type::INEQUATION_LT);
 
   l_simplex.set_A_coef((unsigned int)t_equation::P1_0_P3_1,(unsigned int)t_variable::P1_0,1);
   l_simplex.set_A_coef((unsigned int)t_equation::P1_0_P3_1,(unsigned int)t_variable::P3_1,1);
-  l_simplex.set_B_coef((unsigned int)t_equation::P1_0_P3_1,(double)t_yes_no::NO);
+  l_simplex.set_B_coef((unsigned int)t_equation::P1_0_P3_1,(SIMPLEX_TYPE)t_yes_no::NO);
   l_simplex.define_equation_type((unsigned int)t_equation::P1_0_P3_1,simplex::t_equation_type::INEQUATION_LT);
 
   l_simplex.set_A_coef((unsigned int)t_equation::P1_0_P2b_1,(unsigned int)t_variable::P1_0,1);
   l_simplex.set_A_coef((unsigned int)t_equation::P1_0_P2b_1,(unsigned int)t_variable::P2b_1,1);
-  l_simplex.set_B_coef((unsigned int)t_equation::P1_0_P2b_1,(double)t_yes_no::NO);
+  l_simplex.set_B_coef((unsigned int)t_equation::P1_0_P2b_1,(SIMPLEX_TYPE)t_yes_no::NO);
   l_simplex.define_equation_type((unsigned int)t_equation::P1_0_P2b_1,simplex::t_equation_type::INEQUATION_LT);
 
   l_simplex.set_A_coef((unsigned int)t_equation::P1_0_P3b_1,(unsigned int)t_variable::P1_0,1);
   l_simplex.set_A_coef((unsigned int)t_equation::P1_0_P3b_1,(unsigned int)t_variable::P3b_1,1);
-  l_simplex.set_B_coef((unsigned int)t_equation::P1_0_P3b_1,(double)t_yes_no::NO);
+  l_simplex.set_B_coef((unsigned int)t_equation::P1_0_P3b_1,(SIMPLEX_TYPE)t_yes_no::NO);
   l_simplex.define_equation_type((unsigned int)t_equation::P1_0_P3b_1,simplex::t_equation_type::INEQUATION_LT);
 
   l_simplex.set_A_coef((unsigned int)t_equation::P1b_0_P2_1,(unsigned int)t_variable::P1b_0,1);
   l_simplex.set_A_coef((unsigned int)t_equation::P1b_0_P2_1,(unsigned int)t_variable::P2_1,1);
-  l_simplex.set_B_coef((unsigned int)t_equation::P1b_0_P2_1,(double)t_yes_no::NO);
+  l_simplex.set_B_coef((unsigned int)t_equation::P1b_0_P2_1,(SIMPLEX_TYPE)t_yes_no::NO);
   l_simplex.define_equation_type((unsigned int)t_equation::P1b_0_P2_1,simplex::t_equation_type::INEQUATION_LT);
 
   l_simplex.set_A_coef((unsigned int)t_equation::P1b_0_P3_1,(unsigned int)t_variable::P1b_0,1);
   l_simplex.set_A_coef((unsigned int)t_equation::P1b_0_P3_1,(unsigned int)t_variable::P3_1,1);
-  l_simplex.set_B_coef((unsigned int)t_equation::P1b_0_P3_1,(double)t_yes_no::NO);
+  l_simplex.set_B_coef((unsigned int)t_equation::P1b_0_P3_1,(SIMPLEX_TYPE)t_yes_no::NO);
   l_simplex.define_equation_type((unsigned int)t_equation::P1b_0_P3_1,simplex::t_equation_type::INEQUATION_LT);
 
   l_simplex.set_A_coef((unsigned int)t_equation::P1b_0_P2b_1,(unsigned int)t_variable::P1b_0,1);
   l_simplex.set_A_coef((unsigned int)t_equation::P1b_0_P2b_1,(unsigned int)t_variable::P2b_1,1);
-  l_simplex.set_B_coef((unsigned int)t_equation::P1b_0_P2b_1,(double)t_yes_no::NO);
+  l_simplex.set_B_coef((unsigned int)t_equation::P1b_0_P2b_1,(SIMPLEX_TYPE)t_yes_no::NO);
   l_simplex.define_equation_type((unsigned int)t_equation::P1b_0_P2b_1,simplex::t_equation_type::INEQUATION_LT);
 
   l_simplex.set_A_coef((unsigned int)t_equation::P1b_0_P3b_1,(unsigned int)t_variable::P1b_0,1);
   l_simplex.set_A_coef((unsigned int)t_equation::P1b_0_P3b_1,(unsigned int)t_variable::P3b_1,1);
-  l_simplex.set_B_coef((unsigned int)t_equation::P1b_0_P3b_1,(double)t_yes_no::YES);
+  l_simplex.set_B_coef((unsigned int)t_equation::P1b_0_P3b_1,(SIMPLEX_TYPE)t_yes_no::YES);
   l_simplex.define_equation_type((unsigned int)t_equation::P1b_0_P3b_1,simplex::t_equation_type::INEQUATION_LT);
 
   l_simplex.set_A_coef((unsigned int)t_equation::P2_0_P1_1,(unsigned int)t_variable::P2_0,1);
   l_simplex.set_A_coef((unsigned int)t_equation::P2_0_P1_1,(unsigned int)t_variable::P1_1,1);
-  l_simplex.set_B_coef((unsigned int)t_equation::P2_0_P1_1,(double)t_yes_no::NO);
+  l_simplex.set_B_coef((unsigned int)t_equation::P2_0_P1_1,(SIMPLEX_TYPE)t_yes_no::NO);
   l_simplex.define_equation_type((unsigned int)t_equation::P2_0_P1_1,simplex::t_equation_type::INEQUATION_LT);
 
   l_simplex.set_A_coef((unsigned int)t_equation::P2_0_P3_1,(unsigned int)t_variable::P2_0,1);
   l_simplex.set_A_coef((unsigned int)t_equation::P2_0_P3_1,(unsigned int)t_variable::P3_1,1);
-  l_simplex.set_B_coef((unsigned int)t_equation::P2_0_P3_1,(double)t_yes_no::YES);
+  l_simplex.set_B_coef((unsigned int)t_equation::P2_0_P3_1,(SIMPLEX_TYPE)t_yes_no::YES);
   l_simplex.define_equation_type((unsigned int)t_equation::P2_0_P3_1,simplex::t_equation_type::INEQUATION_LT);
 
   l_simplex.set_A_coef((unsigned int)t_equation::P2_0_P1b_1,(unsigned int)t_variable::P2_0,1);
   l_simplex.set_A_coef((unsigned int)t_equation::P2_0_P1b_1,(unsigned int)t_variable::P1b_1,1);
-  l_simplex.set_B_coef((unsigned int)t_equation::P2_0_P1b_1,(double)t_yes_no::NO);
+  l_simplex.set_B_coef((unsigned int)t_equation::P2_0_P1b_1,(SIMPLEX_TYPE)t_yes_no::NO);
   l_simplex.define_equation_type((unsigned int)t_equation::P2_0_P1b_1,simplex::t_equation_type::INEQUATION_LT);
 
   l_simplex.set_A_coef((unsigned int)t_equation::P2_0_P3b_1,(unsigned int)t_variable::P2_0,1);
   l_simplex.set_A_coef((unsigned int)t_equation::P2_0_P3b_1,(unsigned int)t_variable::P3b_1,1);
-  l_simplex.set_B_coef((unsigned int)t_equation::P2_0_P3b_1,(double)t_yes_no::NO);
+  l_simplex.set_B_coef((unsigned int)t_equation::P2_0_P3b_1,(SIMPLEX_TYPE)t_yes_no::NO);
   l_simplex.define_equation_type((unsigned int)t_equation::P2_0_P3b_1,simplex::t_equation_type::INEQUATION_LT);
 
   l_simplex.set_A_coef((unsigned int)t_equation::P2b_0_P1_1,(unsigned int)t_variable::P2b_0,1);
   l_simplex.set_A_coef((unsigned int)t_equation::P2b_0_P1_1,(unsigned int)t_variable::P1_1,1);
-  l_simplex.set_B_coef((unsigned int)t_equation::P2b_0_P1_1,(double)t_yes_no::NO);
+  l_simplex.set_B_coef((unsigned int)t_equation::P2b_0_P1_1,(SIMPLEX_TYPE)t_yes_no::NO);
   l_simplex.define_equation_type((unsigned int)t_equation::P2b_0_P1_1,simplex::t_equation_type::INEQUATION_LT);
 
   l_simplex.set_A_coef((unsigned int)t_equation::P2b_0_P3_1,(unsigned int)t_variable::P2b_0,1);
   l_simplex.set_A_coef((unsigned int)t_equation::P2b_0_P3_1,(unsigned int)t_variable::P3_1,1);
-  l_simplex.set_B_coef((unsigned int)t_equation::P2b_0_P3_1,(double)t_yes_no::NO);
+  l_simplex.set_B_coef((unsigned int)t_equation::P2b_0_P3_1,(SIMPLEX_TYPE)t_yes_no::NO);
   l_simplex.define_equation_type((unsigned int)t_equation::P2b_0_P3_1,simplex::t_equation_type::INEQUATION_LT);
 
   l_simplex.set_A_coef((unsigned int)t_equation::P2b_0_P1b_1,(unsigned int)t_variable::P2b_0,1);
   l_simplex.set_A_coef((unsigned int)t_equation::P2b_0_P1b_1,(unsigned int)t_variable::P1b_1,1);
-  l_simplex.set_B_coef((unsigned int)t_equation::P2b_0_P1b_1,(double)t_yes_no::NO);
+  l_simplex.set_B_coef((unsigned int)t_equation::P2b_0_P1b_1,(SIMPLEX_TYPE)t_yes_no::NO);
   l_simplex.define_equation_type((unsigned int)t_equation::P2b_0_P1b_1,simplex::t_equation_type::INEQUATION_LT);
 
   l_simplex.set_A_coef((unsigned int)t_equation::P2b_0_P3b_1,(unsigned int)t_variable::P2b_0,1);
   l_simplex.set_A_coef((unsigned int)t_equation::P2b_0_P3b_1,(unsigned int)t_variable::P3b_1,1);
-  l_simplex.set_B_coef((unsigned int)t_equation::P2b_0_P3b_1,(double)t_yes_no::NO);
+  l_simplex.set_B_coef((unsigned int)t_equation::P2b_0_P3b_1,(SIMPLEX_TYPE)t_yes_no::NO);
   l_simplex.define_equation_type((unsigned int)t_equation::P2b_0_P3b_1,simplex::t_equation_type::INEQUATION_LT);
 
   l_simplex.set_A_coef((unsigned int)t_equation::P3_0_P1_1,(unsigned int)t_variable::P3_0,1);
   l_simplex.set_A_coef((unsigned int)t_equation::P3_0_P1_1,(unsigned int)t_variable::P1_1,1);
-  l_simplex.set_B_coef((unsigned int)t_equation::P3_0_P1_1,(double)t_yes_no::YES);
+  l_simplex.set_B_coef((unsigned int)t_equation::P3_0_P1_1,(SIMPLEX_TYPE)t_yes_no::YES);
   l_simplex.define_equation_type((unsigned int)t_equation::P3_0_P1_1,simplex::t_equation_type::INEQUATION_LT);
 
   l_simplex.set_A_coef((unsigned int)t_equation::P3_0_P2_1,(unsigned int)t_variable::P3_0,1);
   l_simplex.set_A_coef((unsigned int)t_equation::P3_0_P2_1,(unsigned int)t_variable::P2_1,1);
-  l_simplex.set_B_coef((unsigned int)t_equation::P3_0_P2_1,(double)t_yes_no::NO);
+  l_simplex.set_B_coef((unsigned int)t_equation::P3_0_P2_1,(SIMPLEX_TYPE)t_yes_no::NO);
   l_simplex.define_equation_type((unsigned int)t_equation::P3_0_P2_1,simplex::t_equation_type::INEQUATION_LT);
 
   l_simplex.set_A_coef((unsigned int)t_equation::P3_0_P1b_1,(unsigned int)t_variable::P3_0,1);
   l_simplex.set_A_coef((unsigned int)t_equation::P3_0_P1b_1,(unsigned int)t_variable::P1b_1,1);
-  l_simplex.set_B_coef((unsigned int)t_equation::P3_0_P1b_1,(double)t_yes_no::NO);
+  l_simplex.set_B_coef((unsigned int)t_equation::P3_0_P1b_1,(SIMPLEX_TYPE)t_yes_no::NO);
   l_simplex.define_equation_type((unsigned int)t_equation::P3_0_P1b_1,simplex::t_equation_type::INEQUATION_LT);
 
   l_simplex.set_A_coef((unsigned int)t_equation::P3_0_P2b_1,(unsigned int)t_variable::P3_0,1);
   l_simplex.set_A_coef((unsigned int)t_equation::P3_0_P2b_1,(unsigned int)t_variable::P2b_1,1);
-  l_simplex.set_B_coef((unsigned int)t_equation::P3_0_P2b_1,(double)t_yes_no::NO);
+  l_simplex.set_B_coef((unsigned int)t_equation::P3_0_P2b_1,(SIMPLEX_TYPE)t_yes_no::NO);
   l_simplex.define_equation_type((unsigned int)t_equation::P3_0_P2b_1,simplex::t_equation_type::INEQUATION_LT);
 
   l_simplex.set_A_coef((unsigned int)t_equation::P3b_0_P1_1,(unsigned int)t_variable::P3b_0,1);
   l_simplex.set_A_coef((unsigned int)t_equation::P3b_0_P1_1,(unsigned int)t_variable::P1_1,1);
-  l_simplex.set_B_coef((unsigned int)t_equation::P3b_0_P1_1,(double)t_yes_no::NO);
+  l_simplex.set_B_coef((unsigned int)t_equation::P3b_0_P1_1,(SIMPLEX_TYPE)t_yes_no::NO);
   l_simplex.define_equation_type((unsigned int)t_equation::P3b_0_P1_1,simplex::t_equation_type::INEQUATION_LT);
 
   l_simplex.set_A_coef((unsigned int)t_equation::P3b_0_P2_1,(unsigned int)t_variable::P3b_0,1);
   l_simplex.set_A_coef((unsigned int)t_equation::P3b_0_P2_1,(unsigned int)t_variable::P2_1,1);
-  l_simplex.set_B_coef((unsigned int)t_equation::P3b_0_P2_1,(double)t_yes_no::NO);
+  l_simplex.set_B_coef((unsigned int)t_equation::P3b_0_P2_1,(SIMPLEX_TYPE)t_yes_no::NO);
   l_simplex.define_equation_type((unsigned int)t_equation::P3b_0_P2_1,simplex::t_equation_type::INEQUATION_LT);
 
   l_simplex.set_A_coef((unsigned int)t_equation::P3b_0_P1b_1,(unsigned int)t_variable::P3b_0,1);
   l_simplex.set_A_coef((unsigned int)t_equation::P3b_0_P1b_1,(unsigned int)t_variable::P1b_1,1);
-  l_simplex.set_B_coef((unsigned int)t_equation::P3b_0_P1b_1,(double)t_yes_no::NO);
+  l_simplex.set_B_coef((unsigned int)t_equation::P3b_0_P1b_1,(SIMPLEX_TYPE)t_yes_no::NO);
   l_simplex.define_equation_type((unsigned int)t_equation::P3b_0_P1b_1,simplex::t_equation_type::INEQUATION_LT);
 
   l_simplex.set_A_coef((unsigned int)t_equation::P3b_0_P2b_1,(unsigned int)t_variable::P3b_0,1);
   l_simplex.set_A_coef((unsigned int)t_equation::P3b_0_P2b_1,(unsigned int)t_variable::P2b_1,1);
-  l_simplex.set_B_coef((unsigned int)t_equation::P3b_0_P2b_1,(double)t_yes_no::YES);
+  l_simplex.set_B_coef((unsigned int)t_equation::P3b_0_P2b_1,(SIMPLEX_TYPE)t_yes_no::YES);
   l_simplex.define_equation_type((unsigned int)t_equation::P3b_0_P2b_1,simplex::t_equation_type::INEQUATION_LT);
 
   l_simplex.set_A_coef((unsigned int)t_equation::P1_1_P2_2,(unsigned int)t_variable::P1_1,1);
   l_simplex.set_A_coef((unsigned int)t_equation::P1_1_P2_2,(unsigned int)t_variable::P2_2,1);
-  l_simplex.set_B_coef((unsigned int)t_equation::P1_1_P2_2,(double)t_yes_no::NO);
+  l_simplex.set_B_coef((unsigned int)t_equation::P1_1_P2_2,(SIMPLEX_TYPE)t_yes_no::NO);
   l_simplex.define_equation_type((unsigned int)t_equation::P1_1_P2_2,simplex::t_equation_type::INEQUATION_LT);
 
   l_simplex.set_A_coef((unsigned int)t_equation::P1_1_P3_2,(unsigned int)t_variable::P1_1,1);
   l_simplex.set_A_coef((unsigned int)t_equation::P1_1_P3_2,(unsigned int)t_variable::P3_2,1);
-  l_simplex.set_B_coef((unsigned int)t_equation::P1_1_P3_2,(double)t_yes_no::NO);
+  l_simplex.set_B_coef((unsigned int)t_equation::P1_1_P3_2,(SIMPLEX_TYPE)t_yes_no::NO);
   l_simplex.define_equation_type((unsigned int)t_equation::P1_1_P3_2,simplex::t_equation_type::INEQUATION_LT);
 
   l_simplex.set_A_coef((unsigned int)t_equation::P1_1_P2b_2,(unsigned int)t_variable::P1_1,1);
   l_simplex.set_A_coef((unsigned int)t_equation::P1_1_P2b_2,(unsigned int)t_variable::P2b_2,1);
-  l_simplex.set_B_coef((unsigned int)t_equation::P1_1_P2b_2,(double)t_yes_no::NO);
+  l_simplex.set_B_coef((unsigned int)t_equation::P1_1_P2b_2,(SIMPLEX_TYPE)t_yes_no::NO);
   l_simplex.define_equation_type((unsigned int)t_equation::P1_1_P2b_2,simplex::t_equation_type::INEQUATION_LT);
 
   l_simplex.set_A_coef((unsigned int)t_equation::P1_1_P3b_2,(unsigned int)t_variable::P1_1,1);
   l_simplex.set_A_coef((unsigned int)t_equation::P1_1_P3b_2,(unsigned int)t_variable::P3b_2,1);
-  l_simplex.set_B_coef((unsigned int)t_equation::P1_1_P3b_2,(double)t_yes_no::NO);
+  l_simplex.set_B_coef((unsigned int)t_equation::P1_1_P3b_2,(SIMPLEX_TYPE)t_yes_no::NO);
   l_simplex.define_equation_type((unsigned int)t_equation::P1_1_P3b_2,simplex::t_equation_type::INEQUATION_LT);
 
   l_simplex.set_A_coef((unsigned int)t_equation::P1b_1_P2_2,(unsigned int)t_variable::P1b_1,1);
   l_simplex.set_A_coef((unsigned int)t_equation::P1b_1_P2_2,(unsigned int)t_variable::P2_2,1);
-  l_simplex.set_B_coef((unsigned int)t_equation::P1b_1_P2_2,(double)t_yes_no::NO);
+  l_simplex.set_B_coef((unsigned int)t_equation::P1b_1_P2_2,(SIMPLEX_TYPE)t_yes_no::NO);
   l_simplex.define_equation_type((unsigned int)t_equation::P1b_1_P2_2,simplex::t_equation_type::INEQUATION_LT);
 
   l_simplex.set_A_coef((unsigned int)t_equation::P1b_1_P3_2,(unsigned int)t_variable::P1b_1,1);
   l_simplex.set_A_coef((unsigned int)t_equation::P1b_1_P3_2,(unsigned int)t_variable::P3_2,1);
-  l_simplex.set_B_coef((unsigned int)t_equation::P1b_1_P3_2,(double)t_yes_no::NO);
+  l_simplex.set_B_coef((unsigned int)t_equation::P1b_1_P3_2,(SIMPLEX_TYPE)t_yes_no::NO);
   l_simplex.define_equation_type((unsigned int)t_equation::P1b_1_P3_2,simplex::t_equation_type::INEQUATION_LT);
 
   l_simplex.set_A_coef((unsigned int)t_equation::P1b_1_P2b_2,(unsigned int)t_variable::P1b_1,1);
   l_simplex.set_A_coef((unsigned int)t_equation::P1b_1_P2b_2,(unsigned int)t_variable::P2b_2,1);
-  l_simplex.set_B_coef((unsigned int)t_equation::P1b_1_P2b_2,(double)t_yes_no::NO);
+  l_simplex.set_B_coef((unsigned int)t_equation::P1b_1_P2b_2,(SIMPLEX_TYPE)t_yes_no::NO);
   l_simplex.define_equation_type((unsigned int)t_equation::P1b_1_P2b_2,simplex::t_equation_type::INEQUATION_LT);
 
   l_simplex.set_A_coef((unsigned int)t_equation::P1b_1_P3b_2,(unsigned int)t_variable::P1b_1,1);
   l_simplex.set_A_coef((unsigned int)t_equation::P1b_1_P3b_2,(unsigned int)t_variable::P3b_2,1);
-  l_simplex.set_B_coef((unsigned int)t_equation::P1b_1_P3b_2,(double)t_yes_no::YES);
+  l_simplex.set_B_coef((unsigned int)t_equation::P1b_1_P3b_2,(SIMPLEX_TYPE)t_yes_no::YES);
   l_simplex.define_equation_type((unsigned int)t_equation::P1b_1_P3b_2,simplex::t_equation_type::INEQUATION_LT);
 
   l_simplex.set_A_coef((unsigned int)t_equation::P2_1_P1_2,(unsigned int)t_variable::P2_1,1);
   l_simplex.set_A_coef((unsigned int)t_equation::P2_1_P1_2,(unsigned int)t_variable::P1_2,1);
-  l_simplex.set_B_coef((unsigned int)t_equation::P2_1_P1_2,(double)t_yes_no::NO);
+  l_simplex.set_B_coef((unsigned int)t_equation::P2_1_P1_2,(SIMPLEX_TYPE)t_yes_no::NO);
   l_simplex.define_equation_type((unsigned int)t_equation::P2_1_P1_2,simplex::t_equation_type::INEQUATION_LT);
 
   l_simplex.set_A_coef((unsigned int)t_equation::P2_1_P3_2,(unsigned int)t_variable::P2_1,1);
   l_simplex.set_A_coef((unsigned int)t_equation::P2_1_P3_2,(unsigned int)t_variable::P3_2,1);
-  l_simplex.set_B_coef((unsigned int)t_equation::P2_1_P3_2,(double)t_yes_no::YES);
+  l_simplex.set_B_coef((unsigned int)t_equation::P2_1_P3_2,(SIMPLEX_TYPE)t_yes_no::YES);
   l_simplex.define_equation_type((unsigned int)t_equation::P2_1_P3_2,simplex::t_equation_type::INEQUATION_LT);
 
   l_simplex.set_A_coef((unsigned int)t_equation::P2_1_P1b_2,(unsigned int)t_variable::P2_1,1);
   l_simplex.set_A_coef((unsigned int)t_equation::P2_1_P1b_2,(unsigned int)t_variable::P1b_2,1);
-  l_simplex.set_B_coef((unsigned int)t_equation::P2_1_P1b_2,(double)t_yes_no::NO);
+  l_simplex.set_B_coef((unsigned int)t_equation::P2_1_P1b_2,(SIMPLEX_TYPE)t_yes_no::NO);
   l_simplex.define_equation_type((unsigned int)t_equation::P2_1_P1b_2,simplex::t_equation_type::INEQUATION_LT);
 
   l_simplex.set_A_coef((unsigned int)t_equation::P2_1_P3b_2,(unsigned int)t_variable::P2_1,1);
   l_simplex.set_A_coef((unsigned int)t_equation::P2_1_P3b_2,(unsigned int)t_variable::P3b_2,1);
-  l_simplex.set_B_coef((unsigned int)t_equation::P2_1_P3b_2,(double)t_yes_no::NO);
+  l_simplex.set_B_coef((unsigned int)t_equation::P2_1_P3b_2,(SIMPLEX_TYPE)t_yes_no::NO);
   l_simplex.define_equation_type((unsigned int)t_equation::P2_1_P3b_2,simplex::t_equation_type::INEQUATION_LT);
 
   l_simplex.set_A_coef((unsigned int)t_equation::P2b_1_P1_2,(unsigned int)t_variable::P2b_1,1);
   l_simplex.set_A_coef((unsigned int)t_equation::P2b_1_P1_2,(unsigned int)t_variable::P1_2,1);
-  l_simplex.set_B_coef((unsigned int)t_equation::P2b_1_P1_2,(double)t_yes_no::NO);
+  l_simplex.set_B_coef((unsigned int)t_equation::P2b_1_P1_2,(SIMPLEX_TYPE)t_yes_no::NO);
   l_simplex.define_equation_type((unsigned int)t_equation::P2b_1_P1_2,simplex::t_equation_type::INEQUATION_LT);
 
   l_simplex.set_A_coef((unsigned int)t_equation::P2b_1_P3_2,(unsigned int)t_variable::P2b_1,1);
   l_simplex.set_A_coef((unsigned int)t_equation::P2b_1_P3_2,(unsigned int)t_variable::P3_2,1);
-  l_simplex.set_B_coef((unsigned int)t_equation::P2b_1_P3_2,(double)t_yes_no::NO);
+  l_simplex.set_B_coef((unsigned int)t_equation::P2b_1_P3_2,(SIMPLEX_TYPE)t_yes_no::NO);
   l_simplex.define_equation_type((unsigned int)t_equation::P2b_1_P3_2,simplex::t_equation_type::INEQUATION_LT);
 
   l_simplex.set_A_coef((unsigned int)t_equation::P2b_1_P1b_2,(unsigned int)t_variable::P2b_1,1);
   l_simplex.set_A_coef((unsigned int)t_equation::P2b_1_P1b_2,(unsigned int)t_variable::P1b_2,1);
-  l_simplex.set_B_coef((unsigned int)t_equation::P2b_1_P1b_2,(double)t_yes_no::NO);
+  l_simplex.set_B_coef((unsigned int)t_equation::P2b_1_P1b_2,(SIMPLEX_TYPE)t_yes_no::NO);
   l_simplex.define_equation_type((unsigned int)t_equation::P2b_1_P1b_2,simplex::t_equation_type::INEQUATION_LT);
 
   l_simplex.set_A_coef((unsigned int)t_equation::P2b_1_P3b_2,(unsigned int)t_variable::P2b_1,1);
   l_simplex.set_A_coef((unsigned int)t_equation::P2b_1_P3b_2,(unsigned int)t_variable::P3b_2,1);
-  l_simplex.set_B_coef((unsigned int)t_equation::P2b_1_P3b_2,(double)t_yes_no::NO);
+  l_simplex.set_B_coef((unsigned int)t_equation::P2b_1_P3b_2,(SIMPLEX_TYPE)t_yes_no::NO);
   l_simplex.define_equation_type((unsigned int)t_equation::P2b_1_P3b_2,simplex::t_equation_type::INEQUATION_LT);
 
   l_simplex.set_A_coef((unsigned int)t_equation::P3_1_P1_2,(unsigned int)t_variable::P3_1,1);
   l_simplex.set_A_coef((unsigned int)t_equation::P3_1_P1_2,(unsigned int)t_variable::P1_2,1);
-  l_simplex.set_B_coef((unsigned int)t_equation::P3_1_P1_2,(double)t_yes_no::YES);
+  l_simplex.set_B_coef((unsigned int)t_equation::P3_1_P1_2,(SIMPLEX_TYPE)t_yes_no::YES);
   l_simplex.define_equation_type((unsigned int)t_equation::P3_1_P1_2,simplex::t_equation_type::INEQUATION_LT);
 
   l_simplex.set_A_coef((unsigned int)t_equation::P3_1_P2_2,(unsigned int)t_variable::P3_1,1);
   l_simplex.set_A_coef((unsigned int)t_equation::P3_1_P2_2,(unsigned int)t_variable::P2_2,1);
-  l_simplex.set_B_coef((unsigned int)t_equation::P3_1_P2_2,(double)t_yes_no::NO);
+  l_simplex.set_B_coef((unsigned int)t_equation::P3_1_P2_2,(SIMPLEX_TYPE)t_yes_no::NO);
   l_simplex.define_equation_type((unsigned int)t_equation::P3_1_P2_2,simplex::t_equation_type::INEQUATION_LT);
 
   l_simplex.set_A_coef((unsigned int)t_equation::P3_1_P1b_2,(unsigned int)t_variable::P3_1,1);
   l_simplex.set_A_coef((unsigned int)t_equation::P3_1_P1b_2,(unsigned int)t_variable::P1b_2,1);
-  l_simplex.set_B_coef((unsigned int)t_equation::P3_1_P1b_2,(double)t_yes_no::NO);
+  l_simplex.set_B_coef((unsigned int)t_equation::P3_1_P1b_2,(SIMPLEX_TYPE)t_yes_no::NO);
   l_simplex.define_equation_type((unsigned int)t_equation::P3_1_P1b_2,simplex::t_equation_type::INEQUATION_LT);
 
   l_simplex.set_A_coef((unsigned int)t_equation::P3_1_P2b_2,(unsigned int)t_variable::P3_1,1);
   l_simplex.set_A_coef((unsigned int)t_equation::P3_1_P2b_2,(unsigned int)t_variable::P2b_2,1);
-  l_simplex.set_B_coef((unsigned int)t_equation::P3_1_P2b_2,(double)t_yes_no::NO);
+  l_simplex.set_B_coef((unsigned int)t_equation::P3_1_P2b_2,(SIMPLEX_TYPE)t_yes_no::NO);
   l_simplex.define_equation_type((unsigned int)t_equation::P3_1_P2b_2,simplex::t_equation_type::INEQUATION_LT);
 
   l_simplex.set_A_coef((unsigned int)t_equation::P3b_1_P1_2,(unsigned int)t_variable::P3b_1,1);
   l_simplex.set_A_coef((unsigned int)t_equation::P3b_1_P1_2,(unsigned int)t_variable::P1_2,1);
-  l_simplex.set_B_coef((unsigned int)t_equation::P3b_1_P1_2,(double)t_yes_no::NO);
+  l_simplex.set_B_coef((unsigned int)t_equation::P3b_1_P1_2,(SIMPLEX_TYPE)t_yes_no::NO);
   l_simplex.define_equation_type((unsigned int)t_equation::P3b_1_P1_2,simplex::t_equation_type::INEQUATION_LT);
 
   l_simplex.set_A_coef((unsigned int)t_equation::P3b_1_P2_2,(unsigned int)t_variable::P3b_1,1);
   l_simplex.set_A_coef((unsigned int)t_equation::P3b_1_P2_2,(unsigned int)t_variable::P2_2,1);
-  l_simplex.set_B_coef((unsigned int)t_equation::P3b_1_P2_2,(double)t_yes_no::NO);
+  l_simplex.set_B_coef((unsigned int)t_equation::P3b_1_P2_2,(SIMPLEX_TYPE)t_yes_no::NO);
   l_simplex.define_equation_type((unsigned int)t_equation::P3b_1_P2_2,simplex::t_equation_type::INEQUATION_LT);
 
   l_simplex.set_A_coef((unsigned int)t_equation::P3b_1_P1b_2,(unsigned int)t_variable::P3b_1,1);
   l_simplex.set_A_coef((unsigned int)t_equation::P3b_1_P1b_2,(unsigned int)t_variable::P1b_2,1);
-  l_simplex.set_B_coef((unsigned int)t_equation::P3b_1_P1b_2,(double)t_yes_no::NO);
+  l_simplex.set_B_coef((unsigned int)t_equation::P3b_1_P1b_2,(SIMPLEX_TYPE)t_yes_no::NO);
   l_simplex.define_equation_type((unsigned int)t_equation::P3b_1_P1b_2,simplex::t_equation_type::INEQUATION_LT);
 
   l_simplex.set_A_coef((unsigned int)t_equation::P3b_1_P2b_2,(unsigned int)t_variable::P3b_1,1);
   l_simplex.set_A_coef((unsigned int)t_equation::P3b_1_P2b_2,(unsigned int)t_variable::P2b_2,1);
-  l_simplex.set_B_coef((unsigned int)t_equation::P3b_1_P2b_2,(double)t_yes_no::YES);
+  l_simplex.set_B_coef((unsigned int)t_equation::P3b_1_P2b_2,(SIMPLEX_TYPE)t_yes_no::YES);
   l_simplex.define_equation_type((unsigned int)t_equation::P3b_1_P2b_2,simplex::t_equation_type::INEQUATION_LT);
 
 
@@ -794,9 +797,9 @@ void test_case3(void)
     }
   l_simplex.display_array(l_output_file);
 
-  double l_max = 0;
+  SIMPLEX_TYPE l_max = 0;
   bool l_infinite = false;
-  simplex::simplex_listener<double> l_listener(l_simplex,l_output_file);
+  simplex::simplex_listener<SIMPLEX_TYPE> l_listener(l_simplex,l_output_file);
   if(l_simplex.find_max(l_max,l_infinite,&l_listener))
     {
       std::cout << "Max = " << l_max << std::endl ;
@@ -819,11 +822,11 @@ int main(int argc,char ** argv)
   try
     {
       std::cout << "============ TEST CASE 1 ==============" << std::endl;
-      test_case1();
+      test_case1<quicky_utils::fract<uint32_t>>();
       std::cout << "============ TEST CASE 2 ==============" << std::endl;
-      test_case2();
+      test_case2<double>();
       std::cout << "============ TEST CASE 3 ==============" << std::endl;
-      test_case3();
+      test_case3<double>();
     }
   catch(quicky_exception::quicky_runtime_exception & e)
     {
