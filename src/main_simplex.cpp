@@ -29,7 +29,7 @@ void test_case1(void)
   // Max Z -1 * X1 - 4 * X2 - 3 * X3           = 0
   //        2 * X1 + 2 * X2 + 1 * X3 + X4      = 4
   //            X1 + 2 * X2 + 2 * X3 +    + X5 = 6
-  simplex::simplex_solver<quicky_utils::fract,simplex::simplex_map<quicky_utils::fract>> l_simplex(5, // Number of variables : x1 and x2
+  simplex::simplex_solver<quicky_utils::fract<uint32_t>,simplex::simplex_map<quicky_utils::fract<uint32_t>>> l_simplex(5, // Number of variables : x1 and x2
 									 0, // Number of inequations with the form A x <= b
 									 2, // Number of equations with the form A x = b
 									 0  // Number of inequations with the form A x >= b
@@ -52,9 +52,9 @@ void test_case1(void)
   l_simplex.define_base_variable(3);
   l_simplex.define_base_variable(4);
 
-  quicky_utils::fract l_max = 0;
+  quicky_utils::fract<uint32_t> l_max = 0;
   bool l_infinite = false;
-  simplex::simplex_listener<quicky_utils::fract,simplex::simplex_map<quicky_utils::fract>> l_listener(l_simplex);
+  simplex::simplex_listener<quicky_utils::fract<uint32_t>,simplex::simplex_map<quicky_utils::fract<uint32_t>>> l_listener(l_simplex);
   if(l_simplex.find_max(l_max,l_infinite,&l_listener))
     {
       std::cout << "Max = " << l_max << std::endl ;
