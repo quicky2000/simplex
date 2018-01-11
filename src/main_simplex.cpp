@@ -35,25 +35,25 @@ void test_case1(void)
 									 2, // Number of equations with the form A x = b
 									 0  // Number of inequations with the form A x >= b
 									 );
-  l_simplex.set_Z_coef(0,1);
-  l_simplex.set_Z_coef(1,4);
-  l_simplex.set_Z_coef(2,3);
-  l_simplex.set_B_coef(0,4);
-  l_simplex.set_B_coef(1,6);
-  l_simplex.set_A_coef(0,0,2);
-  l_simplex.set_A_coef(0,1,2);
-  l_simplex.set_A_coef(0,2,1);
-  l_simplex.set_A_coef(0,3,1);
-  l_simplex.set_A_coef(1,0,1);
-  l_simplex.set_A_coef(1,1,2);
-  l_simplex.set_A_coef(1,2,2);
-  l_simplex.set_A_coef(1,4,1);
+  l_simplex.set_Z_coef(0,(SIMPLEX_TYPE)1);
+  l_simplex.set_Z_coef(1,(SIMPLEX_TYPE)4);
+  l_simplex.set_Z_coef(2,(SIMPLEX_TYPE)3);
+  l_simplex.set_B_coef(0,(SIMPLEX_TYPE)4);
+  l_simplex.set_B_coef(1,(SIMPLEX_TYPE)6);
+  l_simplex.set_A_coef(0,0,(SIMPLEX_TYPE)2);
+  l_simplex.set_A_coef(0,1,(SIMPLEX_TYPE)2);
+  l_simplex.set_A_coef(0,2,(SIMPLEX_TYPE)1);
+  l_simplex.set_A_coef(0,3,(SIMPLEX_TYPE)1);
+  l_simplex.set_A_coef(1,0,(SIMPLEX_TYPE)1);
+  l_simplex.set_A_coef(1,1,(SIMPLEX_TYPE)2);
+  l_simplex.set_A_coef(1,2,(SIMPLEX_TYPE)2);
+  l_simplex.set_A_coef(1,4,(SIMPLEX_TYPE)1);
   l_simplex.define_equation_type(0,simplex::t_equation_type::EQUATION);
   l_simplex.define_equation_type(1,simplex::t_equation_type::EQUATION);
   l_simplex.define_base_variable(3);
   l_simplex.define_base_variable(4);
 
-  SIMPLEX_TYPE l_max = 0;
+  SIMPLEX_TYPE l_max = (SIMPLEX_TYPE)0;
   bool l_infinite = false;
   simplex::simplex_listener<SIMPLEX_TYPE,simplex::simplex_map<SIMPLEX_TYPE>> l_listener(l_simplex);
   if(l_simplex.find_max(l_max,l_infinite,&l_listener))
