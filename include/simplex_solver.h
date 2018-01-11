@@ -631,10 +631,10 @@ namespace simplex
 	  // Nothing to do
 	  break;
 	case t_equation_type::INEQUATION_LT:
-	  set_adjustement_variable(p_equation_index,1);
+	  set_adjustement_variable(p_equation_index,(COEF_TYPE)1);
 	  break;
 	case t_equation_type::INEQUATION_GT:
-	  set_adjustement_variable(p_equation_index,-1);
+	  set_adjustement_variable(p_equation_index,(COEF_TYPE)-1);
 	  break;
 	default:
 	  throw quicky_exception::quicky_logic_exception("Unknown equation_type value : "+ std::to_string((unsigned int)p_equation_type),__LINE__,__FILE__);

@@ -19,6 +19,7 @@
 #include "simplex_listener.h"
 #include "simplex_map.h"
 #include "simplex_solver.h"
+#include "safe_types.h"
 #include "fract.h"
 #include <iostream>
 #include <fstream>
@@ -823,6 +824,8 @@ int main(int argc,char ** argv)
     {
       std::cout << "============ TEST CASE 1 ==============" << std::endl;
       test_case1<quicky_utils::fract<uint32_t>>();
+      std::cout << "============ TEST CASE 1 bis ==========" << std::endl;
+      test_case1<quicky_utils::fract<quicky_utils::safe_uint32_t>>();
       std::cout << "============ TEST CASE 2 ==============" << std::endl;
       test_case2<double>();
       std::cout << "============ TEST CASE 3 ==============" << std::endl;
