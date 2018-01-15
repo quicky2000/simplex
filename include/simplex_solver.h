@@ -592,26 +592,33 @@ namespace simplex
 								       )const
     {
       assert(p_input_variable_index < m_nb_all_variables);
-      bool l_found = false;
-      COEF_TYPE l_min = std::numeric_limits<COEF_TYPE>::max();
-      for(unsigned int l_index = 0;
-	  l_index < m_nb_total_equations;
-	  ++l_index
-	  )
-	{
-	  COEF_TYPE l_divider = get_internal_coef(l_index,p_input_variable_index);
-	  if(l_divider > 0)
-	    {
-	      COEF_TYPE l_result = m_array.get_B_coef(l_index) / l_divider;
-	      if(l_result < l_min)
-		{
-		  l_min = l_result;
-		  p_equation_index = l_index;
-		  l_found = true;
-		}
-	    }
-	}
-      return l_found;
+        unsigned int l_index = 0;
+        while(get_internal_coef(l_index,p_input_variable_index) <= 0 && l_index < m_nb_total_equations)
+        {
+            ++l_index;
+        }
+        if(l_index == m_nb_total_equations)
+        {
+            return false;
+        }
+        COEF_TYPE l_min = m_array.get_B_coef(l_index) / get_internal_coef(l_index,p_input_variable_index);
+        p_equation_index = l_index;
+        ++l_index;
+        while(l_index < m_nb_total_equations)
+        {
+            COEF_TYPE l_divider = get_internal_coef(l_index,p_input_variable_index);
+            if(l_divider > 0)
+            {
+                COEF_TYPE l_result = m_array.get_B_coef(l_index) / l_divider;
+                if(l_result < l_min)
+                {
+                    l_min = l_result;
+                    p_equation_index = l_index;
+                }
+            }
+            ++l_index;
+        }
+      return true;
     }
 
   //----------------------------------------------------------------------------
