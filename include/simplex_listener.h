@@ -23,13 +23,13 @@
 namespace simplex
 {
   template <typename COEF_TYPE, typename ARRAY_TYPE>
-  class simplex_solver;
+  class simplex_solver_base;
 
   template <typename COEF_TYPE,typename ARRAY_TYPE=simplex_array<COEF_TYPE>>
   class simplex_listener
   {
     public:
-    inline simplex_listener(const simplex_solver<COEF_TYPE,ARRAY_TYPE> & p_simplex,
+    inline simplex_listener(const simplex_solver_base<COEF_TYPE,ARRAY_TYPE> & p_simplex,
 			    std::ostream & p_ostream = std::cout
 			    );
     inline void start_iteration(const unsigned int & p_nb_iteration);
@@ -38,14 +38,14 @@ namespace simplex
     inline void new_Z0(COEF_TYPE p_z0);
     private:
     unsigned int m_nb_iteration;
-    const simplex_solver<COEF_TYPE,ARRAY_TYPE> & m_simplex;
+    const simplex_solver_base<COEF_TYPE,ARRAY_TYPE> & m_simplex;
     std::ostream & m_ostream;
     bool m_start;
   };
 
   //----------------------------------------------------------------------------
   template <typename COEF_TYPE,typename ARRAY_TYPE>
-  simplex_listener<COEF_TYPE,ARRAY_TYPE>::simplex_listener(const simplex_solver<COEF_TYPE,ARRAY_TYPE> & p_simplex,
+  simplex_listener<COEF_TYPE,ARRAY_TYPE>::simplex_listener(const simplex_solver_base<COEF_TYPE,ARRAY_TYPE> & p_simplex,
 							   std::ostream & p_ostream
 							   ):
     m_nb_iteration(0),
