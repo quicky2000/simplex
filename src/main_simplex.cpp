@@ -22,6 +22,7 @@
 #include "simplex_listener.h"
 #include "simplex_map.h"
 #include "simplex_solver.h"
+#include "simplex_solver_integer.h"
 
 template <typename SIMPLEX_TYPE>
 void test_case1(void);
@@ -39,6 +40,8 @@ int main(int argc,char ** argv)
     {
         std::cout << "============ TEST CASE 1 ==============" << std::endl;
         test_case1<simplex::simplex_solver<double>>();
+        std::cout << "============ TEST CASE 1 ==============" << std::endl;
+        test_case1<simplex::simplex_solver_integer<int32_t>>();
         std::cout << "============ TEST CASE 1 ==============" << std::endl;
         test_case1<simplex::simplex_solver<double,simplex::simplex_map<double>>>();
         std::cout << "============ TEST CASE 1 bis==============" << std::endl;

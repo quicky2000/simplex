@@ -10,6 +10,7 @@ set(MY_SOURCE_FILES
     include/simplex_listener.h
     include/simplex_map.h
     include/simplex_solver_base.h
+    include/simplex_solver_integer.h
     include/simplex_solver.h)
 
 # List header directories in project
