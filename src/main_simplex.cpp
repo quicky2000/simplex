@@ -23,6 +23,7 @@
 #include "simplex_map.h"
 #include "simplex_solver.h"
 #include "simplex_solver_integer.h"
+#include "simplex_solver_integer_ppcm.h"
 
 template <typename SIMPLEX_TYPE>
 void test_case1(void);
@@ -43,6 +44,8 @@ int main(int argc,char ** argv)
         std::cout << "============ TEST CASE 1 ==============" << std::endl;
         test_case1<simplex::simplex_solver_integer<int32_t>>();
         std::cout << "============ TEST CASE 1 ==============" << std::endl;
+        test_case1<simplex::simplex_solver_integer_ppcm<int32_t>>();
+        std::cout << "============ TEST CASE 1 ==============" << std::endl;
         test_case1<simplex::simplex_solver<double,simplex::simplex_map<double>>>();
         std::cout << "============ TEST CASE 1 bis==============" << std::endl;
         test_case1<simplex::simplex_solver<quicky_utils::fract<uint32_t>,simplex::simplex_map<quicky_utils::fract<uint32_t>>>>();
@@ -52,10 +55,14 @@ int main(int argc,char ** argv)
         test_case2<simplex::simplex_solver<double>>();
         std::cout << "============ TEST CASE 2 bis ==============" << std::endl;
         test_case2<simplex::simplex_solver_integer<int32_t>>();
+        std::cout << "============ TEST CASE 2 ter ==============" << std::endl;
+        test_case2<simplex::simplex_solver_integer_ppcm<int32_t>>();
         std::cout << "============ TEST CASE 3 ==============" << std::endl;
         test_case3<simplex::simplex_solver<double>>();
         std::cout << "============ TEST CASE 3 bis ==============" << std::endl;
         test_case3<simplex::simplex_solver_integer<int32_t>>();
+        std::cout << "============ TEST CASE 3 ter ==============" << std::endl;
+        test_case3<simplex::simplex_solver_integer_ppcm<int32_t>>();
     }
     catch(quicky_exception::quicky_runtime_exception & e)
     {

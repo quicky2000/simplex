@@ -12,6 +12,7 @@ set(MY_SOURCE_FILES
     include/simplex_solver_base.h
     include/simplex_solver_integer_base.h
     include/simplex_solver_integer.h
+    include/simplex_solver_integer_ppcm.h
     include/simplex_solver.h)
 
 # List header directories in project
