@@ -50,8 +50,12 @@ int main(int argc,char ** argv)
         test_case1<simplex::simplex_solver<quicky_utils::fract<quicky_utils::safe_uint32_t>,simplex::simplex_map<quicky_utils::fract<quicky_utils::safe_uint32_t>>>>();
         std::cout << "============ TEST CASE 2 ==============" << std::endl;
         test_case2<simplex::simplex_solver<double>>();
+        std::cout << "============ TEST CASE 2 bis ==============" << std::endl;
+        test_case2<simplex::simplex_solver_integer<int32_t>>();
         std::cout << "============ TEST CASE 3 ==============" << std::endl;
         test_case3<simplex::simplex_solver<double>>();
+        std::cout << "============ TEST CASE 3 bis ==============" << std::endl;
+        test_case3<simplex::simplex_solver_integer<int32_t>>();
     }
     catch(quicky_exception::quicky_runtime_exception & e)
     {
