@@ -63,7 +63,10 @@ namespace simplex
 
         // Pivoting Z
         COEF_TYPE l_q = this->get_array().get_Z_coef(p_column_index);
-        std::cout << "Z line <= (Z * " << l_pivot << ") - (R[" << p_row_index << "] * " << l_q << ")" << std::endl;
+        if(l_pivot != 1 || l_q)
+        {
+            std::cout << "Z line <= (Z * " << l_pivot << ") - (R[" << p_row_index << "] * " << l_q << ")" << std::endl;
+        }
         COEF_TYPE l_pgcd = 0;
         COEF_TYPE l_new_coef = 0;
         for(unsigned int l_index = 0;
@@ -103,7 +106,11 @@ namespace simplex
             if(l_row_index != p_row_index)
             {
                 COEF_TYPE l_q = this->get_internal_coef(l_row_index,p_column_index);
-                std::cout << "R[" << l_row_index << "] <= (R[" << l_row_index << "] * " << l_pivot << ") - (R[" << p_row_index << "] * " << l_q << ")" << std::endl;
+                if(l_pivot != 1 || l_q)
+                {
+                    std::cout << "R[" << l_row_index << "] <= (R[" << l_row_index << "] * " << l_pivot << ") - (R["
+                              << p_row_index << "] * " << l_q << ")" << std::endl;
+                }
                 l_pgcd = 0;
                 l_new_coef = this->get_array().get_B_coef(l_row_index) * l_pivot - l_q * this->get_array().get_B_coef(p_row_index);
                 this->accumulate_PGCD(l_pgcd, l_new_coef);
