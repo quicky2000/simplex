@@ -19,14 +19,15 @@
 #define SIMPLEX_SOLVER_INTEGER_H
 
 #include "simplex_array.h"
-#include "simplex_solver_base.h"
 #include "fract.h"
+#include "simplex_solver_integer_base.h"
 
 namespace simplex
 {
     template <typename COEF_TYPE, typename ARRAY_TYPE=simplex_array<COEF_TYPE>>
-    class simplex_solver_integer: public simplex_solver_base<COEF_TYPE,ARRAY_TYPE>
+    class simplex_solver_integer: public simplex_solver_integer_base<COEF_TYPE, ARRAY_TYPE>
     {
+
       public:
         simplex_solver_integer() = delete;
 
@@ -71,25 +72,7 @@ namespace simplex
                         const COEF_TYPE & p_value
                        );
 
-
     };
-
-    //-------------------------------------------------------------------------
-    template <typename COEF_TYPE, typename ARRAY_TYPE>
-    simplex_solver_integer<COEF_TYPE,ARRAY_TYPE>::simplex_solver_integer(unsigned int p_nb_variables,
-                                                                         unsigned int p_nb_inequations_lt,
-                                                                         unsigned int p_nb_equations,
-                                                                         unsigned int p_nb_inequations_gt
-                                                                        ):
-            simplex_solver_base<COEF_TYPE,ARRAY_TYPE>(p_nb_variables,
-                                                      p_nb_inequations_lt,
-                                                      p_nb_equations,
-                                                      p_nb_inequations_gt
-                                                     )
-    {
-        static_assert(std::is_integral<COEF_TYPE>::value, "Simplex solver acccept only integer types");
-        static_assert(std::is_signed<COEF_TYPE>::value, "Simplex solver acccept only signed types");
-    }
 
     //-------------------------------------------------------------------------
     template <typename COEF_TYPE, typename ARRAY_TYPE>
@@ -254,6 +237,23 @@ namespace simplex
         {
             p_pgcd = p_value;
         }
+    }
+
+    //-------------------------------------------------------------------------
+    template <typename COEF_TYPE, typename ARRAY_TYPE>
+    simplex_solver_integer<COEF_TYPE,ARRAY_TYPE>::simplex_solver_integer(unsigned int p_nb_variables,
+                                                                         unsigned int p_nb_inequations_lt,
+                                                                         unsigned int p_nb_equations,
+                                                                         unsigned int p_nb_inequations_gt
+                                                                        ):
+    simplex_solver_integer_base<COEF_TYPE,ARRAY_TYPE>(p_nb_variables,
+                                                     p_nb_inequations_lt,
+                                                     p_nb_equations,
+                                                     p_nb_inequations_gt
+                                                     )
+    {
+        static_assert(std::is_integral<COEF_TYPE>::value, "Simplex solver acccept only integer types");
+        static_assert(std::is_signed<COEF_TYPE>::value, "Simplex solver acccept only signed types");
     }
 }
 
