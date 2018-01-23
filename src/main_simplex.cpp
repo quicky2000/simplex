@@ -32,7 +32,8 @@ template <typename SIMPLEX_TYPE>
 void test_case2(void);
 
 template <typename SIMPLEX_TYPE>
-void test_case3(void);
+void
+test_case3(const std::string & p_suffix);
 
 //------------------------------------------------------------------------------
 int main(int argc,char ** argv)
@@ -58,11 +59,11 @@ int main(int argc,char ** argv)
         std::cout << "============ TEST CASE 2 ter ==============" << std::endl;
         test_case2<simplex::simplex_solver_integer_ppcm<int32_t>>();
         std::cout << "============ TEST CASE 3 ==============" << std::endl;
-        test_case3<simplex::simplex_solver<double>>();
+        test_case3<simplex::simplex_solver<double>>("double");
         std::cout << "============ TEST CASE 3 bis ==============" << std::endl;
-        test_case3<simplex::simplex_solver_integer<int32_t>>();
+        test_case3<simplex::simplex_solver_integer<int32_t>>("integer");
         std::cout << "============ TEST CASE 3 ter ==============" << std::endl;
-        test_case3<simplex::simplex_solver_integer_ppcm<int32_t>>();
+        test_case3<simplex::simplex_solver_integer_ppcm<int32_t>>("integer_ppcm");
     }
     catch(quicky_exception::quicky_runtime_exception & e)
     {
@@ -374,7 +375,8 @@ typedef enum class yes_no
 } t_yes_no;
 
 template <typename SIMPLEX_TYPE>
-void test_case3(void)
+void
+test_case3(const std::string & p_suffix)
 {
     // 3 position equations
     // 3 pieces equations
@@ -847,7 +849,9 @@ void test_case3(void)
     //  l_simplex.define_equation_type(3,simplex::t_equation_type::INEQUATION_LT);
 
     std::ofstream l_output_file;
-    l_output_file.open("test_case3.log");
+    std::string l_file_name("test_case3");
+    l_file_name += (p_suffix != "" ? "_" : "") + p_suffix +".log";
+    l_output_file.open(l_file_name.c_str());
     if(!l_output_file.is_open())
     {
         throw quicky_exception::quicky_runtime_exception("Unable to open file test_case3.log",__LINE__,__FILE__);
