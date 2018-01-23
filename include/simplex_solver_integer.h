@@ -19,7 +19,6 @@
 #define SIMPLEX_SOLVER_INTEGER_H
 
 #include "simplex_array.h"
-#include "fract.h"
 #include "simplex_solver_integer_base.h"
 
 namespace simplex
@@ -48,30 +47,6 @@ namespace simplex
                           const unsigned int p_column_index
                          ) override ;
 
-        /**
-         * Method to determine the equation index corresponding to next output
-         * variable for pivot operation.
-         * Search is done using fract type to do exact comparison
-         * @param index of input variable
-         * @param reference on variable where to store the output equation index if any
-         * @return boolean indicating if an input variable was found
-         */
-        inline
-        bool
-        get_output_equation_index(unsigned int p_input_variable_index,
-                                  unsigned int & p_equation_index
-                                 )const override ;
-
-        /**
-         * Method to determine the PGCD of a number list by successive calls
-         * @param p_pgcd current PGCD, that will receive the presult of PGCD(p_pgcd,p_coef)
-         * @param p_value new value used to update PGCD
-         */
-        void
-        accumulate_PGCD(COEF_TYPE & p_pgcd,
-                        const COEF_TYPE & p_value
-                       );
-
     };
 
     //-------------------------------------------------------------------------
@@ -98,12 +73,12 @@ namespace simplex
         {
             COEF_TYPE l_u = this->get_internal_coef(p_row_index,l_index);
             l_new_coef = this->get_array().get_Z_coef(l_index) * l_pivot - l_q * l_u;
-            accumulate_PGCD(l_pgcd, l_new_coef);
+            this->accumulate_PGCD(l_pgcd, l_new_coef);
             this->get_array().set_Z_coef(l_index, l_new_coef);
         }
         assert(!this->get_array().get_Z_coef(p_column_index));
         l_new_coef = this->get_array().get_Z0_coef() * l_pivot - l_q * this->get_array().get_B_coef(p_row_index);
-        accumulate_PGCD(l_pgcd, l_new_coef);
+        this->accumulate_PGCD(l_pgcd, l_new_coef);
         this->get_array().set_Z0_coef(l_new_coef);
 
         // Divide Z row by PGCD if necessary
@@ -131,7 +106,7 @@ namespace simplex
                 std::cout << "R[" << l_row_index << "] <= (R[" << l_row_index << "] * " << l_pivot << ") - (R[" << p_row_index << "] * " << l_q << ")" << std::endl;
                 l_pgcd = 0;
                 l_new_coef = this->get_array().get_B_coef(l_row_index) * l_pivot - l_q * this->get_array().get_B_coef(p_row_index);
-                accumulate_PGCD(l_pgcd, l_new_coef);
+                this->accumulate_PGCD(l_pgcd, l_new_coef);
                 this->get_array().set_B_coef(l_row_index, l_new_coef);
                 for (unsigned int l_index = 0;
                      l_index < this->get_nb_all_variables();
@@ -140,7 +115,7 @@ namespace simplex
                 {
                     COEF_TYPE l_u = this->get_internal_coef(p_row_index, l_index);
                     l_new_coef = this->get_internal_coef(l_row_index,l_index) * l_pivot - l_q * l_u;
-                    accumulate_PGCD(l_pgcd, l_new_coef);
+                    this->accumulate_PGCD(l_pgcd, l_new_coef);
                     this->set_internal_coef(l_row_index, l_index, l_new_coef);
                 }
 
@@ -166,9 +141,9 @@ namespace simplex
             ++l_index
            )
         {
-            accumulate_PGCD(l_pgcd,this->get_internal_coef(p_row_index, l_index));
+            this->accumulate_PGCD(l_pgcd,this->get_internal_coef(p_row_index, l_index));
         }
-        accumulate_PGCD(l_pgcd,this->get_array().get_B_coef(p_row_index));
+        this->accumulate_PGCD(l_pgcd,this->get_array().get_B_coef(p_row_index));
         if(l_pgcd > 1)
         {
             std::cout << "R[" << p_row_index << "] <= R[" << p_row_index << "] / " << l_pgcd << std::endl;
@@ -180,62 +155,6 @@ namespace simplex
                 this->set_internal_coef(p_row_index,l_index,this->get_internal_coef(p_row_index,l_index) / l_pgcd);
             }
             this->get_array().set_B_coef(p_row_index, this->get_array().get_B_coef(p_row_index) / l_pgcd);
-        }
-    }
-
-    //-------------------------------------------------------------------------
-    template <typename COEF_TYPE, typename ARRAY_TYPE>
-    bool
-    simplex_solver_integer<COEF_TYPE,ARRAY_TYPE>::get_output_equation_index(unsigned int p_input_variable_index,
-                                                                            unsigned int & p_equation_index
-                                                                           )const
-    {
-        assert(p_input_variable_index < this->get_nb_all_variables());
-        unsigned int l_index = 0;
-        while(this->get_internal_coef(l_index,p_input_variable_index) <= 0 && l_index < this->get_nb_total_equations())
-        {
-            ++l_index;
-        }
-        if(l_index == this->get_nb_total_equations())
-        {
-            return false;
-        }
-        quicky_utils::fract<COEF_TYPE> l_min(this->get_array().get_B_coef(l_index), this->get_internal_coef(l_index,p_input_variable_index));
-        p_equation_index = l_index;
-        ++l_index;
-        while(l_index < this->get_nb_total_equations())
-        {
-            COEF_TYPE l_divider = this->get_internal_coef(l_index,p_input_variable_index);
-            if(l_divider > 0)
-            {
-                quicky_utils::fract<COEF_TYPE> l_result(this->get_array().get_B_coef(l_index), l_divider);
-                if(l_result < l_min)
-                {
-                    l_min = l_result;
-                    p_equation_index = l_index;
-                }
-            }
-            ++l_index;
-        }
-        return true;
-    }
-
-    //-------------------------------------------------------------------------
-    template <typename COEF_TYPE, typename ARRAY_TYPE>
-    void
-    simplex_solver_integer<COEF_TYPE,ARRAY_TYPE>::accumulate_PGCD(COEF_TYPE & p_pgcd,
-                                                                  const COEF_TYPE & p_value
-                                                                 )
-    {
-        if(p_pgcd)
-        {
-            p_pgcd = quicky_utils::fract<COEF_TYPE>::PGCD(p_value,
-                                                          p_pgcd
-                                                         );
-        }
-        else
-        {
-            p_pgcd = p_value;
         }
     }
 

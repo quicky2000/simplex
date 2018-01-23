@@ -19,6 +19,7 @@
 #define SIMPLEX_SOLVER_INTEGER_BASE_H
 
 #include "simplex_solver_base.h"
+#include "fract.h"
 
 namespace simplex
 {
@@ -55,6 +56,31 @@ namespace simplex
                  bool & p_infinite,
                  LISTENER * p_listener = NULL
                 );
+
+      protected:
+        /**
+                  * Method to determine the PGCD of a number list by successive calls
+                  * @param p_pgcd current PGCD, that will receive the presult of PGCD(p_pgcd,p_coef)
+                  * @param p_value new value used to update PGCD
+                  */
+        void
+        accumulate_PGCD(COEF_TYPE & p_pgcd,
+                        const COEF_TYPE & p_value
+                       );
+
+        /**
+           * Method to determine the equation index corresponding to next output
+           * variable for pivot operation.
+           * Search is done using fract type to do exact comparison
+           * @param index of input variable
+           * @param reference on variable where to store the output equation index if any
+           * @return boolean indicating if an input variable was found
+           */
+        inline
+        bool
+        get_output_equation_index(unsigned int p_input_variable_index,
+                                  unsigned int & p_equation_index
+                                 )const override ;
 
       private:
         COEF_TYPE * m_original_Z_coefs;
@@ -137,6 +163,63 @@ namespace simplex
         p_max = l_computed_max;
         return l_result;
     }
+
+    //-------------------------------------------------------------------------
+    template <typename COEF_TYPE, typename ARRAY_TYPE>
+    void
+    simplex_solver_integer_base<COEF_TYPE,ARRAY_TYPE>::accumulate_PGCD(COEF_TYPE & p_pgcd,
+                                                                       const COEF_TYPE & p_value
+                                                                      )
+    {
+        if(p_pgcd)
+        {
+            p_pgcd = quicky_utils::fract<COEF_TYPE>::PGCD(p_value,
+                                                          p_pgcd
+                                                         );
+        }
+        else
+        {
+            p_pgcd = p_value;
+        }
+    }
+
+    //-------------------------------------------------------------------------
+    template <typename COEF_TYPE, typename ARRAY_TYPE>
+    bool
+    simplex_solver_integer_base<COEF_TYPE,ARRAY_TYPE>::get_output_equation_index(unsigned int p_input_variable_index,
+                                                                                 unsigned int & p_equation_index
+                                                                                )const
+    {
+        assert(p_input_variable_index < this->get_nb_all_variables());
+        unsigned int l_index = 0;
+        while(this->get_internal_coef(l_index,p_input_variable_index) <= 0 && l_index < this->get_nb_total_equations())
+        {
+            ++l_index;
+        }
+        if(l_index == this->get_nb_total_equations())
+        {
+            return false;
+        }
+        quicky_utils::fract<COEF_TYPE> l_min(this->get_array().get_B_coef(l_index), this->get_internal_coef(l_index, p_input_variable_index));
+        p_equation_index = l_index;
+        ++l_index;
+        while(l_index < this->get_nb_total_equations())
+        {
+            COEF_TYPE l_divider = this->get_internal_coef(l_index,p_input_variable_index);
+            if(l_divider > 0)
+            {
+                quicky_utils::fract<COEF_TYPE> l_result(this->get_array().get_B_coef(l_index), l_divider);
+                if(l_result < l_min)
+                {
+                    l_min = l_result;
+                    p_equation_index = l_index;
+                }
+            }
+            ++l_index;
+        }
+        return true;
+    }
+
 }
 
 #endif //SIMPLEX_SOLVER_INTEGER_BASE_H
