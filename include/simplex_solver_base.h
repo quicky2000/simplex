@@ -22,6 +22,7 @@
 #include "quicky_exception.h"
 #include <sstream>
 #include <limits>
+#include <vector>
 
 namespace simplex
 {
@@ -154,9 +155,20 @@ namespace simplex
                  LISTENER * p_listener = NULL
                 );
 
+        /**
+         *  Method checking if variable values passed as parameters respect
+         *  simplex problem constraints
+         * @param p_values variable values
+         * @return true if constraints are respected
+         */
+        inline bool check_variables(const std::vector<COEF_TYPE> & p_values);
+
         inline virtual ~simplex_solver_base(void);
 
       protected:
+
+        bool is_base_variable(const unsigned int & p_index)const;
+
         unsigned int
         get_nb_all_variables() const;
 
@@ -796,6 +808,65 @@ namespace simplex
             ++l_nb_iteration;
         }
         p_max = m_array.get_Z0_coef();
+        return true;
+    }
+
+    //-------------------------------------------------------------------------
+    template <typename COEF_TYPE,
+              typename ARRAY_TYPE
+             >
+    bool
+    simplex_solver_base<COEF_TYPE, ARRAY_TYPE>::is_base_variable(const unsigned int & p_index) const
+    {
+        return std::numeric_limits<unsigned int>::max() != m_base_variables_position[p_index];
+    }
+
+    //-------------------------------------------------------------------------
+    template <typename COEF_TYPE,
+              typename ARRAY_TYPE
+             >
+    bool
+    simplex_solver_base<COEF_TYPE, ARRAY_TYPE>::check_variables(const std::vector<COEF_TYPE> & p_values)
+    {
+        assert(p_values.size() <= m_nb_variables);
+        for(unsigned int l_equation_index = 0;
+            l_equation_index < m_nb_equations;
+            ++l_equation_index
+           )
+        {
+            COEF_TYPE l_sum(0);
+            for(unsigned int l_variable_index = 0;
+                l_variable_index < p_values.size();
+                ++l_variable_index
+               )
+            {
+                l_sum += m_array.get_A_coef(l_equation_index, l_variable_index) * p_values[l_variable_index];
+            }
+            COEF_TYPE l_b_coef = m_array.get_B_coef(l_equation_index);
+            switch(m_equation_types[l_equation_index])
+            {
+                case t_equation_type::UNDEFINED:
+                    throw quicky_exception::quicky_logic_exception("Undefined equation when checking simplex variables", __LINE__, __FILE__);
+                    break;
+                case t_equation_type::EQUATION:
+                    if(l_sum != l_b_coef)
+                    {
+                        return false;
+                    }
+                    break;
+                case t_equation_type::INEQUATION_LT:
+                    if(l_sum > l_b_coef)
+                    {
+                        return false;
+                    }
+                    break;
+                case t_equation_type::INEQUATION_GT:
+                    if(l_sum < l_b_coef)
+                    {
+                        return false;
+                    }
+            }
+        }
         return true;
     }
 }

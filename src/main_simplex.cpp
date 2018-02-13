@@ -24,6 +24,7 @@
 #include "simplex_solver.h"
 #include "simplex_solver_integer.h"
 #include "simplex_solver_integer_ppcm.h"
+#include <vector>
 
 template <typename SIMPLEX_TYPE>
 void test_case1(void);
@@ -123,6 +124,14 @@ void test_case1(void)
         {
             std::cout << "Base variable[" << l_index << "] is X" << l_simplex.get_base_variable(l_index) + 1 << std::endl;
         }
+        assert(l_simplex.check_variables({typename SIMPLEX_TYPE::t_coef_type(0),
+                                          typename SIMPLEX_TYPE::t_coef_type(1),
+                                          typename SIMPLEX_TYPE::t_coef_type(2)
+                                         }));
+        assert(false == l_simplex.check_variables({typename SIMPLEX_TYPE::t_coef_type(1),
+                                                   typename SIMPLEX_TYPE::t_coef_type(1),
+                                                   typename SIMPLEX_TYPE::t_coef_type(0)
+                                                  }));
     }
     else if(l_infinite)
     {
