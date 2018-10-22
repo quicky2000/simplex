@@ -27,10 +27,10 @@
 #include <vector>
 
 template <typename SIMPLEX_TYPE>
-void test_case1(void);
+void test_case1();
 
 template <typename SIMPLEX_TYPE>
-void test_case2(void);
+void test_case2();
 
 template <typename SIMPLEX_TYPE>
 void
@@ -82,7 +82,7 @@ int main(int argc,char ** argv)
 
 //-----------------------------------------------------------------------------
 template <typename SIMPLEX_TYPE>
-void test_case1(void)
+void test_case1()
 {
     // Example
     // Max Z -1 * X1 - 4 * X2 - 3 * X3           = 0
@@ -111,7 +111,7 @@ void test_case1(void)
     l_simplex.define_base_variable(3);
     l_simplex.define_base_variable(4);
 
-    typename SIMPLEX_TYPE::t_coef_type l_max = (typename SIMPLEX_TYPE::t_coef_type)0;
+    auto l_max = (typename SIMPLEX_TYPE::t_coef_type)0;
     bool l_infinite = false;
     simplex::simplex_listener<typename SIMPLEX_TYPE::t_coef_type,typename SIMPLEX_TYPE::t_array_type> l_listener(l_simplex);
     if(l_simplex.find_max(l_max,l_infinite,&l_listener))
@@ -146,7 +146,7 @@ void test_case1(void)
 
 //-----------------------------------------------------------------------------
 template <typename SIMPLEX_TYPE>
-void test_case2(void)
+void test_case2()
 {
     // Example
     // Max z = 1000 x1 + 1200 x2
