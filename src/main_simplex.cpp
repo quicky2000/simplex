@@ -15,10 +15,16 @@
       along with this program.  If not, see <http://www.gnu.org/licenses/>
 */
 #ifdef SIMPLEX_SELF_TEST
+
+#define EXT_INT_DISABLE_EXPLICIT
+#define EXT_UINT_DISABLE_EXPLICIT
+
 #include <iostream>
 #include <fstream>
 #include "quicky_test.h"
 #include "safe_types.h"
+#include "ext_uint.h"
+#include "ext_int.h"
 #include "fract.h"
 #include "simplex_listener.h"
 #include "simplex_map.h"
@@ -57,20 +63,24 @@ int main(int argc,char ** argv)
         l_ok &= test_case1<simplex::simplex_solver<quicky_utils::fract<uint32_t>,simplex::simplex_map<quicky_utils::fract<uint32_t>>>>();
         std::cout << "============ TEST CASE 1 ter ==========" << std::endl;
         l_ok &= test_case1<simplex::simplex_solver<quicky_utils::fract<quicky_utils::safe_uint32_t>,simplex::simplex_map<quicky_utils::fract<quicky_utils::safe_uint32_t>>>>();
-        std::cout << "============ TEST CASE 1 ter ==========" << std::endl;
-        test_case1<simplex::simplex_solver<quicky_utils::fract<quicky_utils::safe_uint32_t>,simplex::simplex_map<quicky_utils::fract<quicky_utils::safe_uint32_t>>>>();
+        std::cout << "============ TEST CASE 1 " << type_string<quicky_utils::fract<ext_int<int32_t>>>::name() << " ==========" << std::endl;
+        l_ok &= test_case1<simplex::simplex_solver<quicky_utils::fract<ext_int<int32_t>>>>();
         std::cout << "============ TEST CASE 2 ==============" << std::endl;
         l_ok &= test_case2<simplex::simplex_solver<double>>();
         std::cout << "============ TEST CASE 2 bis ==============" << std::endl;
         l_ok &= test_case2<simplex::simplex_solver_integer<int32_t>>();
         std::cout << "============ TEST CASE 2 ter ==============" << std::endl;
         l_ok &= test_case2<simplex::simplex_solver_integer_ppcm<int32_t>>();
+        std::cout << "============ TEST CASE 2 " << type_string<quicky_utils::fract<ext_int<int32_t>>>::name() << " ==============" << std::endl;
+        l_ok &= test_case2<simplex::simplex_solver<quicky_utils::fract<quicky_utils::ext_int<int32_t>>>>();
         std::cout << "============ TEST CASE 3 ==============" << std::endl;
         l_ok &= test_case3<simplex::simplex_solver<double>>("double");
         std::cout << "============ TEST CASE 3 bis ==============" << std::endl;
         l_ok &= test_case3<simplex::simplex_solver_integer<int32_t>>("integer");
         std::cout << "============ TEST CASE 3 ter ==============" << std::endl;
         l_ok &= test_case3<simplex::simplex_solver_integer_ppcm<int32_t>>("integer_ppcm");
+        std::cout << "============ TEST CASE 3 " << type_string<quicky_utils::fract<ext_int<int32_t>>>::name() << " ==============" << std::endl;
+        l_ok &= test_case3<simplex::simplex_solver<quicky_utils::fract<quicky_utils::ext_int<int32_t>>>>("toto");
     }
     catch(quicky_exception::quicky_runtime_exception & e)
     {
