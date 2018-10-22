@@ -17,6 +17,7 @@
 #ifdef SIMPLEX_SELF_TEST
 #include <iostream>
 #include <fstream>
+#include "quicky_test.h"
 #include "safe_types.h"
 #include "fract.h"
 #include "simplex_listener.h"
@@ -27,44 +28,49 @@
 #include <vector>
 
 template <typename SIMPLEX_TYPE>
-void test_case1();
+bool test_case1();
 
 template <typename SIMPLEX_TYPE>
-void test_case2();
+bool test_case2();
 
 template <typename SIMPLEX_TYPE>
-void
+bool
 test_case3(const std::string & p_suffix);
+
+using namespace quicky_utils;
 
 //------------------------------------------------------------------------------
 int main(int argc,char ** argv)
 {
+    bool l_ok = true;
     try
     {
         std::cout << "============ TEST CASE 1 ==============" << std::endl;
-        test_case1<simplex::simplex_solver<double>>();
+        l_ok &= test_case1<simplex::simplex_solver<double>>();
         std::cout << "============ TEST CASE 1 ==============" << std::endl;
-        test_case1<simplex::simplex_solver_integer<int32_t>>();
+        l_ok &= test_case1<simplex::simplex_solver_integer<int32_t>>();
         std::cout << "============ TEST CASE 1 ==============" << std::endl;
-        test_case1<simplex::simplex_solver_integer_ppcm<int32_t>>();
+        l_ok &= test_case1<simplex::simplex_solver_integer_ppcm<int32_t>>();
         std::cout << "============ TEST CASE 1 ==============" << std::endl;
-        test_case1<simplex::simplex_solver<double,simplex::simplex_map<double>>>();
+        l_ok &= test_case1<simplex::simplex_solver<double,simplex::simplex_map<double>>>();
         std::cout << "============ TEST CASE 1 bis==============" << std::endl;
-        test_case1<simplex::simplex_solver<quicky_utils::fract<uint32_t>,simplex::simplex_map<quicky_utils::fract<uint32_t>>>>();
+        l_ok &= test_case1<simplex::simplex_solver<quicky_utils::fract<uint32_t>,simplex::simplex_map<quicky_utils::fract<uint32_t>>>>();
+        std::cout << "============ TEST CASE 1 ter ==========" << std::endl;
+        l_ok &= test_case1<simplex::simplex_solver<quicky_utils::fract<quicky_utils::safe_uint32_t>,simplex::simplex_map<quicky_utils::fract<quicky_utils::safe_uint32_t>>>>();
         std::cout << "============ TEST CASE 1 ter ==========" << std::endl;
         test_case1<simplex::simplex_solver<quicky_utils::fract<quicky_utils::safe_uint32_t>,simplex::simplex_map<quicky_utils::fract<quicky_utils::safe_uint32_t>>>>();
         std::cout << "============ TEST CASE 2 ==============" << std::endl;
-        test_case2<simplex::simplex_solver<double>>();
+        l_ok &= test_case2<simplex::simplex_solver<double>>();
         std::cout << "============ TEST CASE 2 bis ==============" << std::endl;
-        test_case2<simplex::simplex_solver_integer<int32_t>>();
+        l_ok &= test_case2<simplex::simplex_solver_integer<int32_t>>();
         std::cout << "============ TEST CASE 2 ter ==============" << std::endl;
-        test_case2<simplex::simplex_solver_integer_ppcm<int32_t>>();
+        l_ok &= test_case2<simplex::simplex_solver_integer_ppcm<int32_t>>();
         std::cout << "============ TEST CASE 3 ==============" << std::endl;
-        test_case3<simplex::simplex_solver<double>>("double");
+        l_ok &= test_case3<simplex::simplex_solver<double>>("double");
         std::cout << "============ TEST CASE 3 bis ==============" << std::endl;
-        test_case3<simplex::simplex_solver_integer<int32_t>>("integer");
+        l_ok &= test_case3<simplex::simplex_solver_integer<int32_t>>("integer");
         std::cout << "============ TEST CASE 3 ter ==============" << std::endl;
-        test_case3<simplex::simplex_solver_integer_ppcm<int32_t>>("integer_ppcm");
+        l_ok &= test_case3<simplex::simplex_solver_integer_ppcm<int32_t>>("integer_ppcm");
     }
     catch(quicky_exception::quicky_runtime_exception & e)
     {
@@ -76,14 +82,18 @@ int main(int argc,char ** argv)
         std::cout << "ERROR : " << e.what() << std::endl ;
         return(-1);
     }
-    return 0;
+    std::cout << "--------------------------------------------" << std::endl;
+    std::cout << "- TEST " << (l_ok ? "PASSED" : "FAILED") << std::endl;
+    std::cout << "--------------------------------------------" << std::endl;
+    return !l_ok;
 
 }
 
 //-----------------------------------------------------------------------------
 template <typename SIMPLEX_TYPE>
-void test_case1()
+bool test_case1()
 {
+    bool l_ok = true;
     // Example
     // Max Z -1 * X1 - 4 * X2 - 3 * X3           = 0
     //        2 * X1 + 2 * X2 + 1 * X3 + X4      = 4
@@ -141,13 +151,15 @@ void test_case1()
     {
         std::cout << "No Max found !?" << std::endl;
     }
-    assert(l_max == 10);
+    l_ok &= quicky_test::check_expected<typename SIMPLEX_TYPE::t_coef_type>(l_max, (typename SIMPLEX_TYPE::t_coef_type)10,"Result test case 1");
+    return l_ok;
 }
 
 //-----------------------------------------------------------------------------
 template <typename SIMPLEX_TYPE>
-void test_case2()
+bool test_case2()
 {
+    bool l_ok = true;
     // Example
     // Max z = 1000 x1 + 1200 x2
     // 10 x1 + 5 x2 <= 200
@@ -218,7 +230,8 @@ void test_case2()
     {
         std::cout << "No Max found !?" << std::endl;
     }
-    assert(27000 == l_max );
+    l_ok &= quicky_test::check_expected<typename SIMPLEX_TYPE::t_coef_type>(l_max, (typename SIMPLEX_TYPE::t_coef_type)27000, "Result test case 2");
+    return l_ok;
 }
 
 // 
@@ -384,9 +397,10 @@ typedef enum class yes_no
 } t_yes_no;
 
 template <typename SIMPLEX_TYPE>
-void
+bool
 test_case3(const std::string & p_suffix)
 {
+    bool l_ok = true;
     // 3 position equations
     // 3 pieces equations
 
@@ -882,8 +896,9 @@ test_case3(const std::string & p_suffix)
     {
         std::cout << "No Max found !?" << std::endl;
     }
-    assert(3 == l_max);
+    l_ok &= quicky_test::check_expected<typename SIMPLEX_TYPE::t_coef_type>(l_max, (typename SIMPLEX_TYPE::t_coef_type)3, "Result of test case 3");
     l_output_file.close();
+    return l_ok;
 }
 
 #endif // SIMPLEX_SELF_TEST
