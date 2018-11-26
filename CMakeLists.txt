@@ -22,6 +22,7 @@ set(MY_SOURCE_FILES
     src/test_my_square_matrix.cpp
     src/test_equation_system.cpp
     include/simplex_listener_target_if.h
+    include/simplex_solver_glpk.h
    )
 
 # List header directories in project
@@ -31,6 +32,7 @@ set(MY_INCLUDE_DIRECTORIES
 #Create dependancy list
 set(DEPENDANCY_LIST "quicky_utils")
 LIST(APPEND DEPENDANCY_LIST "quicky_exception")
+LIST(APPEND DEPENDANCY_LIST "EXT_glpk")
 
 #------------------------------
 #- Generic part

@@ -33,6 +33,7 @@
 #include "simplex_solver_integer_ppcm.h"
 #include "simplex_identity_solver.h"
 #include "equation_system.h"
+#include "simplex_solver_glpk.h"
 #include <vector>
 
 template <typename SIMPLEX_TYPE>
@@ -56,6 +57,31 @@ int main(int argc,char ** argv)
     bool l_ok = true;
     try
     {
+        simplex::simplex_solver_glpk l_glpk(3,
+                                            3
+                                           );
+        l_glpk.set_Z_coef(0, 10.0);
+        l_glpk.set_Z_coef(1, 6.0);
+        l_glpk.set_Z_coef(2, 4.0);
+        l_glpk.set_B_coef(0, 100.0);
+        l_glpk.set_B_coef(1, 600.0);
+        l_glpk.set_B_coef(2, 300.0);
+        l_glpk.define_equation_type(0, simplex::equation_type::INEQUATION_LT);
+        l_glpk.define_equation_type(1, simplex::equation_type::INEQUATION_LT);
+        l_glpk.define_equation_type(2, simplex::equation_type::INEQUATION_LT);
+        l_glpk.set_A_coef(0, 0, 1.0);
+        l_glpk.set_A_coef(0, 1, 1.0);
+        l_glpk.set_A_coef(0, 2, 1.0);
+        l_glpk.set_A_coef(1, 0, 10.0);
+        l_glpk.set_A_coef(1, 1, 4.0);
+        l_glpk.set_A_coef(1, 2, 5.0);
+        l_glpk.set_A_coef(2, 0, 2.0);
+        l_glpk.set_A_coef(2, 1, 2.0);
+        l_glpk.set_A_coef(2, 2, 6.0);
+
+        double l_max;
+        bool l_infinite;
+        l_glpk.find_max(l_max, l_infinite);
 
         l_ok &= test_my_matrix();
         l_ok &= test_square_matrix();
