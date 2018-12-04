@@ -1,10 +1,12 @@
-sudo: required
-dist: trusty
-language: cpp
-compiler:
-  - gcc
-#  - clang
+matrix:
+  include:
+    - os: linux
+      sudo: required
+      dist: trusty
+      compiler: gcc
+    - os: osx
 
+language: cpp
 
 before_install:
   - MY_LOCATION=`pwd`
@@ -26,7 +28,6 @@ before_install:
   - cd build
 
 script:
-  - generate_makefile simplex
-  - make test
-  - ./bin/simplex.exe
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then generate_makefile simplex; make test; ./bin/simplex.exe; fi
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then cmake $QUICKY_REPOSITORY/simplex; make; ./test_simplex; fi
 #EOF
