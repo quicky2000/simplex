@@ -29,5 +29,5 @@ before_install:
 
 script:
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then generate_makefile simplex; make test; ./bin/simplex.exe; fi
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then cmake $QUICKY_REPOSITORY/simplex; make; ./test_simplex; fi
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then cmake $QUICKY_REPOSITORY/simplex; make; ./simplex; fi
 #EOF
