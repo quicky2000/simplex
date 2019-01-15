@@ -92,6 +92,12 @@ namespace simplex
 
         // Pivoting Z
         COEF_TYPE l_q = this->get_array().get_Z_coef(p_column_index);
+#ifdef DEBUG_SIMPLEX
+        if(l_pivot != 1 || l_q)
+        {
+            std::cout << "Z line <= Z - " << l_q << " * R[" << p_row_index << "] / " << l_pivot << std::endl;
+        }
+#endif // DEBUG_SIMPLEX
         for(unsigned int l_index = 0;
             l_index < this->get_nb_all_variables();
             ++l_index
@@ -111,6 +117,12 @@ namespace simplex
             if(l_row_index != p_row_index)
             {
                 COEF_TYPE l_q = this->get_internal_coef(l_row_index,p_column_index);
+#ifdef DEBUG_SIMPLEX
+                if(l_q)
+                {
+                    std::cout << "R[" << l_row_index << "] <= (R[" << l_row_index << "] - " << l_q << " * " << "R[" << p_row_index << "] / " << l_pivot << std::endl;
+                }
+#endif // DEBUG_SIMPLEX
                 this->get_array().set_B_coef(l_row_index, this->get_array().get_B_coef(l_row_index) - (l_q * this->get_array().get_B_coef(p_row_index)) / l_pivot);
                 for(unsigned int l_index = 0;
                     l_index < this->get_nb_all_variables();
@@ -124,6 +136,9 @@ namespace simplex
         }
 
         // Particular case of pivot row
+#ifdef DEBUG_SIMPLEX
+        std::cout << "R[" << p_row_index << "] <= R[" << p_row_index << "] / " << l_pivot << std::endl;
+#endif // DEBUG_SIMPLEX
         for(unsigned int l_index = 0;
             l_index < this->get_nb_variables();
             ++l_index

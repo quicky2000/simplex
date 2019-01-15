@@ -85,7 +85,9 @@ namespace simplex
         COEF_TYPE l_mult_z = -l_ppcm / l_q;
         COEF_TYPE l_mult_array = -l_ppcm / l_pivot;
 
+#ifdef DEBUG_SIMPLEX
         std::cout << "Z line <= (Z * " << l_mult_z << ") - (R[" << p_row_index << "] * " << l_mult_array << ")" << std::endl;
+#endif //DEBUG_SIMPLEX
         COEF_TYPE l_pgcd = 0;
         COEF_TYPE l_new_coef = 0;
         for(unsigned int l_index = 0;
@@ -106,7 +108,9 @@ namespace simplex
         // Divide Z row by PGCD if necessary
         if(l_pgcd > 1)
         {
+#ifdef DEBUG_SIMPLEX
             std::cout << "Z line <= Z / " << l_pgcd << std::endl;
+#endif //DEBUG_SIMPLEX
             for (unsigned int l_index = 0;
                  l_index < this->get_nb_all_variables();
                  ++l_index
@@ -141,8 +145,10 @@ namespace simplex
                         l_mult_array = -l_ppcm / l_pivot;
                     }
 
+#ifdef DEBUG_SIMPLEX
                     std::cout << "R[" << l_row_index << "] <= (R[" << l_row_index << "] * " << l_mult_z << ") - (R["
                               << p_row_index << "] * " << l_mult_array << ")" << std::endl;
+#endif //DEBUG_SIMPLEX
                     l_pgcd = 0;
                     l_new_coef = this->get_array().get_B_coef(l_row_index) * l_mult_z - this->get_array().get_B_coef(p_row_index) * l_mult_array;
                     this->accumulate_PGCD(l_pgcd, l_new_coef);
@@ -160,7 +166,9 @@ namespace simplex
 
                     if (l_pgcd > 1)
                     {
+#ifdef DEBUG_SIMPLEX
                         std::cout << "R[" << l_row_index << "] <= R[" << l_row_index << "] / " << l_pgcd << std::endl;
+#endif //DEBUG_SIMPLEX
                         for (unsigned int l_index = 0;
                              l_index < this->get_nb_all_variables();
                              ++l_index

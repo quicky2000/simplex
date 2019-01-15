@@ -144,20 +144,24 @@ namespace simplex
             ++l_index
                 )
         {
+#ifdef DEBUG_SIMPLEX
             std::cout << "Check variable " << l_index << std::endl;
+#endif //DEBUG_SIMPLEX
             unsigned int l_row_index = this->get_base_variables_position(l_index);
             if(std::numeric_limits<unsigned int>::max() != l_row_index)
             {
-                std::cout << "Corresponding row index : " << l_row_index << std::endl;
                 COEF_TYPE l_coef = this->get_array().get_A_coef(l_row_index, l_index);
-                std::cout << "Corresponding coef : " << l_coef << std::endl;
                 COEF_TYPE l_B_coef = this->get_array().get_B_coef(l_row_index);
-                std::cout << "Corresponding B coef : " << l_B_coef << std::endl;
                 COEF_TYPE l_var_value = l_B_coef / l_coef;
-                std::cout << "Variable value : " << l_var_value << std::endl;
                 COEF_TYPE l_z_coef = m_original_Z_coefs[l_index];
-                std::cout << "Corresponding Z coef : " << l_z_coef << std::endl;
                 l_computed_max -= l_z_coef * l_var_value;
+#ifdef DEBUG_SIMPLEX
+                std::cout << "Corresponding row index : " << l_row_index << std::endl;
+                std::cout << "Corresponding coef : " << l_coef << std::endl;
+                std::cout << "Corresponding B coef : " << l_B_coef << std::endl;
+                std::cout << "Variable value : " << l_var_value << std::endl;
+                std::cout << "Corresponding Z coef : " << l_z_coef << std::endl;
+#endif //DEBUG_SIMPLEX
             }
         }
         p_max = l_computed_max;

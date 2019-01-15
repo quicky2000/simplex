@@ -63,10 +63,12 @@ namespace simplex
 
         // Pivoting Z
         COEF_TYPE l_q = this->get_array().get_Z_coef(p_column_index);
+#ifdef DEBUG_SIMPLEX
         if(l_pivot != 1 || l_q)
         {
             std::cout << "Z line <= (Z * " << l_pivot << ") - (R[" << p_row_index << "] * " << l_q << ")" << std::endl;
         }
+#endif // DEBUG_SIMPLEX
         COEF_TYPE l_pgcd = 0;
         COEF_TYPE l_new_coef = 0;
         for(unsigned int l_index = 0;
@@ -87,7 +89,9 @@ namespace simplex
         // Divide Z row by PGCD if necessary
         if(l_pgcd > 1)
         {
+#ifdef DEBUG_SIMPLEX
             std::cout << "Z line <= Z / " << l_pgcd << std::endl;
+#endif //DEBUG_SIMPLEX
             for (unsigned int l_index = 0;
                  l_index < this->get_nb_all_variables();
                  ++l_index
@@ -106,11 +110,13 @@ namespace simplex
             if(l_row_index != p_row_index)
             {
                 COEF_TYPE l_q = this->get_internal_coef(l_row_index,p_column_index);
+#ifdef DEBUG_SIMPLEX
                 if(l_pivot != 1 || l_q)
                 {
                     std::cout << "R[" << l_row_index << "] <= (R[" << l_row_index << "] * " << l_pivot << ") - (R["
                               << p_row_index << "] * " << l_q << ")" << std::endl;
                 }
+#endif //DEBUG_SIMPLEX
                 l_pgcd = 0;
                 l_new_coef = this->get_array().get_B_coef(l_row_index) * l_pivot - l_q * this->get_array().get_B_coef(p_row_index);
                 this->accumulate_PGCD(l_pgcd, l_new_coef);
@@ -128,7 +134,9 @@ namespace simplex
 
                     if (l_pgcd > 1)
                     {
+#ifdef DEBUG_SIMPLEX
                         std::cout << "R[" << l_row_index << "] <= R[" << l_row_index << "] / " << l_pgcd << std::endl;
+#endif //DEBUG_SIMPLEX
                         for (unsigned int l_index = 0;
                              l_index < this->get_nb_all_variables();
                              ++l_index
@@ -153,7 +161,9 @@ namespace simplex
         this->accumulate_PGCD(l_pgcd,this->get_array().get_B_coef(p_row_index));
         if(l_pgcd > 1)
         {
+#ifdef DEBUG_SIMPLEX
             std::cout << "R[" << p_row_index << "] <= R[" << p_row_index << "] / " << l_pgcd << std::endl;
+#endif //DEBUG_SIMPLEX
             for(unsigned int l_index = 0;
                 l_index < this->get_nb_variables();
                 ++l_index
