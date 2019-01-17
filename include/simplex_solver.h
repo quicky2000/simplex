@@ -21,6 +21,7 @@
 #include "simplex_listener.h"
 #include "simplex_array.h"
 #include <quicky_exception.h>
+#include "type_string.h"
 #include <cstring>
 #include <type_traits>
 #include <cassert>

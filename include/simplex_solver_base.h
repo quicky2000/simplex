@@ -23,6 +23,7 @@
 #include <sstream>
 #include <limits>
 #include <vector>
+#include <memory.h>
 
 namespace simplex
 {
