@@ -37,7 +37,7 @@ namespace simplex
     } t_equation_type;
 
     template <typename COEF_TYPE,typename ARRAY_TYPE>
-    class simplex_solver_base
+    class simplex_solver_base: public simplex_listener_target_if
     {
       public:
         typedef COEF_TYPE t_coef_type;
@@ -106,7 +106,7 @@ namespace simplex
          * @param p_stream stream where the display should be done
          * @return the modified stream
          */
-        inline std::ostream & display_array(std::ostream & p_stream)const;
+        inline std::ostream & display_array(std::ostream & p_stream)const override;
 
         /**
          * Define equation type
@@ -149,7 +149,7 @@ namespace simplex
          is infinite
          @return value indicating if a max was found
          */
-        template <class LISTENER=simplex_listener<COEF_TYPE,ARRAY_TYPE>>
+        template <class LISTENER=simplex_listener<COEF_TYPE>>
         bool
         find_max(COEF_TYPE & p_max,
                  bool & p_infinite,

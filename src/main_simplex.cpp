@@ -133,7 +133,7 @@ bool test_case1()
 
     auto l_max = (typename SIMPLEX_TYPE::t_coef_type)0;
     bool l_infinite = false;
-    simplex::simplex_listener<typename SIMPLEX_TYPE::t_coef_type,typename SIMPLEX_TYPE::t_array_type> l_listener(l_simplex);
+    simplex::simplex_listener<typename SIMPLEX_TYPE::t_coef_type> l_listener(l_simplex);
     if(l_simplex.find_max(l_max,l_infinite,&l_listener))
     {
         std::cout << "Max = " << l_max << std::endl ;
