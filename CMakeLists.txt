@@ -14,6 +14,7 @@ set(MY_SOURCE_FILES
     include/simplex_solver_integer.h
     include/simplex_solver_integer_ppcm.h
     include/simplex_solver.h
+    include/simplex_identity_solver.h
     include/simplex_listener_target_if.h
    )
 
