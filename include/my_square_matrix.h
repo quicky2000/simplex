@@ -27,7 +27,7 @@ class my_square_matrix: public my_matrix
 
     my_square_matrix * get_transposed() const;
 
-    double getDeterm() const;
+    double get_determ() const;
 
     my_square_matrix *extract_square_matrix(unsigned int p_excluded_row_index
                                            ,unsigned int p_excluded_column_index
@@ -60,7 +60,7 @@ my_square_matrix * my_square_matrix::get_transposed() const
 }
 
 //-------------------------------------------------------------------------
-double my_square_matrix::getDeterm() const
+double my_square_matrix::get_determ() const
 {
     unsigned int l_height = this->get_height();
     if(2 == l_height)
@@ -68,20 +68,20 @@ double my_square_matrix::getDeterm() const
         return(get_data(0,0) * get_data(1,1) - get_data(0,1) * get_data(1,0));
     }
 
-    double determ = 0;
-    bool column = false;
-    unsigned int max = 0;
+    double l_determ = 0;
+    bool l_column = false;
+    unsigned int l_max = 0;
     // Search line and column having maximum number of zero to speed up computation
-    int lineMax = 0;
-    int columnMax = 0;
-    unsigned int * numberLine = new unsigned int[l_height];
-    unsigned int * numberColumn = new unsigned int[l_height];
+    int l_line_max = 0;
+    int l_column_max = 0;
+    unsigned int * l_number_line = new unsigned int[l_height];
+    unsigned int * l_number_column = new unsigned int[l_height];
 
     // Array's initialization
     for(unsigned int l_index = 0; l_index < l_height; ++l_index)
     {
-        numberLine[l_index] = 0;
-        numberColumn[l_index] = 0;
+        l_number_line[l_index] = 0;
+        l_number_column[l_index] = 0;
     }
 
     // Number of zero computation
@@ -91,8 +91,8 @@ double my_square_matrix::getDeterm() const
         {
             if(0 == get_data(l_row_index,l_column_index))
             {
-                numberLine[l_row_index]++;
-                numberColumn[l_column_index]++;
+                l_number_line[l_row_index]++;
+                l_number_column[l_column_index]++;
             }
         }
     }
@@ -100,48 +100,50 @@ double my_square_matrix::getDeterm() const
     // Maximum's search
     for(unsigned int l_row_index = 0; l_row_index < l_height; l_row_index++)
     {
-        if(numberLine[l_row_index] > max)
+        if(l_number_line[l_row_index] > l_max)
         {
-            max = numberLine[l_row_index];
-            lineMax = l_row_index;
+            l_max = l_number_line[l_row_index];
+            l_line_max = l_row_index;
         }
     }
 
     for(unsigned int l_column_index = 0; l_column_index < l_height; ++l_column_index)
     {
-        if(numberColumn[l_column_index] > max)
+        if(l_number_column[l_column_index] > l_max)
         {
-            max=numberColumn[l_column_index];
-            columnMax=l_column_index;
-            column=true;
+            l_max=l_number_column[l_column_index];
+            l_column_max=l_column_index;
+            l_column=true;
         }
     }
 
-    if(max == l_height)
+    if(l_max == l_height)
     {
         return 0;
     }
 
     // Recursive computation
-    if(column)
+    if(l_column)
     {
         for(unsigned int l_row_index = 0; l_row_index < l_height; ++l_row_index)
         {
-            determ += get_data(l_row_index, columnMax) * pow(-1, l_row_index) * pow(-1, columnMax) * (extract_square_matrix(l_row_index,
-                                                                                                                            columnMax
-                                                                                                                           ))->getDeterm();
+            l_determ += get_data(l_row_index, l_column_max) * pow(-1, l_row_index) * pow(-1, l_column_max) *
+                    (extract_square_matrix(l_row_index,
+                                           l_column_max
+                                          ))->get_determ();
         }
     }
     else
     {
         for(unsigned int l_column_index = 0; l_column_index < l_height; ++l_column_index)
         {
-            determ += get_data(lineMax, l_column_index) * pow(-1, l_column_index) * pow(-1, lineMax) * (extract_square_matrix(lineMax,
-                                                                                                                              l_column_index
-                                                                                                                             ))->getDeterm();
+            l_determ += get_data(l_line_max, l_column_index) * pow(-1, l_column_index) * pow(-1, l_line_max) *
+                    (extract_square_matrix(l_line_max,
+                                           l_column_index
+                                          ))->get_determ();
         }
     }
-    return(determ);
+    return(l_determ);
 
 }
 
@@ -180,23 +182,23 @@ my_square_matrix * my_square_matrix::extract_square_matrix(unsigned int p_exclud
 #ifdef SIMPLEX_SELF_TEST
 void test_square_matrix()
 {
-    my_square_matrix matrice(3);
+    my_square_matrix l_matrix(3);
 
-    matrice.set_data(0,0,100);
-    matrice.set_data(0,1,0);
-    matrice.set_data(0,2,0);
-    matrice.set_data(1,0,0);
-    matrice.set_data(1,1,100);
-    matrice.set_data(1,2,0);
-    matrice.set_data(2,0,0);
-    matrice.set_data(2,1,0);
-    matrice.set_data(2,2,100);
+    l_matrix.set_data(0,0,100);
+    l_matrix.set_data(0,1,0);
+    l_matrix.set_data(0,2,0);
+    l_matrix.set_data(1,0,0);
+    l_matrix.set_data(1,1,100);
+    l_matrix.set_data(1,2,0);
+    l_matrix.set_data(2,0,0);
+    l_matrix.set_data(2,1,0);
+    l_matrix.set_data(2,2,100);
 
     std::cout << "Matrix :" << std::endl;
-    std::cout << matrice.to_string();
+    std::cout << l_matrix.to_string();
     std::cout << std::endl;
 
-    std::cout << "Determ: " << matrice.getDeterm() << std::endl;
+    std::cout << "Determ: " << l_matrix.get_determ() << std::endl;
 
 }
 #endif // SIMPLEX_SELF_TEST

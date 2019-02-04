@@ -23,8 +23,8 @@
 class SystemEquation
 {
   private:
-	my_square_matrix matrice;
-	my_matrix coef;
+	my_square_matrix m_matrix;
+	my_matrix m_coef;
 
   public:
 
@@ -38,8 +38,8 @@ class SystemEquation
 
 //-----------------------------------------------------------------------------
 SystemEquation::SystemEquation(my_square_matrix p_matrix, my_matrix p_coef)
-:matrice(p_matrix)
-,coef(p_coef)
+:m_matrix(p_matrix)
+,m_coef(p_coef)
 {
     if(p_matrix.get_height() != p_coef.get_height())
     {
@@ -50,47 +50,45 @@ SystemEquation::SystemEquation(my_square_matrix p_matrix, my_matrix p_coef)
 //-----------------------------------------------------------------------------
 double * SystemEquation::solve()
 {
-    if(matrice.getDeterm()==0)
+    if(m_matrix.get_determ()==0)
     {
         return(NULL);
     }
 
-    int largeur = matrice.get_width();
-    int i,i2,j;
-    bool pivot;
-    double * max = new double[2];
-    double * result= new double[largeur];
+    unsigned int l_width = m_matrix.get_width();
+    bool l_pivot;
+    double * l_max = new double[2];
+    double * l_result= new double[l_width];
 
     // Matrix triangularisation
-    for (i=0;i<largeur ;i++ )
+    for(unsigned int i = 0; i < l_width ; ++i)
     {
-        pivot=false;
+        l_pivot = false;
 
-        if(matrice.get_data(i,i) == 0)
+        if(m_matrix.get_data(i,i) == 0)
         {
-
-            pivot=true;
-            max = matrice.max_abs_sub_column(i + 1,i);
-            matrice.swap_line(i, (int)max[1]);
-            coef.swap_line(i, (int)max[1]);
+            l_pivot=true;
+            l_max = m_matrix.max_abs_sub_column(i + 1,i);
+            m_matrix.swap_line(i, (int)l_max[1]);
+            m_coef.swap_line(i, (int)l_max[1]);
         }
 
-        if(pivot == false || (pivot == true && matrice.get_data(i,i) != 0))
+        if(l_pivot == false || (l_pivot == true && m_matrix.get_data(i,i) != 0))
         {
-            for(i2 = i+1; i2 < largeur; ++i2)
+            for(unsigned int i2 = i+1; i2 < l_width; ++i2)
             {
-                double m = matrice.get_data(i2, i) / matrice.get_data(i,i);
+                double m = m_matrix.get_data(i2, i) / m_matrix.get_data(i,i);
 
-                coef.set_data(i2, 0, coef.get_data(i2, 0) - m * coef.get_data(i,0));
-                for(j = 0; j < largeur; ++j)
+                m_coef.set_data(i2, 0, m_coef.get_data(i2, 0) - m * m_coef.get_data(i,0));
+                for(unsigned int j = 0; j < l_width; ++j)
                 {
                     if(j == i)
                     {
-                        matrice.set_data(i2, j, 0);
+                        m_matrix.set_data(i2, j, 0);
                     }
                     else
                     {
-                        matrice.set_data(i2, j, matrice.get_data(i2, j) - m * matrice.get_data(i,j));
+                        m_matrix.set_data(i2, j, m_matrix.get_data(i2, j) - m * m_matrix.get_data(i,j));
                     }
                 }
             }
@@ -98,29 +96,29 @@ double * SystemEquation::solve()
     }
 
     // Triangular system resolution
-    for(j = largeur - 1; j >= 0; --j)
+    for(unsigned int j = l_width - 1; j >= 0; --j)
     {
-        result[j] = coef.get_data(j, 0) / matrice.get_data(j,j);
-        for(i = j + 1; i < largeur; ++i)
+        l_result[j] = m_coef.get_data(j, 0) / m_matrix.get_data(j,j);
+        for(unsigned int i = j + 1; i < l_width; ++i)
         {
-            result[j] = result[j] - (result[i] * matrice.get_data(j,i)) / matrice.get_data(j,j);
+            l_result[j] = l_result[j] - (l_result[i] * m_matrix.get_data(j,i)) / m_matrix.get_data(j,j);
         }
     }
-    return(result);
+    return(l_result);
 }
 
 //-----------------------------------------------------------------------------
 std::string SystemEquation::to_string() const
 {
     std::string l_string("dimension");
-    l_string += std::to_string(matrice.get_width()) +"\n";
-    for(unsigned int i = 0; i  < matrice.get_height(); ++i)
+    l_string += std::to_string(m_matrix.get_width()) +"\n";
+    for(unsigned int i = 0; i  < m_matrix.get_height(); ++i)
     {
-        for(unsigned int j = 0; j <matrice.get_width(); ++j)
+        for(unsigned int j = 0; j <m_matrix.get_width(); ++j)
         {
-            l_string += std::to_string(matrice.get_data(i,j)) +"\t";
+            l_string += std::to_string(m_matrix.get_data(i,j)) +"\t";
         }
-        l_string += "=" + std::to_string(coef.get_data(i,0)) +"\n";
+        l_string += "=" + std::to_string(m_coef.get_data(i,0)) +"\n";
     }
     return(l_string);
 }
@@ -153,12 +151,12 @@ void test_equation_system()
     std::cout << "Coef matrix:" << std::endl;
     std::cout << l_coef.to_string();
 
-    SystemEquation system(l_matrix,l_coef);
+    SystemEquation l_system(l_matrix,l_coef);
 
     std::cout << "Equation system:" << std::endl;
-    std::cout << system.to_string();
+    std::cout << l_system.to_string();
 
-    double * result = system.solve();
+    double * result = l_system.solve();
 
     if(result != NULL)
     {

@@ -55,7 +55,7 @@ class my_matrix
                   ) const;
 
     double* max() const;
-    double* maxAbs() const;
+    double* max_abs() const;
     double* max_sub_matrix(unsigned int p_min_height,
                            unsigned int p_min_width
                           ) const;
@@ -181,7 +181,7 @@ double* my_matrix::max() const
 }
 
 //-------------------------------------------------------------------------
-double* my_matrix::maxAbs() const
+double* my_matrix::max_abs() const
 {
     return(max_abs_sub_matrix(0, 0));
 }
