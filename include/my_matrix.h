@@ -225,7 +225,7 @@ double* my_matrix::max_abs_sub_matrix(unsigned int p_min_height
 
     double* l_result = new double[3];
 
-    l_result[0] = abs(get_data(p_min_height, p_min_width));
+    l_result[0] = std::abs(get_data(p_min_height, p_min_width));
     l_result[1] = p_min_height;
     l_result[2] = p_min_width;
 
@@ -233,9 +233,9 @@ double* my_matrix::max_abs_sub_matrix(unsigned int p_min_height
     {
         for(unsigned int l_column_index = p_min_width; l_column_index < m_width; l_column_index++)
         {
-            if(l_result[0] < abs(get_data(l_row_index, l_column_index)))
+            if(l_result[0] < std::abs(get_data(l_row_index, l_column_index)))
             {
-                l_result[0] = abs(get_data(l_row_index, l_column_index));
+                l_result[0] = std::abs(get_data(l_row_index, l_column_index));
                 l_result[1] = l_row_index;
                 l_result[2] = l_column_index;
             }
@@ -293,9 +293,9 @@ double* my_matrix::max_abs_sub_column(unsigned int p_row_index
 
     for(unsigned int l_row_index = p_row_index ; l_row_index < m_height; l_row_index++)
     {
-        if(l_result [0] < abs(get_data(l_row_index, p_column_index)))
+        if(l_result [0] < std::abs(get_data(l_row_index, p_column_index)))
         {
-            l_result [0] = abs(get_data(l_row_index, p_column_index));
+            l_result [0] = std::abs(get_data(l_row_index, p_column_index));
             l_result [1] = l_row_index;
         }
     }
