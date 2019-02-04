@@ -25,13 +25,13 @@ class my_square_matrix: public my_matrix
   public:
     my_square_matrix(int dimension);
 
-    my_square_matrix * get_transposed();
+    my_square_matrix * get_transposed() const;
 
-    double getDeterm();
+    double getDeterm() const;
 
-    my_square_matrix *extract_square_matrix(unsigned int p_excluded_row_index,
-                                        unsigned int p_excluded_column_index
-                                       );
+    my_square_matrix *extract_square_matrix(unsigned int p_excluded_row_index
+                                           ,unsigned int p_excluded_column_index
+                                           ) const;
 
 
 };
@@ -43,7 +43,7 @@ my_square_matrix::my_square_matrix(int dimension)
 }
 
 //-------------------------------------------------------------------------
-my_square_matrix * my_square_matrix::get_transposed()
+my_square_matrix * my_square_matrix::get_transposed() const
 {
     unsigned int l_height = this->get_height();
     my_square_matrix * l_transposed = new my_square_matrix(l_height);
@@ -60,7 +60,7 @@ my_square_matrix * my_square_matrix::get_transposed()
 }
 
 //-------------------------------------------------------------------------
-double my_square_matrix::getDeterm()
+double my_square_matrix::getDeterm() const
 {
     unsigned int l_height = this->get_height();
     if(2 == l_height)
@@ -146,9 +146,9 @@ double my_square_matrix::getDeterm()
 }
 
 //-----------------------------------------------------------------------------
-my_square_matrix * my_square_matrix::extract_square_matrix(unsigned int p_excluded_row_index,
-                                                   unsigned int p_excluded_column_index
-                                                  )
+my_square_matrix * my_square_matrix::extract_square_matrix(unsigned int p_excluded_row_index
+                                                          ,unsigned int p_excluded_column_index
+                                                          ) const
 {
     unsigned int l_height = this->get_height();
     my_square_matrix * extractedMatrix = new my_square_matrix(l_height - 1);

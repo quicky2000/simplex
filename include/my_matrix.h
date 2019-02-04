@@ -36,11 +36,11 @@ class my_matrix
                  ,unsigned int p_column_index
                  ,double p_value
                  );
-	double get_data(unsigned int p_row_index,
-                    unsigned int p_column_index
-                   );
-	unsigned int get_width();
-	unsigned int get_height();
+	double get_data(unsigned int p_row_index
+	               ,unsigned int p_column_index
+                   ) const;
+	unsigned int get_width() const;
+	unsigned int get_height() const;
     void initialize(double a);
 
     /**
@@ -52,24 +52,24 @@ class my_matrix
     my_matrix *
     extract_matrix(unsigned int p_line_index
                   ,unsigned int p_column_index
-                  );
+                  ) const;
 
-    double* max();
-    double* maxAbs();
+    double* max() const;
+    double* maxAbs() const;
     double* max_sub_matrix(unsigned int p_min_height,
                            unsigned int p_min_width
-                          );
+                          ) const;
     double* max_abs_sub_matrix(unsigned int p_min_height,
                                unsigned int p_min_width
-                              );
-    double* max_column(unsigned int p_column);
+                              )const ;
+    double* max_column(unsigned int p_column) const;
     double* max_sub_column(unsigned int p_row_index
                           ,unsigned int p_column_index
-                          );
-    double* max_abs_column(unsigned int p_column_index);
+                          ) const;
+    double* max_abs_column(unsigned int p_column_index) const;
     double* max_abs_sub_column(unsigned int p_row_index
                               ,unsigned int p_column_index
-                              );
+                              ) const;
     void swap_line(unsigned int p_row_index_1,
                    unsigned int p_row_index_2
                   );
@@ -78,7 +78,7 @@ class my_matrix
                     );
     my_matrix *
     mult(my_matrix & p_matrix);
-    std::string to_string();
+    std::string to_string() const;
 
   private:
   protected:
@@ -111,7 +111,7 @@ void my_matrix::set_data(unsigned int p_row_index
 //-------------------------------------------------------------------------
 double my_matrix::get_data(unsigned int p_row_index
                           ,unsigned int p_column_index
-                          )
+                          ) const
 {
     assert(p_row_index < m_height);
     assert(p_column_index < m_width);
@@ -119,13 +119,13 @@ double my_matrix::get_data(unsigned int p_row_index
 }
 
 //-------------------------------------------------------------------------
-unsigned int my_matrix::get_width()
+unsigned int my_matrix::get_width() const
 {
     return m_width;
 }
 
 //-------------------------------------------------------------------------
-unsigned int my_matrix::get_height()
+unsigned int my_matrix::get_height() const
 {
     return m_height;
 }
@@ -146,7 +146,7 @@ void my_matrix::initialize(double a)
 my_matrix *
 my_matrix::extract_matrix(unsigned int p_line_index
                          ,unsigned int p_column_index
-                         )
+                         ) const
 {
     my_matrix * l_extracted_matrix = new my_matrix(m_height - 1, m_width - 1);
     unsigned int p_extracted_row_index = 0;
@@ -175,25 +175,21 @@ my_matrix::extract_matrix(unsigned int p_line_index
 }
 
 //-------------------------------------------------------------------------
-double* my_matrix::max()
+double* my_matrix::max() const
 {
-    return(max_sub_matrix(0,
-                          0
-                         ));
+    return(max_sub_matrix(0, 0));
 }
 
 //-------------------------------------------------------------------------
-double* my_matrix::maxAbs()
+double* my_matrix::maxAbs() const
 {
-    return(max_abs_sub_matrix(0,
-                              0
-                             ));
+    return(max_abs_sub_matrix(0, 0));
 }
 
 //-------------------------------------------------------------------------
 double* my_matrix::max_sub_matrix(unsigned int p_min_height
                                  ,unsigned int p_min_width
-                                 )
+                                 ) const
 {
     assert(p_min_height < m_height);
     assert(p_min_width < m_width);
@@ -222,7 +218,7 @@ double* my_matrix::max_sub_matrix(unsigned int p_min_height
 //-------------------------------------------------------------------------
 double* my_matrix::max_abs_sub_matrix(unsigned int p_min_height
                                      ,unsigned int p_min_width
-                                     )
+                                     ) const
 {
     assert(p_min_height < m_height);
     assert(p_min_width < m_width);
@@ -249,7 +245,7 @@ double* my_matrix::max_abs_sub_matrix(unsigned int p_min_height
 }
 
 //-------------------------------------------------------------------------
-double* my_matrix::max_column(unsigned int p_column)
+double* my_matrix::max_column(unsigned int p_column) const
 {
     return(max_sub_column(0, p_column));
 }
@@ -257,7 +253,7 @@ double* my_matrix::max_column(unsigned int p_column)
 //-------------------------------------------------------------------------
 double* my_matrix::max_sub_column(unsigned int p_row_index
                                  ,unsigned int p_column_index
-                                 )
+                                 ) const
 {
     assert(p_row_index < m_height);
     assert(p_column_index < m_width);
@@ -278,7 +274,7 @@ double* my_matrix::max_sub_column(unsigned int p_row_index
 }
 
 //-------------------------------------------------------------------------
-double* my_matrix::max_abs_column(unsigned int p_column_index)
+double* my_matrix::max_abs_column(unsigned int p_column_index) const
 {
     return(max_abs_sub_column(0, p_column_index));
 }
@@ -286,7 +282,7 @@ double* my_matrix::max_abs_column(unsigned int p_column_index)
 //-------------------------------------------------------------------------
 double* my_matrix::max_abs_sub_column(unsigned int p_row_index
                                      ,unsigned int p_column_index
-                                     )
+                                     ) const
 {
     assert(p_row_index < m_height);
     assert(p_column_index < m_width);
@@ -370,7 +366,7 @@ my_matrix::mult(my_matrix & p_matrix)
 
 //-------------------------------------------------------------------------
 std::string
-my_matrix::to_string()
+my_matrix::to_string() const
 {
     std::string l_string("Width=");
     l_string += std::to_string(m_width) + "\n";

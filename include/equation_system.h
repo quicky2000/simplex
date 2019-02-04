@@ -33,7 +33,7 @@ class SystemEquation
 
     double * solve();
 
-    std::string to_string();
+    std::string to_string() const;
 };
 
 //-----------------------------------------------------------------------------
@@ -110,7 +110,7 @@ double * SystemEquation::solve()
 }
 
 //-----------------------------------------------------------------------------
-std::string SystemEquation::to_string()
+std::string SystemEquation::to_string() const
 {
     std::string l_string("dimension");
     l_string += std::to_string(matrice.get_width()) +"\n";
