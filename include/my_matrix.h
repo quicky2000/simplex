@@ -23,6 +23,7 @@
 #include <cassert>
 #include <cmath>
 #include <iostream>
+#include <cstring>
 
 class my_matrix
 {
@@ -31,6 +32,8 @@ class my_matrix
 	         ,unsigned int p_width
              );
 	~my_matrix();
+
+	my_matrix(const my_matrix & p_matrix);
 
     void set_data(unsigned int p_row_index
                  ,unsigned int p_column_index
@@ -387,6 +390,14 @@ my_matrix::to_string() const
 my_matrix::~my_matrix()
 {
     delete[] m_data;
+}
+
+my_matrix::my_matrix(const my_matrix & p_matrix)
+:m_width(p_matrix.m_width)
+,m_height(p_matrix.m_height)
+,m_data(new double[m_width * m_height])
+{
+    memcpy(m_data, p_matrix.m_data, sizeof(double) * m_width * m_height);
 }
 
 #ifdef SIMPLEX_SELF_TEST
