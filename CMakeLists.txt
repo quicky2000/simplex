@@ -15,6 +15,9 @@ set(MY_SOURCE_FILES
     include/simplex_solver_integer_ppcm.h
     include/simplex_solver.h
     include/simplex_identity_solver.h
+    include/my_matrix.h
+    include/my_square_matrix.h
+    include/equation_system.h
     include/simplex_listener_target_if.h
    )
 
