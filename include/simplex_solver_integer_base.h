@@ -109,7 +109,7 @@ namespace simplex
     template <typename COEF_TYPE, typename ARRAY_TYPE>
     simplex::simplex_solver_integer_base<COEF_TYPE, ARRAY_TYPE>::~simplex_solver_integer_base()
     {
-        delete m_original_Z_coefs;
+        delete[] m_original_Z_coefs;
     }
 
     //-------------------------------------------------------------------------
