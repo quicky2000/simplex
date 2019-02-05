@@ -29,7 +29,9 @@ class SystemEquation
   public:
 
 
-    SystemEquation(my_square_matrix p_matrix, my_matrix p_coef);
+    SystemEquation(const my_square_matrix & p_matrix
+                  ,const my_matrix & p_coef
+                  );
 
     double * solve();
 
@@ -37,7 +39,9 @@ class SystemEquation
 };
 
 //-----------------------------------------------------------------------------
-SystemEquation::SystemEquation(my_square_matrix p_matrix, my_matrix p_coef)
+SystemEquation::SystemEquation(const my_square_matrix & p_matrix
+                              ,const my_matrix & p_coef
+                              )
 :m_matrix(p_matrix)
 ,m_coef(p_coef)
 {
