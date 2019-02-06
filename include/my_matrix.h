@@ -80,7 +80,7 @@ class my_matrix
                      unsigned int p_column_index_2
                     );
     my_matrix *
-    mult(my_matrix & p_matrix);
+    mult(const my_matrix & p_matrix);
     std::string to_string() const;
 
     bool operator==(const my_matrix & p_matrix) const;
@@ -345,7 +345,7 @@ void my_matrix::swap_column(unsigned int p_column_index_1
 
 //-------------------------------------------------------------------------
 my_matrix *
-my_matrix::mult(my_matrix & p_matrix)
+my_matrix::mult(const my_matrix & p_matrix)
 {
     if(m_width != p_matrix.get_height())
     {
