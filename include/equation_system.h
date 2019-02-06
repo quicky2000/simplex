@@ -61,7 +61,7 @@ double * SystemEquation::solve()
 
     unsigned int l_width = m_matrix.get_width();
     bool l_pivot;
-    double * l_max = new double[2];
+    std::tuple<double, unsigned int> l_max;
     double * l_result= new double[l_width];
 
     // Matrix triangularisation
@@ -73,8 +73,8 @@ double * SystemEquation::solve()
         {
             l_pivot=true;
             l_max = m_matrix.max_abs_sub_column(i + 1,i);
-            m_matrix.swap_line(i, (int)l_max[1]);
-            m_coef.swap_line(i, (int)l_max[1]);
+            m_matrix.swap_line(i, std::get<1>(l_max));
+            m_coef.swap_line(i, std::get<1>(l_max));
         }
 
         if(l_pivot == false || (l_pivot == true && m_matrix.get_data(i,i) != 0))
