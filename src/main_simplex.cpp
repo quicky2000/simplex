@@ -32,6 +32,7 @@
 #include "simplex_solver_integer.h"
 #include "simplex_solver_integer_ppcm.h"
 #include "simplex_identity_solver.h"
+#include "equation_system.h"
 #include <vector>
 
 template <typename SIMPLEX_TYPE>
@@ -52,6 +53,9 @@ int main(int argc,char ** argv)
     bool l_ok = true;
     try
     {
+
+        l_ok &= test_my_matrix();
+
         // Example
         // Max Z -1 * X1 - 4 * X2 - 3 * X3           = 0
         //        2 * X1 + 2 * X2 + 1 * X3 + E1      = 4
