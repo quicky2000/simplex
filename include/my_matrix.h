@@ -83,6 +83,8 @@ class my_matrix
     mult(my_matrix & p_matrix);
     std::string to_string() const;
 
+    bool operator==(const my_matrix & p_matrix) const;
+
   private:
   protected:
     unsigned int m_width;
@@ -398,6 +400,27 @@ my_matrix::my_matrix(const my_matrix & p_matrix)
 ,m_data(new double[m_width * m_height])
 {
     memcpy(m_data, p_matrix.m_data, sizeof(double) * m_width * m_height);
+}
+
+//-------------------------------------------------------------------------
+bool
+my_matrix::operator==(const my_matrix & p_matrix) const
+{
+    if(m_height != p_matrix.m_height || m_width != p_matrix.m_width)
+    {
+        return false;
+    }
+    for(unsigned int l_row_index = 0; l_row_index < m_height; ++l_row_index)
+    {
+        for(unsigned int l_column_index = 0; l_column_index < m_width; ++l_column_index)
+        {
+            if(get_data(l_row_index, l_column_index) != p_matrix.get_data(l_row_index, l_column_index))
+            {
+                return false;
+            }
+        }
+    }
+    return true;
 }
 
 #ifdef SIMPLEX_SELF_TEST
