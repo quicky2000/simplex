@@ -126,8 +126,8 @@ class my_matrix
      * @return max value of column
      */
     std::tuple<double, unsigned int>
-    max_sub_column(unsigned int p_row_index,
-                   unsigned int p_column_index
+    max_sub_column(unsigned int p_row_index
+                  ,unsigned int p_column_index
                   ) const;
 
     /**
@@ -151,18 +151,19 @@ class my_matrix
      * @return max value of column
      */
     std::tuple<double, unsigned int>
-    max_abs_sub_column(unsigned int p_row_index,
-                       unsigned int p_column_index
+    max_abs_sub_column(unsigned int p_row_index
+                      ,unsigned int p_column_index
                       ) const;
 
-    void swap_line(unsigned int p_row_index_1,
-                   unsigned int p_row_index_2
+    void swap_line(unsigned int p_row_index_1
+                  ,unsigned int p_row_index_2
                   );
-    void swap_column(unsigned int p_column_index_1,
-                     unsigned int p_column_index_2
+    void swap_column(unsigned int p_column_index_1
+                    ,unsigned int p_column_index_2
                     );
     my_matrix *
     mult(const my_matrix & p_matrix);
+
     std::string to_string() const;
 
     bool operator==(const my_matrix & p_matrix) const;
@@ -276,8 +277,8 @@ my_matrix::max_abs() const
 
 //-------------------------------------------------------------------------
 std::tuple<double, unsigned int, unsigned int>
-my_matrix::max_sub_matrix(unsigned int p_min_height,
-                          unsigned int p_min_width
+my_matrix::max_sub_matrix(unsigned int p_min_height
+                         ,unsigned int p_min_width
                          ) const
 {
     assert(p_min_height < m_height);
@@ -306,8 +307,8 @@ my_matrix::max_sub_matrix(unsigned int p_min_height,
 
 //-------------------------------------------------------------------------
 std::tuple<double, unsigned int, unsigned int>
-my_matrix::max_abs_sub_matrix(unsigned int p_min_height,
-                              unsigned int p_min_width
+my_matrix::max_abs_sub_matrix(unsigned int p_min_height
+                             ,unsigned int p_min_width
                              ) const
 {
     assert(p_min_height < m_height);
@@ -373,8 +374,8 @@ my_matrix::max_abs_column(unsigned int p_column_index) const
 
 //-------------------------------------------------------------------------
 std::tuple<double, unsigned int>
-my_matrix::max_abs_sub_column(unsigned int p_row_index,
-                              unsigned int p_column_index
+my_matrix::max_abs_sub_column(unsigned int p_row_index
+                             ,unsigned int p_column_index
                              ) const
 {
     assert(p_row_index < m_height);
