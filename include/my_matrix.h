@@ -607,6 +607,7 @@ bool test_my_matrix()
         l_matrix_ref.set_data(1, 1, 9.0);
         l_matrix_ref.set_data(1, 2, -11.0);
         l_ok &= quicky_utils::quicky_test::check_expected(l_matrix_ref == *l_matrix3, true, "my_matrix::extract_matrix()");
+        delete l_matrix3;
     }
     {
         my_matrix l_matrix_ref(3,4);
@@ -661,10 +662,10 @@ bool test_my_matrix()
         my_matrix l_ref_result(2,1);
         l_ref_result.set_data(0, 0, 11.0);
         l_ref_result.set_data(1, 0, 24.5);
-        l_ok &= quicky_utils::quicky_test::check_expected(l_ref_result == *l_op1.mult(l_op2), true, "my_matrix::mult()");
+        my_matrix * l_mult = l_op1.mult(l_op2);
+        l_ok &= quicky_utils::quicky_test::check_expected(l_ref_result == *l_mult, true, "my_matrix::mult()");
+        delete l_mult;
     }
-    std::cout << "matrix * matrix2 :" << std::endl << l_matrix.mult(l_matrix2)->to_string() << std::endl;
-    std::cout << "matrix2 * matrix :" << std::endl << l_matrix2.mult(l_matrix)->to_string() << std::endl;
     return l_ok;
 }
 #endif // SIMPLEX_SELF_TEST
