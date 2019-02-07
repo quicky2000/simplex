@@ -129,18 +129,26 @@ double my_square_matrix::get_determ() const
     {
         for(unsigned int l_row_index = 0; l_row_index < l_height; ++l_row_index)
         {
-            my_square_matrix * l_extracted_matrix = extract_square_matrix(l_row_index, l_column_max);
-            l_determ += get_data(l_row_index, l_column_max) * pow(-1, l_row_index) * pow(-1, l_column_max) * l_extracted_matrix->get_determ();
-            delete l_extracted_matrix;
+            double l_coef = get_data(l_row_index, l_column_max);
+            if(0 != l_coef)
+            {
+                my_square_matrix * l_extracted_matrix = extract_square_matrix(l_row_index, l_column_max);
+                l_determ += l_coef * pow(-1, l_row_index) * pow(-1, l_column_max) * l_extracted_matrix->get_determ();
+                delete l_extracted_matrix;
+            }
         }
     }
     else
     {
         for(unsigned int l_column_index = 0; l_column_index < l_height; ++l_column_index)
         {
-            my_square_matrix * l_extracted_matrix = extract_square_matrix(l_line_max, l_column_index);
-            l_determ += get_data(l_line_max, l_column_index) * pow(-1, l_column_index) * pow(-1, l_line_max) * l_extracted_matrix->get_determ();
-            delete l_extracted_matrix;
+            double l_coef = get_data(l_line_max, l_column_index);
+            if(0 != l_coef)
+            {
+                my_square_matrix * l_extracted_matrix = extract_square_matrix(l_line_max, l_column_index);
+                l_determ += l_coef * pow(-1, l_column_index) * pow(-1, l_line_max) * l_extracted_matrix->get_determ();
+                delete l_extracted_matrix;
+            }
         }
     }
     return(l_determ);
