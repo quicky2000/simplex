@@ -180,9 +180,37 @@ my_square_matrix * my_square_matrix::extract_square_matrix(unsigned int p_exclud
 }
 
 #ifdef SIMPLEX_SELF_TEST
-void test_square_matrix()
+bool test_square_matrix()
 {
+    bool l_ok = true;
     my_square_matrix l_matrix(3);
+    l_matrix.set_data(0, 0, -1.0);
+    l_matrix.set_data(0, 1, 2.0);
+    l_matrix.set_data(0, 2, 5.0);
+    l_matrix.set_data(1, 0, 1.0);
+    l_matrix.set_data(1, 1, 2.0);
+    l_matrix.set_data(1, 2, 3.0);
+    l_matrix.set_data(2, 0, -2.0);
+    l_matrix.set_data(2, 1, 8.0);
+    l_matrix.set_data(2, 2, 10.0);
+    l_ok &= quicky_utils::quicky_test::check_expected(l_matrix.get_determ(), 32.0, "my_square_matrix::get_determ()");
+
+    l_matrix.set_data(1, 0, 0.0);
+    l_matrix.set_data(1, 1, 4.0);
+    l_matrix.set_data(1, 2, 8.0);
+    l_matrix.set_data(2, 0, 0.0);
+    l_matrix.set_data(2, 1, 4.0);
+    l_matrix.set_data(2, 2, 0.0);
+    l_ok &= quicky_utils::quicky_test::check_expected(l_matrix.get_determ(), 32.0, "my_square_matrix::get_determ()");
+
+    my_square_matrix l_extracted_ref(2);
+    l_extracted_ref.set_data(0, 0, 0.0);
+    l_extracted_ref.set_data(0, 1, 8.0);
+    l_extracted_ref.set_data(1, 0, 0.0);
+    l_extracted_ref.set_data(1, 1, 0.0);
+    my_square_matrix * l_extracted = l_matrix.extract_square_matrix(0, 1);
+    l_ok &= quicky_utils::quicky_test::check_expected(*l_extracted == l_extracted_ref, true, "my_square_matrix::extract_square_matrix()");
+    delete l_extracted;
 
     l_matrix.set_data(0,0,100);
     l_matrix.set_data(0,1,0);
@@ -193,13 +221,14 @@ void test_square_matrix()
     l_matrix.set_data(2,0,0);
     l_matrix.set_data(2,1,0);
     l_matrix.set_data(2,2,100);
+    l_ok &= quicky_utils::quicky_test::check_expected(l_matrix.get_determ(), 1000000.0, "my_square_matrix::get_determ()");
 
     std::cout << "Matrix :" << std::endl;
     std::cout << l_matrix.to_string();
     std::cout << std::endl;
 
     std::cout << "Determ: " << l_matrix.get_determ() << std::endl;
-
+    return l_ok;
 }
 #endif // SIMPLEX_SELF_TEST
 
