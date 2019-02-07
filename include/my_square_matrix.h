@@ -23,7 +23,7 @@
 class my_square_matrix: public my_matrix
 {
   public:
-    my_square_matrix(int dimension);
+    my_square_matrix(unsigned int dimension);
 
     my_square_matrix * get_transposed() const;
 
@@ -37,7 +37,7 @@ class my_square_matrix: public my_matrix
 };
 
 //-------------------------------------------------------------------------
-my_square_matrix::my_square_matrix(int dimension)
+my_square_matrix::my_square_matrix(unsigned int dimension)
 :my_matrix(dimension,dimension)
 {
 }
