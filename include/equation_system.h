@@ -100,7 +100,7 @@ double * SystemEquation::solve()
     }
 
     // Triangular system resolution
-    for(unsigned int j = l_width - 1; j >= 0; --j)
+    for(unsigned int j = l_width - 1; j < l_width; --j)
     {
         l_result[j] = m_coef.get_data(j, 0) / m_matrix.get_data(j,j);
         for(unsigned int i = j + 1; i < l_width; ++i)
