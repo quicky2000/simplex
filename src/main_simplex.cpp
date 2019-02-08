@@ -56,6 +56,7 @@ int main(int argc,char ** argv)
 
         l_ok &= test_my_matrix();
         l_ok &= test_square_matrix();
+        l_ok &= test_equation_system();
 
         // Example
         // Max Z -1 * X1 - 4 * X2 - 3 * X3           = 0

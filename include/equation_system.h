@@ -128,47 +128,59 @@ std::string SystemEquation::to_string() const
 }
 
 #ifdef SIMPLEX_SELF_TEST
-void test_equation_system()
+bool test_equation_system()
 {
+    bool l_ok =true;
     my_square_matrix l_matrix(3);
+    l_matrix.set_data(0,0,1);
+    l_matrix.set_data(0,1,1);
+    l_matrix.set_data(0,2,1);
+    l_matrix.set_data(1,0,-1);
+    l_matrix.set_data(1,1,1);
+    l_matrix.set_data(1,2,1);
+    l_matrix.set_data(2,0,-1);
+    l_matrix.set_data(2,1,-1);
+    l_matrix.set_data(2,2,1);
 
-    l_matrix.set_data(0,0,10);
-    l_matrix.set_data(0,1,5);
-    l_matrix.set_data(0,2,0);
-    l_matrix.set_data(1,0,100);
-    l_matrix.set_data(1,1,10);
-    l_matrix.set_data(1,2,0);
-    l_matrix.set_data(2,0,-20);
-    l_matrix.set_data(2,1,100);
-    l_matrix.set_data(2,2,0);
+    my_matrix l_coef(3,1);
+    l_coef.set_data(0,0,6);
+    l_coef.set_data(1,0,4);
+    l_coef.set_data(2,0,0);
+
+    SystemEquation l_system(l_matrix,l_coef);
+    double * l_result = l_system.solve();
+
+    assert(l_result);
+    l_ok &= quicky_utils::quicky_test::check_expected(l_result[0], 1.0, "Variable[0]");
+    l_ok &= quicky_utils::quicky_test::check_expected(l_result[1], 2.0, "Variable[1]");
+    l_ok &= quicky_utils::quicky_test::check_expected(l_result[2], 3.0, "Variable[2]");
 
     std::cout << "Equation Matrix :" << std::endl;
     std::cout << l_matrix.to_string();
 
-
-    my_matrix l_coef(3,1);
-
-    l_coef.set_data(0,0,10);
-    l_coef.set_data(1,0,10);
-    l_coef.set_data(2,0,10);
-
     std::cout << "Coef matrix:" << std::endl;
     std::cout << l_coef.to_string();
-
-    SystemEquation l_system(l_matrix,l_coef);
 
     std::cout << "Equation system:" << std::endl;
     std::cout << l_system.to_string();
 
-    double * result = l_system.solve();
 
-    if(result != NULL)
+    if(l_result != NULL)
     {
         for(unsigned int i = 0; i < l_coef.get_height();++i)
         {
-            std::cout << "Result[" << std::to_string(i) << "] : " << result[i] << std::endl;
+            std::cout << "Result[" << std::to_string(i) << "] : " << l_result[i] << std::endl;
         }
     }
+    delete[] l_result;
+
+    l_matrix.set_data(2,0,0);
+    l_matrix.set_data(2,1,0);
+    l_matrix.set_data(2,2,0);
+    SystemEquation l_system2 = SystemEquation(l_matrix,l_coef);
+    l_result = l_system2.solve();
+    l_ok &= quicky_utils::quicky_test::check_expected(l_result, (double*)NULL, "equation_system::solve() No result");
+    return l_ok;
 }
 #endif // SIMPLEX_SELF_TEST
 
