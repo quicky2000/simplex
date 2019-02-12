@@ -35,6 +35,10 @@ class my_matrix
 	~my_matrix();
 
 	my_matrix(const my_matrix & p_matrix);
+	my_matrix(my_matrix && p_matrix);
+
+    my_matrix & operator=(const my_matrix & p_matrix);
+    my_matrix & operator=(my_matrix && p_matrix);
 
     void set_data(unsigned int p_row_index
                  ,unsigned int p_column_index
@@ -511,6 +515,43 @@ my_matrix::operator==(const my_matrix & p_matrix) const
         }
     }
     return true;
+}
+
+//-----------------------------------------------------------------------------
+my_matrix::my_matrix(my_matrix && p_matrix)
+:m_width(p_matrix.m_width)
+,m_height(p_matrix.m_height)
+,m_data(p_matrix.m_data)
+{
+    p_matrix.m_width = 0;
+    p_matrix.m_height = 0;
+    p_matrix.m_data = NULL;
+}
+
+//-----------------------------------------------------------------------------
+my_matrix &
+my_matrix::operator=(const my_matrix & p_matrix)
+{
+    m_width = p_matrix.m_width;
+    m_height = p_matrix.m_height;
+    delete[] m_data;
+    m_data = new double[m_width * m_height];
+    memcpy(m_data, p_matrix.m_data, m_width * m_height * sizeof(double));
+    return *this;
+}
+
+//-----------------------------------------------------------------------------
+my_matrix &
+my_matrix::operator=(my_matrix && p_matrix)
+{
+    m_width = p_matrix.m_width;
+    m_height = p_matrix.m_height;
+    delete[] m_data;
+    m_data = p_matrix.m_data;
+    p_matrix.m_width = 0;
+    p_matrix.m_height = 0;
+    p_matrix.m_data = NULL;
+    return *this;
 }
 
 #ifdef SIMPLEX_SELF_TEST
