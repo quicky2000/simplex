@@ -231,6 +231,25 @@ bool test_square_matrix()
     l_matrix.set_data(2,2,100);
     l_ok &= quicky_utils::quicky_test::check_expected(l_matrix.get_determ(), 1000000.0, "my_square_matrix::get_determ()");
 
+    {
+        my_square_matrix l_small_matrix(2);
+        l_small_matrix.set_data(0, 0, 0);
+        l_small_matrix.set_data(0, 1, 1);
+        l_small_matrix.set_data(1, 0, 2);
+        l_small_matrix.set_data(1, 1, 3);
+
+        my_square_matrix * l_transposed = l_small_matrix.get_transposed();
+
+
+        my_square_matrix l_reference(2);
+        l_reference.set_data(0, 0, 0);
+        l_reference.set_data(1, 0, 1);
+        l_reference.set_data(0, 1, 2);
+        l_reference.set_data(1, 1, 3);
+
+        l_ok &= quicky_utils::quicky_test::check_expected(*l_transposed == l_reference, true, "my_square_matrix::get_transposed()");
+        delete l_transposed;
+    }
     std::cout << "Matrix :" << std::endl;
     std::cout << l_matrix.to_string();
     std::cout << std::endl;
