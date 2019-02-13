@@ -29,6 +29,7 @@
 class my_matrix
 {
   public:
+    my_matrix();
 	my_matrix(unsigned int p_height
 	         ,unsigned int p_width
              );
@@ -552,6 +553,15 @@ my_matrix::operator=(my_matrix && p_matrix)
     p_matrix.m_height = 0;
     p_matrix.m_data = NULL;
     return *this;
+}
+
+//-----------------------------------------------------------------------------
+my_matrix::my_matrix()
+:m_width(0)
+,m_height(0)
+,m_data(NULL)
+{
+
 }
 
 #ifdef SIMPLEX_SELF_TEST
