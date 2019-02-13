@@ -36,10 +36,10 @@ class my_matrix
 	~my_matrix();
 
 	my_matrix(const my_matrix & p_matrix);
-	my_matrix(my_matrix && p_matrix);
+	my_matrix(my_matrix && p_matrix) noexcept;
 
     my_matrix & operator=(const my_matrix & p_matrix);
-    my_matrix & operator=(my_matrix && p_matrix);
+    my_matrix & operator=(my_matrix && p_matrix) noexcept;
 
     void set_data(unsigned int p_row_index
                  ,unsigned int p_column_index
@@ -546,7 +546,7 @@ my_matrix<T>::operator==(const my_matrix & p_matrix) const
 
 //-----------------------------------------------------------------------------
 template <typename T>
-my_matrix<T>::my_matrix(my_matrix && p_matrix)
+my_matrix<T>::my_matrix(my_matrix && p_matrix) noexcept
 :m_width(p_matrix.m_width)
 ,m_height(p_matrix.m_height)
 ,m_data(p_matrix.m_data)
@@ -572,7 +572,7 @@ my_matrix<T>::operator=(const my_matrix & p_matrix)
 //-----------------------------------------------------------------------------
 template <typename T>
 my_matrix<T> &
-my_matrix<T>::operator=(my_matrix && p_matrix)
+my_matrix<T>::operator=(my_matrix && p_matrix) noexcept
 {
     m_width = p_matrix.m_width;
     m_height = p_matrix.m_height;
