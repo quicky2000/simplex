@@ -20,6 +20,7 @@ set(MY_SOURCE_FILES
     include/equation_system.h
     src/test_my_matrix.cpp
     src/test_my_square_matrix.cpp
+    src/test_equation_system.cpp
     include/simplex_listener_target_if.h
    )
 
