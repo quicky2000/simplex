@@ -57,7 +57,7 @@ class my_matrix
      * @param p_column_index index of column to exclude
      * @return extracted matrix
      */
-    my_matrix *
+    my_matrix
     extract_matrix(unsigned int p_line_index
                   ,unsigned int p_column_index
                   ) const;
@@ -165,7 +165,7 @@ class my_matrix
     void swap_column(unsigned int p_column_index_1
                     ,unsigned int p_column_index_2
                     );
-    my_matrix *
+    my_matrix
     mult(const my_matrix & p_matrix);
 
     std::string to_string() const;
@@ -235,12 +235,12 @@ void my_matrix::initialize(double a)
 }
 
 //-------------------------------------------------------------------------
-my_matrix *
-my_matrix::extract_matrix(unsigned int p_line_index
-                         ,unsigned int p_column_index
+my_matrix
+my_matrix::extract_matrix(unsigned int p_line_index,
+                          unsigned int p_column_index
                          ) const
 {
-    my_matrix * l_extracted_matrix = new my_matrix(m_height - 1, m_width - 1);
+    my_matrix l_extracted_matrix(m_height - 1, m_width - 1);
     unsigned int p_extracted_row_index = 0;
     unsigned int p_extracted_column_index = 0;
 
@@ -250,7 +250,7 @@ my_matrix::extract_matrix(unsigned int p_line_index
         {
             if(p_current_row_index != p_line_index && p_current_column_index != p_column_index)
             {
-                l_extracted_matrix->set_data(p_extracted_row_index, p_extracted_column_index, get_data(p_current_row_index,p_current_column_index));
+                l_extracted_matrix.set_data(p_extracted_row_index, p_extracted_column_index, get_data(p_current_row_index,p_current_column_index));
             }
             if(p_current_column_index !=  p_column_index)
             {
@@ -438,14 +438,14 @@ void my_matrix::swap_column(unsigned int p_column_index_1
 }
 
 //-------------------------------------------------------------------------
-my_matrix *
+my_matrix
 my_matrix::mult(const my_matrix & p_matrix)
 {
     if(m_width != p_matrix.get_height())
     {
         throw quicky_exception::quicky_logic_exception("my_matrix.class: fatal error ! you try to multiplicate two matrix with incompatible sizes", __LINE__, __FILE__);
     }
-    my_matrix* l_result = new my_matrix(m_height, p_matrix.get_width());
+    my_matrix l_result(m_height, p_matrix.get_width());
     double l_total;
 
     for(unsigned int l_row_index = 0; l_row_index < m_height; l_row_index++)
@@ -457,7 +457,7 @@ my_matrix::mult(const my_matrix & p_matrix)
             {
                 l_total+= get_data(l_row_index, l_mixed_index)* p_matrix.get_data(l_mixed_index, l_column_index);
             }
-            l_result->set_data(l_row_index, l_column_index, l_total);
+            l_result.set_data(l_row_index, l_column_index, l_total);
         }
     }
     return l_result;
@@ -639,7 +639,7 @@ bool test_my_matrix()
     l_ok &= check_max(l_matrix.max_sub_column(1, 2), std::make_tuple(6.0, 1u), "my_matrix::max_sub_column");
 
     {
-        my_matrix * l_matrix3 = l_matrix.extract_matrix(1,2);
+        my_matrix l_matrix3 = l_matrix.extract_matrix(1,2);
         my_matrix l_matrix_ref(2,3);
         l_matrix_ref.set_data(0, 0, -17.0);
         l_matrix_ref.set_data(0, 1, 15.2);
@@ -647,8 +647,7 @@ bool test_my_matrix()
         l_matrix_ref.set_data(1, 0, 5.0);
         l_matrix_ref.set_data(1, 1, 9.0);
         l_matrix_ref.set_data(1, 2, -11.0);
-        l_ok &= quicky_utils::quicky_test::check_expected(l_matrix_ref == *l_matrix3, true, "my_matrix::extract_matrix()");
-        delete l_matrix3;
+        l_ok &= quicky_utils::quicky_test::check_expected(l_matrix_ref == l_matrix3, true, "my_matrix::extract_matrix()");
     }
     {
         my_matrix l_matrix_ref(3,4);
@@ -703,9 +702,8 @@ bool test_my_matrix()
         my_matrix l_ref_result(2,1);
         l_ref_result.set_data(0, 0, 11.0);
         l_ref_result.set_data(1, 0, 24.5);
-        my_matrix * l_mult = l_op1.mult(l_op2);
-        l_ok &= quicky_utils::quicky_test::check_expected(l_ref_result == *l_mult, true, "my_matrix::mult()");
-        delete l_mult;
+        my_matrix l_mult = l_op1.mult(l_op2);
+        l_ok &= quicky_utils::quicky_test::check_expected(l_ref_result == l_mult, true, "my_matrix::mult()");
     }
     return l_ok;
 }

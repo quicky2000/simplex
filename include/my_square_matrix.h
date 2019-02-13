@@ -25,13 +25,15 @@ class my_square_matrix: public my_matrix
   public:
     my_square_matrix(unsigned int dimension);
 
-    my_square_matrix * get_transposed() const;
+    my_square_matrix
+    get_transposed() const;
 
     double get_determ() const;
 
-    my_square_matrix *extract_square_matrix(unsigned int p_excluded_row_index
-                                           ,unsigned int p_excluded_column_index
-                                           ) const;
+    my_square_matrix
+    extract_square_matrix(unsigned int p_excluded_row_index
+                         ,unsigned int p_excluded_column_index
+                         ) const;
 
 
 };
@@ -43,16 +45,17 @@ my_square_matrix::my_square_matrix(unsigned int dimension)
 }
 
 //-------------------------------------------------------------------------
-my_square_matrix * my_square_matrix::get_transposed() const
+my_square_matrix
+my_square_matrix::get_transposed() const
 {
     unsigned int l_height = this->get_height();
-    my_square_matrix * l_transposed = new my_square_matrix(l_height);
+    my_square_matrix l_transposed(l_height);
 
     for(unsigned int l_row_index = 0; l_row_index < l_height; l_row_index++)
     {
         for(unsigned int l_column_index = 0; l_column_index < l_height; l_column_index++)
         {
-            l_transposed->set_data(l_row_index, l_column_index, get_data(l_column_index,l_row_index));
+            l_transposed.set_data(l_row_index, l_column_index, get_data(l_column_index,l_row_index));
         }
     }
     return(l_transposed);
@@ -132,9 +135,8 @@ double my_square_matrix::get_determ() const
             double l_coef = get_data(l_row_index, l_column_max);
             if(0 != l_coef)
             {
-                my_square_matrix * l_extracted_matrix = extract_square_matrix(l_row_index, l_column_max);
-                l_determ += l_coef * pow(-1, l_row_index) * pow(-1, l_column_max) * l_extracted_matrix->get_determ();
-                delete l_extracted_matrix;
+                my_square_matrix l_extracted_matrix = extract_square_matrix(l_row_index, l_column_max);
+                l_determ += l_coef * pow(-1, l_row_index) * pow(-1, l_column_max) * l_extracted_matrix.get_determ();
             }
         }
     }
@@ -145,9 +147,8 @@ double my_square_matrix::get_determ() const
             double l_coef = get_data(l_line_max, l_column_index);
             if(0 != l_coef)
             {
-                my_square_matrix * l_extracted_matrix = extract_square_matrix(l_line_max, l_column_index);
-                l_determ += l_coef * pow(-1, l_column_index) * pow(-1, l_line_max) * l_extracted_matrix->get_determ();
-                delete l_extracted_matrix;
+                my_square_matrix l_extracted_matrix = extract_square_matrix(l_line_max, l_column_index);
+                l_determ += l_coef * pow(-1, l_column_index) * pow(-1, l_line_max) * l_extracted_matrix.get_determ();
             }
         }
     }
@@ -156,12 +157,13 @@ double my_square_matrix::get_determ() const
 }
 
 //-----------------------------------------------------------------------------
-my_square_matrix * my_square_matrix::extract_square_matrix(unsigned int p_excluded_row_index
-                                                          ,unsigned int p_excluded_column_index
-                                                          ) const
+my_square_matrix
+my_square_matrix::extract_square_matrix(unsigned int p_excluded_row_index
+                                       ,unsigned int p_excluded_column_index
+                                       ) const
 {
     unsigned int l_height = this->get_height();
-    my_square_matrix * extractedMatrix = new my_square_matrix(l_height - 1);
+    my_square_matrix extractedMatrix(l_height - 1);
     unsigned int l_extracted_row_index = 0;
     unsigned int l_extracted_column_index = 0;
 
@@ -171,7 +173,7 @@ my_square_matrix * my_square_matrix::extract_square_matrix(unsigned int p_exclud
         {
             if(l_row_index != p_excluded_row_index && l_column_index != p_excluded_column_index)
             {
-                extractedMatrix->set_data(l_extracted_row_index, l_extracted_column_index, get_data(l_row_index, l_column_index));
+                extractedMatrix.set_data(l_extracted_row_index, l_extracted_column_index, get_data(l_row_index, l_column_index));
             }
             if(l_column_index != p_excluded_column_index)
             {
@@ -216,9 +218,8 @@ bool test_square_matrix()
     l_extracted_ref.set_data(0, 1, 8.0);
     l_extracted_ref.set_data(1, 0, 0.0);
     l_extracted_ref.set_data(1, 1, 0.0);
-    my_square_matrix * l_extracted = l_matrix.extract_square_matrix(0, 1);
-    l_ok &= quicky_utils::quicky_test::check_expected(*l_extracted == l_extracted_ref, true, "my_square_matrix::extract_square_matrix()");
-    delete l_extracted;
+    my_square_matrix l_extracted = l_matrix.extract_square_matrix(0, 1);
+    l_ok &= quicky_utils::quicky_test::check_expected(l_extracted == l_extracted_ref, true, "my_square_matrix::extract_square_matrix()");
 
     l_matrix.set_data(0,0,100);
     l_matrix.set_data(0,1,0);
@@ -237,9 +238,7 @@ bool test_square_matrix()
         l_small_matrix.set_data(0, 1, 1);
         l_small_matrix.set_data(1, 0, 2);
         l_small_matrix.set_data(1, 1, 3);
-
-        my_square_matrix * l_transposed = l_small_matrix.get_transposed();
-
+        my_square_matrix l_transposed = l_small_matrix.get_transposed();
 
         my_square_matrix l_reference(2);
         l_reference.set_data(0, 0, 0);
@@ -247,14 +246,8 @@ bool test_square_matrix()
         l_reference.set_data(0, 1, 2);
         l_reference.set_data(1, 1, 3);
 
-        l_ok &= quicky_utils::quicky_test::check_expected(*l_transposed == l_reference, true, "my_square_matrix::get_transposed()");
-        delete l_transposed;
+        l_ok &= quicky_utils::quicky_test::check_expected(l_transposed == l_reference, true, "my_square_matrix::get_transposed()");
     }
-    std::cout << "Matrix :" << std::endl;
-    std::cout << l_matrix.to_string();
-    std::cout << std::endl;
-
-    std::cout << "Determ: " << l_matrix.get_determ() << std::endl;
     return l_ok;
 }
 #endif // SIMPLEX_SELF_TEST
