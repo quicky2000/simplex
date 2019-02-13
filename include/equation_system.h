@@ -21,7 +21,7 @@
 #include "my_square_matrix.h"
 
 template <typename T>
-class SystemEquation
+class my_equation_system
 {
   private:
 	my_square_matrix<T> m_matrix;
@@ -30,9 +30,9 @@ class SystemEquation
   public:
 
 
-    SystemEquation(const my_square_matrix<T> & p_matrix
-                  ,const my_matrix<T> & p_coef
-                  );
+    my_equation_system(const my_square_matrix<T> & p_matrix
+                      ,const my_matrix<T> & p_coef
+                      );
 
     my_matrix<T>
     solve();
@@ -42,9 +42,9 @@ class SystemEquation
 
 //-----------------------------------------------------------------------------
 template <typename T>
-SystemEquation<T>::SystemEquation(const my_square_matrix<T> & p_matrix
-                                 ,const my_matrix<T> & p_coef
-                                 )
+my_equation_system<T>::my_equation_system(const my_square_matrix<T> & p_matrix
+                                         ,const my_matrix<T> & p_coef
+                                         )
 :m_matrix(p_matrix)
 ,m_coef(p_coef)
 {
@@ -57,7 +57,7 @@ SystemEquation<T>::SystemEquation(const my_square_matrix<T> & p_matrix
 //-----------------------------------------------------------------------------
 template <typename T>
 my_matrix<T>
-SystemEquation<T>::solve()
+my_equation_system<T>::solve()
 {
     if(m_matrix.get_determ()==0)
     {
@@ -118,7 +118,7 @@ SystemEquation<T>::solve()
 
 //-----------------------------------------------------------------------------
 template <typename T>
-std::string SystemEquation<T>::to_string() const
+std::string my_equation_system<T>::to_string() const
 {
     std::string l_string("dimension");
     l_string += std::to_string(m_matrix.get_width()) +"\n";

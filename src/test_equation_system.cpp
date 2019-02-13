@@ -39,7 +39,7 @@ bool test_equation_system()
     l_coef.set_data(1,0,4);
     l_coef.set_data(2,0,0);
 
-    SystemEquation<double> l_system(l_matrix,l_coef);
+    my_equation_system<double> l_system(l_matrix,l_coef);
     my_matrix<double> l_result = l_system.solve();
 
     assert(l_result.get_height());
@@ -66,7 +66,7 @@ bool test_equation_system()
     l_matrix.set_data(2,0,0);
     l_matrix.set_data(2,1,0);
     l_matrix.set_data(2,2,0);
-    SystemEquation<double> l_system2 = SystemEquation<double>(l_matrix,l_coef);
+    my_equation_system<double> l_system2 = my_equation_system<double>(l_matrix,l_coef);
     l_result = l_system2.solve();
     l_ok &= quicky_utils::quicky_test::check_expected(l_result.get_height(), 0u, "equation_system::solve() No result");
     return l_ok;
