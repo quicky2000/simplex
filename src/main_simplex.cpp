@@ -46,6 +46,7 @@ bool
 test_case3(const std::string & p_suffix);
 
 using namespace quicky_utils;
+using namespace simplex;
 
 //------------------------------------------------------------------------------
 int main(int argc,char ** argv)
