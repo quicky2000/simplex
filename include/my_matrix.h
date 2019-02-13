@@ -26,6 +26,7 @@
 #include <cstring>
 #include <tuple>
 
+template <typename T>
 class my_matrix
 {
   public:
@@ -43,14 +44,15 @@ class my_matrix
 
     void set_data(unsigned int p_row_index
                  ,unsigned int p_column_index
-                 ,double p_value
+                 ,const T & p_value
                  );
-	double get_data(unsigned int p_row_index
-	               ,unsigned int p_column_index
-                   ) const;
+	const T &
+    get_data(unsigned int p_row_index,
+             unsigned int p_column_index
+            ) const;
 	unsigned int get_width() const;
 	unsigned int get_height() const;
-    void initialize(double a);
+    void initialize(const T & a);
 
     /**
      * Create extracted matrix by excluding 1 line and 1 column
@@ -58,7 +60,7 @@ class my_matrix
      * @param p_column_index index of column to exclude
      * @return extracted matrix
      */
-    my_matrix
+    my_matrix<T>
     extract_matrix(unsigned int p_line_index
                   ,unsigned int p_column_index
                   ) const;
@@ -70,7 +72,7 @@ class my_matrix
      * Third tuple member is column index
      * @return max of matrix values
      */
-    std::tuple<double, unsigned int, unsigned int> max() const;
+    std::tuple<T, unsigned int, unsigned int> max() const;
 
     /**
      * Return max of matrix absolute values and its coordinates
@@ -79,7 +81,7 @@ class my_matrix
      * Third tuple member is column index
      * @return max of matrix values
      */
-    std::tuple<double, unsigned int, unsigned int>
+    std::tuple<T, unsigned int, unsigned int>
     max_abs() const;
 
     /**
@@ -91,7 +93,7 @@ class my_matrix
      * @param p_min_width start column index
      * @return max of matrix values
      */
-    std::tuple<double, unsigned int, unsigned int>
+    std::tuple<T, unsigned int, unsigned int>
     max_sub_matrix(unsigned int p_min_height
                   ,unsigned int p_min_width
                   ) const;
@@ -105,7 +107,7 @@ class my_matrix
      * @param p_min_width start column index
      * @return max of matrix values
      */
-    std::tuple<double, unsigned int, unsigned int>
+    std::tuple<T, unsigned int, unsigned int>
     max_abs_sub_matrix(unsigned int p_min_height
                       ,unsigned int p_min_width
                       ) const ;
@@ -118,7 +120,7 @@ class my_matrix
      * @param p_column_index column index
      * @return max value of column
      */
-    std::tuple<double, unsigned int>
+    std::tuple<T, unsigned int>
     max_column(unsigned int p_column_index) const;
 
     /**
@@ -130,7 +132,7 @@ class my_matrix
      * @param p_column_index column index
      * @return max value of column
      */
-    std::tuple<double, unsigned int>
+    std::tuple<T, unsigned int>
     max_sub_column(unsigned int p_row_index
                   ,unsigned int p_column_index
                   ) const;
@@ -143,7 +145,7 @@ class my_matrix
      * @param p_column_index column index
      * @return max value of column
      */
-    std::tuple<double, unsigned int>
+    std::tuple<T, unsigned int>
     max_abs_column(unsigned int p_column_index) const;
 
     /**
@@ -155,7 +157,7 @@ class my_matrix
      * @param p_column_index column index
      * @return max value of column
      */
-    std::tuple<double, unsigned int>
+    std::tuple<T, unsigned int>
     max_abs_sub_column(unsigned int p_row_index
                       ,unsigned int p_column_index
                       ) const;
@@ -173,28 +175,31 @@ class my_matrix
 
     bool operator==(const my_matrix & p_matrix) const;
 
+    typedef T coef_type_t;
+
   private:
-  protected:
     unsigned int m_width;
     unsigned int m_height;
-    double * m_data;
+    T * m_data;
 };
 
 //-------------------------------------------------------------------------
-my_matrix::my_matrix(unsigned int p_height
-                    ,unsigned int p_width
-                    )
+template <typename T>
+my_matrix<T>::my_matrix(unsigned int p_height
+                       ,unsigned int p_width
+                       )
         :m_width(p_width)
         ,m_height(p_height)
-        ,m_data(new double[p_height * p_width])
+        ,m_data(new T[p_height * p_width])
 {
 }
 
 //-------------------------------------------------------------------------
-void my_matrix::set_data(unsigned int p_row_index
-                        ,unsigned int p_column_index
-                        ,double p_value
-                        )
+template <typename T>
+void my_matrix<T>::set_data(unsigned int p_row_index
+                           ,unsigned int p_column_index
+                           ,const T & p_value
+                           )
 {
     assert(p_row_index < m_height);
     assert(p_column_index < m_width);
@@ -202,9 +207,11 @@ void my_matrix::set_data(unsigned int p_row_index
 }
 
 //-------------------------------------------------------------------------
-double my_matrix::get_data(unsigned int p_row_index
-                          ,unsigned int p_column_index
-                          ) const
+template <typename T>
+const T &
+my_matrix<T>::get_data(unsigned int p_row_index
+                      ,unsigned int p_column_index
+                      ) const
 {
     assert(p_row_index < m_height);
     assert(p_column_index < m_width);
@@ -212,19 +219,22 @@ double my_matrix::get_data(unsigned int p_row_index
 }
 
 //-------------------------------------------------------------------------
-unsigned int my_matrix::get_width() const
+template <typename T>
+unsigned int my_matrix<T>::get_width() const
 {
     return m_width;
 }
 
 //-------------------------------------------------------------------------
-unsigned int my_matrix::get_height() const
+template <typename T>
+unsigned int my_matrix<T>::get_height() const
 {
     return m_height;
 }
 
 //-------------------------------------------------------------------------
-void my_matrix::initialize(double a)
+template <typename T>
+void my_matrix<T>::initialize(const T & a)
 {
     for(unsigned int i = 0; i < m_height; i++)
     {
@@ -236,10 +246,11 @@ void my_matrix::initialize(double a)
 }
 
 //-------------------------------------------------------------------------
-my_matrix
-my_matrix::extract_matrix(unsigned int p_line_index,
-                          unsigned int p_column_index
-                         ) const
+template <typename T>
+my_matrix<T>
+my_matrix<T>::extract_matrix(unsigned int p_line_index
+                            ,unsigned int p_column_index
+                            ) const
 {
     my_matrix l_extracted_matrix(m_height - 1, m_width - 1);
     unsigned int p_extracted_row_index = 0;
@@ -268,31 +279,34 @@ my_matrix::extract_matrix(unsigned int p_line_index,
 }
 
 //-------------------------------------------------------------------------
-std::tuple<double, unsigned int, unsigned int> my_matrix::max() const
+template <typename T>
+std::tuple<T, unsigned int, unsigned int> my_matrix<T>::max() const
 {
     return(max_sub_matrix(0, 0));
 }
 
 //-------------------------------------------------------------------------
-std::tuple<double, unsigned int, unsigned int>
-my_matrix::max_abs() const
+template <typename T>
+std::tuple<T, unsigned int, unsigned int>
+my_matrix<T>::max_abs() const
 {
     return(max_abs_sub_matrix(0, 0));
 }
 
 //-------------------------------------------------------------------------
-std::tuple<double, unsigned int, unsigned int>
-my_matrix::max_sub_matrix(unsigned int p_min_height
-                         ,unsigned int p_min_width
-                         ) const
+template <typename T>
+std::tuple<T, unsigned int, unsigned int>
+my_matrix<T>::max_sub_matrix(unsigned int p_min_height
+                            ,unsigned int p_min_width
+                            ) const
 {
     assert(p_min_height < m_height);
     assert(p_min_width < m_width);
 
-    std::tuple<double, unsigned int, unsigned int> l_result(get_data(p_min_height, p_min_width)
-                                                           ,p_min_height
-                                                           ,p_min_width
-                                                           );
+    std::tuple<T, unsigned int, unsigned int> l_result(get_data(p_min_height, p_min_width)
+                                                      ,p_min_height
+                                                      ,p_min_width
+                                                      );
 
     for(unsigned int l_row_index = p_min_height; l_row_index < m_height; ++l_row_index)
     {
@@ -311,18 +325,19 @@ my_matrix::max_sub_matrix(unsigned int p_min_height
 }
 
 //-------------------------------------------------------------------------
-std::tuple<double, unsigned int, unsigned int>
-my_matrix::max_abs_sub_matrix(unsigned int p_min_height
-                             ,unsigned int p_min_width
-                             ) const
+template <typename T>
+std::tuple<T, unsigned int, unsigned int>
+my_matrix<T>::max_abs_sub_matrix(unsigned int p_min_height
+                                ,unsigned int p_min_width
+                                ) const
 {
     assert(p_min_height < m_height);
     assert(p_min_width < m_width);
 
-    std::tuple<double, unsigned int, unsigned int> l_result(std::abs(get_data(p_min_height, p_min_width))
-                                                           ,p_min_height
-                                                           ,p_min_width
-                                                           );
+    std::tuple<T, unsigned int, unsigned int> l_result(std::abs(get_data(p_min_height, p_min_width))
+                                                      ,p_min_height
+                                                      ,p_min_width
+                                                      );
 
     for(unsigned int l_row_index = p_min_height; l_row_index < m_height; l_row_index++)
     {
@@ -341,22 +356,24 @@ my_matrix::max_abs_sub_matrix(unsigned int p_min_height
 }
 
 //-------------------------------------------------------------------------
-std::tuple<double, unsigned int>
-my_matrix::max_column(unsigned int p_column_index) const
+template <typename T>
+std::tuple<T, unsigned int>
+my_matrix<T>::max_column(unsigned int p_column_index) const
 {
     return(max_sub_column(0, p_column_index));
 }
 
 //-------------------------------------------------------------------------
-std::tuple<double, unsigned int>
-my_matrix::max_sub_column(unsigned int p_row_index
-                         ,unsigned int p_column_index
-                         ) const
+template <typename T>
+std::tuple<T, unsigned int>
+my_matrix<T>::max_sub_column(unsigned int p_row_index
+                            ,unsigned int p_column_index
+                            ) const
 {
     assert(p_row_index < m_height);
     assert(p_column_index < m_width);
 
-    std::tuple<double, unsigned int> l_result(get_data(p_row_index, p_column_index), p_row_index);
+    std::tuple<T, unsigned int> l_result(get_data(p_row_index, p_column_index), p_row_index);
 
     for(unsigned int l_row_index = p_row_index; l_row_index < m_height; l_row_index++)
     {
@@ -371,24 +388,26 @@ my_matrix::max_sub_column(unsigned int p_row_index
 }
 
 //-------------------------------------------------------------------------
-std::tuple<double, unsigned int>
-my_matrix::max_abs_column(unsigned int p_column_index) const
+template <typename T>
+std::tuple<T, unsigned int>
+my_matrix<T>::max_abs_column(unsigned int p_column_index) const
 {
     return(max_abs_sub_column(0, p_column_index));
 }
 
 //-------------------------------------------------------------------------
-std::tuple<double, unsigned int>
-my_matrix::max_abs_sub_column(unsigned int p_row_index
-                             ,unsigned int p_column_index
-                             ) const
+template <typename T>
+std::tuple<T, unsigned int>
+my_matrix<T>::max_abs_sub_column(unsigned int p_row_index
+                                ,unsigned int p_column_index
+                                ) const
 {
     assert(p_row_index < m_height);
     assert(p_column_index < m_width);
 
-    std::tuple<double, unsigned int> l_result(std::abs(get_data(p_row_index, p_column_index))
-                                             ,p_row_index
-                                             );
+    std::tuple<T, unsigned int> l_result(std::abs(get_data(p_row_index, p_column_index))
+                                        ,p_row_index
+                                        );
 
     for(unsigned int l_row_index = p_row_index ; l_row_index < m_height; l_row_index++)
     {
@@ -403,14 +422,15 @@ my_matrix::max_abs_sub_column(unsigned int p_row_index
 }
 
 //-------------------------------------------------------------------------
-void my_matrix::swap_line(unsigned int p_row_index_1
-                         ,unsigned int p_row_index_2
-                         )
+template <typename T>
+void my_matrix<T>::swap_line(unsigned int p_row_index_1
+                            ,unsigned int p_row_index_2
+                            )
 {
     assert(p_row_index_1 < m_height);
     assert(p_row_index_2 < m_height);
 
-    double l_tmp_data;
+    T l_tmp_data;
 
     for(unsigned int l_column_index = 0 ; l_column_index < m_width; l_column_index++)
     {
@@ -421,14 +441,15 @@ void my_matrix::swap_line(unsigned int p_row_index_1
 }
 
 //-------------------------------------------------------------------------
-void my_matrix::swap_column(unsigned int p_column_index_1
-                           ,unsigned int p_column_index_2
-                           )
+template <typename T>
+void my_matrix<T>::swap_column(unsigned int p_column_index_1
+                              ,unsigned int p_column_index_2
+                              )
 {
     assert(p_column_index_1 < m_width);
     assert(p_column_index_2 < m_width);
 
-    double l_tmp_data;
+    T l_tmp_data;
 
     for(unsigned int l_row_index = 0; l_row_index < m_height; l_row_index++)
     {
@@ -439,15 +460,16 @@ void my_matrix::swap_column(unsigned int p_column_index_1
 }
 
 //-------------------------------------------------------------------------
-my_matrix
-my_matrix::mult(const my_matrix & p_matrix)
+template <typename T>
+my_matrix<T>
+my_matrix<T>::mult(const my_matrix & p_matrix)
 {
     if(m_width != p_matrix.get_height())
     {
         throw quicky_exception::quicky_logic_exception("my_matrix.class: fatal error ! you try to multiplicate two matrix with incompatible sizes", __LINE__, __FILE__);
     }
     my_matrix l_result(m_height, p_matrix.get_width());
-    double l_total;
+    T l_total;
 
     for(unsigned int l_row_index = 0; l_row_index < m_height; l_row_index++)
     {
@@ -465,8 +487,9 @@ my_matrix::mult(const my_matrix & p_matrix)
 }
 
 //-------------------------------------------------------------------------
+template <typename T>
 std::string
-my_matrix::to_string() const
+my_matrix<T>::to_string() const
 {
     std::string l_string("Width=");
     l_string += std::to_string(m_width) + "\n";
@@ -484,22 +507,26 @@ my_matrix::to_string() const
 }
 
 //-------------------------------------------------------------------------
-my_matrix::~my_matrix()
+template <typename T>
+my_matrix<T>::~my_matrix()
 {
     delete[] m_data;
 }
 
-my_matrix::my_matrix(const my_matrix & p_matrix)
+//-------------------------------------------------------------------------
+template <typename T>
+my_matrix<T>::my_matrix(const my_matrix & p_matrix)
 :m_width(p_matrix.m_width)
 ,m_height(p_matrix.m_height)
-,m_data(new double[m_width * m_height])
+,m_data(new T[m_width * m_height])
 {
-    memcpy(m_data, p_matrix.m_data, sizeof(double) * m_width * m_height);
+    memcpy(m_data, p_matrix.m_data, sizeof(T) * m_width * m_height);
 }
 
 //-------------------------------------------------------------------------
+template <typename T>
 bool
-my_matrix::operator==(const my_matrix & p_matrix) const
+my_matrix<T>::operator==(const my_matrix & p_matrix) const
 {
     if(m_height != p_matrix.m_height || m_width != p_matrix.m_width)
     {
@@ -519,7 +546,8 @@ my_matrix::operator==(const my_matrix & p_matrix) const
 }
 
 //-----------------------------------------------------------------------------
-my_matrix::my_matrix(my_matrix && p_matrix)
+template <typename T>
+my_matrix<T>::my_matrix(my_matrix && p_matrix)
 :m_width(p_matrix.m_width)
 ,m_height(p_matrix.m_height)
 ,m_data(p_matrix.m_data)
@@ -530,20 +558,22 @@ my_matrix::my_matrix(my_matrix && p_matrix)
 }
 
 //-----------------------------------------------------------------------------
-my_matrix &
-my_matrix::operator=(const my_matrix & p_matrix)
+template <typename T>
+my_matrix<T> &
+my_matrix<T>::operator=(const my_matrix & p_matrix)
 {
     m_width = p_matrix.m_width;
     m_height = p_matrix.m_height;
     delete[] m_data;
-    m_data = new double[m_width * m_height];
-    memcpy(m_data, p_matrix.m_data, m_width * m_height * sizeof(double));
+    m_data = new T[m_width * m_height];
+    memcpy(m_data, p_matrix.m_data, m_width * m_height * sizeof(T));
     return *this;
 }
 
 //-----------------------------------------------------------------------------
-my_matrix &
-my_matrix::operator=(my_matrix && p_matrix)
+template <typename T>
+my_matrix<T> &
+my_matrix<T>::operator=(my_matrix && p_matrix)
 {
     m_width = p_matrix.m_width;
     m_height = p_matrix.m_height;
@@ -556,7 +586,8 @@ my_matrix::operator=(my_matrix && p_matrix)
 }
 
 //-----------------------------------------------------------------------------
-my_matrix::my_matrix()
+template <typename T>
+my_matrix<T>::my_matrix()
 :m_width(0)
 ,m_height(0)
 ,m_data(NULL)
@@ -566,8 +597,9 @@ my_matrix::my_matrix()
 
 #ifdef SIMPLEX_SELF_TEST
 //-----------------------------------------------------------------------------
-bool check_max(const std::tuple<double, unsigned int, unsigned int> & p_max
-              ,const std::tuple<double, unsigned int, unsigned int> & p_ref
+template <typename T>
+bool check_max(const std::tuple<T, unsigned int, unsigned int> & p_max
+              ,const std::tuple<T, unsigned int, unsigned int> & p_ref
               ,const std::string & p_method_name
               )
 {
@@ -579,8 +611,9 @@ bool check_max(const std::tuple<double, unsigned int, unsigned int> & p_max
 }
 
 //-----------------------------------------------------------------------------
-bool check_max(const std::tuple<double, unsigned int> & p_max
-              ,const std::tuple<double, unsigned int> & p_ref
+template <typename T>
+bool check_max(const std::tuple<T, unsigned int> & p_max
+              ,const std::tuple<T, unsigned int> & p_ref
               ,const std::string & p_method_name
               )
 {
@@ -594,8 +627,8 @@ bool check_max(const std::tuple<double, unsigned int> & p_max
 bool test_my_matrix()
 {
     bool l_ok = true;
-    my_matrix l_matrix(3,4);
-    my_matrix l_matrix2(4,3);
+    my_matrix<double> l_matrix(3,4);
+    my_matrix<double> l_matrix2(4,3);
 
     l_matrix.set_data(0, 0, -17);
     l_matrix.set_data(0, 1, 15.2);
@@ -649,8 +682,8 @@ bool test_my_matrix()
     l_ok &= check_max(l_matrix.max_sub_column(1, 2), std::make_tuple(6.0, 1u), "my_matrix::max_sub_column");
 
     {
-        my_matrix l_matrix3 = l_matrix.extract_matrix(1,2);
-        my_matrix l_matrix_ref(2,3);
+        my_matrix<double> l_matrix3 = l_matrix.extract_matrix(1,2);
+        my_matrix<double> l_matrix_ref(2,3);
         l_matrix_ref.set_data(0, 0, -17.0);
         l_matrix_ref.set_data(0, 1, 15.2);
         l_matrix_ref.set_data(0, 2, 3.0);
@@ -660,7 +693,7 @@ bool test_my_matrix()
         l_ok &= quicky_utils::quicky_test::check_expected(l_matrix_ref == l_matrix3, true, "my_matrix::extract_matrix()");
     }
     {
-        my_matrix l_matrix_ref(3,4);
+        my_matrix<double> l_matrix_ref(3,4);
         l_matrix_ref.set_data(0, 0, -17);
         l_matrix_ref.set_data(0, 1, 15.2);
         l_matrix_ref.set_data(0, 2, 10);
@@ -673,12 +706,12 @@ bool test_my_matrix()
         l_matrix_ref.set_data(2, 1, 5);
         l_matrix_ref.set_data(2, 2, 6);
         l_matrix_ref.set_data(2, 3, 7);
-        my_matrix l_matrix_copy(l_matrix);
+        my_matrix<double> l_matrix_copy(l_matrix);
         l_matrix_copy.swap_line(1, 2);
         l_ok &= quicky_utils::quicky_test::check_expected(l_matrix_ref == l_matrix_copy, true, "my_matrix::swap_line()");
     }
     {
-        my_matrix l_matrix_ref(3,4);
+        my_matrix<double> l_matrix_ref(3,4);
         l_matrix_ref.set_data(0, 0, -17);
         l_matrix_ref.set_data(0, 1, 10);
         l_matrix_ref.set_data(0, 2, 15.2);
@@ -691,12 +724,12 @@ bool test_my_matrix()
         l_matrix_ref.set_data(2, 1, 2);
         l_matrix_ref.set_data(2, 2, 9);
         l_matrix_ref.set_data(2, 3, -11);
-        my_matrix l_matrix_copy(l_matrix);
+        my_matrix<double> l_matrix_copy(l_matrix);
         l_matrix_copy.swap_column(1, 2);
         l_ok &= quicky_utils::quicky_test::check_expected(l_matrix_ref == l_matrix_copy, true, "my_matrix::swap_column()");
     }
     {
-        my_matrix l_op1(2,3);
+        my_matrix<double> l_op1(2,3);
         l_op1.set_data(0, 0, 1.0);
         l_op1.set_data(0, 1, 2.0);
         l_op1.set_data(0, 2, 3.0);
@@ -704,15 +737,15 @@ bool test_my_matrix()
         l_op1.set_data(1, 1, 5.0);
         l_op1.set_data(1, 2, 6.0);
 
-        my_matrix l_op2(3,1);
+        my_matrix<double> l_op2(3,1);
         l_op2.set_data(0, 0, 0.5);
         l_op2.set_data(1, 0, 1.5);
         l_op2.set_data(2, 0, 2.5);
 
-        my_matrix l_ref_result(2,1);
+        my_matrix<double> l_ref_result(2,1);
         l_ref_result.set_data(0, 0, 11.0);
         l_ref_result.set_data(1, 0, 24.5);
-        my_matrix l_mult = l_op1.mult(l_op2);
+        my_matrix<double> l_mult = l_op1.mult(l_op2);
         l_ok &= quicky_utils::quicky_test::check_expected(l_ref_result == l_mult, true, "my_matrix::mult()");
     }
     return l_ok;

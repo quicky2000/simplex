@@ -20,29 +20,31 @@
 
 #include "my_square_matrix.h"
 
+template <typename T>
 class SystemEquation
 {
   private:
-	my_square_matrix m_matrix;
-	my_matrix m_coef;
+	my_square_matrix<T> m_matrix;
+	my_matrix<T> m_coef;
 
   public:
 
 
-    SystemEquation(const my_square_matrix & p_matrix
-                  ,const my_matrix & p_coef
+    SystemEquation(const my_square_matrix<T> & p_matrix
+                  ,const my_matrix<T> & p_coef
                   );
 
-    my_matrix
+    my_matrix<T>
     solve();
 
     std::string to_string() const;
 };
 
 //-----------------------------------------------------------------------------
-SystemEquation::SystemEquation(const my_square_matrix & p_matrix
-                              ,const my_matrix & p_coef
-                              )
+template <typename T>
+SystemEquation<T>::SystemEquation(const my_square_matrix<T> & p_matrix
+                                 ,const my_matrix<T> & p_coef
+                                 )
 :m_matrix(p_matrix)
 ,m_coef(p_coef)
 {
@@ -53,18 +55,19 @@ SystemEquation::SystemEquation(const my_square_matrix & p_matrix
 }
 
 //-----------------------------------------------------------------------------
-my_matrix
-SystemEquation::solve()
+template <typename T>
+my_matrix<T>
+SystemEquation<T>::solve()
 {
     if(m_matrix.get_determ()==0)
     {
-        return my_matrix();
+        return my_matrix<T>();
     }
 
     unsigned int l_width = m_matrix.get_width();
     bool l_pivot;
-    std::tuple<double, unsigned int> l_max;
-    my_matrix l_result(l_width, 1);
+    std::tuple<T, unsigned int> l_max;
+    my_matrix<T> l_result(l_width, 1);
 
     // Matrix triangularisation
     for(unsigned int i = 0; i < l_width ; ++i)
@@ -83,7 +86,7 @@ SystemEquation::solve()
         {
             for(unsigned int i2 = i+1; i2 < l_width; ++i2)
             {
-                double m = m_matrix.get_data(i2, i) / m_matrix.get_data(i,i);
+                T m = m_matrix.get_data(i2, i) / m_matrix.get_data(i,i);
 
                 m_coef.set_data(i2, 0, m_coef.get_data(i2, 0) - m * m_coef.get_data(i,0));
                 for(unsigned int j = 0; j < l_width; ++j)
@@ -114,7 +117,8 @@ SystemEquation::solve()
 }
 
 //-----------------------------------------------------------------------------
-std::string SystemEquation::to_string() const
+template <typename T>
+std::string SystemEquation<T>::to_string() const
 {
     std::string l_string("dimension");
     l_string += std::to_string(m_matrix.get_width()) +"\n";
@@ -133,7 +137,7 @@ std::string SystemEquation::to_string() const
 bool test_equation_system()
 {
     bool l_ok =true;
-    my_square_matrix l_matrix(3);
+    my_square_matrix<double> l_matrix(3);
     l_matrix.set_data(0,0,1);
     l_matrix.set_data(0,1,1);
     l_matrix.set_data(0,2,1);
@@ -144,13 +148,13 @@ bool test_equation_system()
     l_matrix.set_data(2,1,-1);
     l_matrix.set_data(2,2,1);
 
-    my_matrix l_coef(3,1);
+    my_matrix<double> l_coef(3,1);
     l_coef.set_data(0,0,6);
     l_coef.set_data(1,0,4);
     l_coef.set_data(2,0,0);
 
-    SystemEquation l_system(l_matrix,l_coef);
-    my_matrix l_result = l_system.solve();
+    SystemEquation<double> l_system(l_matrix,l_coef);
+    my_matrix<double> l_result = l_system.solve();
 
     assert(l_result.get_height());
 
@@ -176,7 +180,7 @@ bool test_equation_system()
     l_matrix.set_data(2,0,0);
     l_matrix.set_data(2,1,0);
     l_matrix.set_data(2,2,0);
-    SystemEquation l_system2 = SystemEquation(l_matrix,l_coef);
+    SystemEquation<double> l_system2 = SystemEquation<double>(l_matrix,l_coef);
     l_result = l_system2.solve();
     l_ok &= quicky_utils::quicky_test::check_expected(l_result.get_height(), 0u, "equation_system::solve() No result");
     return l_ok;

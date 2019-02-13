@@ -20,7 +20,8 @@
 
 #include "my_matrix.h"
 
-class my_square_matrix: public my_matrix
+template <typename T>
+class my_square_matrix: public my_matrix<T>
 {
   public:
     my_square_matrix(unsigned int dimension);
@@ -28,7 +29,7 @@ class my_square_matrix: public my_matrix
     my_square_matrix
     get_transposed() const;
 
-    double get_determ() const;
+    T get_determ() const;
 
     my_square_matrix
     extract_square_matrix(unsigned int p_excluded_row_index
@@ -39,14 +40,16 @@ class my_square_matrix: public my_matrix
 };
 
 //-------------------------------------------------------------------------
-my_square_matrix::my_square_matrix(unsigned int dimension)
-:my_matrix(dimension,dimension)
+template <typename T>
+my_square_matrix<T>::my_square_matrix(unsigned int dimension)
+:my_matrix<T>(dimension,dimension)
 {
 }
 
 //-------------------------------------------------------------------------
-my_square_matrix
-my_square_matrix::get_transposed() const
+template <typename T>
+my_square_matrix<T>
+my_square_matrix<T>::get_transposed() const
 {
     unsigned int l_height = this->get_height();
     my_square_matrix l_transposed(l_height);
@@ -55,7 +58,7 @@ my_square_matrix::get_transposed() const
     {
         for(unsigned int l_column_index = 0; l_column_index < l_height; l_column_index++)
         {
-            l_transposed.set_data(l_row_index, l_column_index, get_data(l_column_index,l_row_index));
+            l_transposed.set_data(l_row_index, l_column_index, this->get_data(l_column_index,l_row_index));
         }
     }
     return(l_transposed);
@@ -63,15 +66,16 @@ my_square_matrix::get_transposed() const
 }
 
 //-------------------------------------------------------------------------
-double my_square_matrix::get_determ() const
+template <typename T>
+T my_square_matrix<T>::get_determ() const
 {
     unsigned int l_height = this->get_height();
     if(2 == l_height)
     {
-        return(get_data(0,0) * get_data(1,1) - get_data(0,1) * get_data(1,0));
+        return(this->get_data(0,0) * this->get_data(1,1) - this->get_data(0,1) * this->get_data(1,0));
     }
 
-    double l_determ = 0;
+    T l_determ = 0;
     bool l_column = false;
     unsigned int l_max = 0;
     // Search line and column having maximum number of zero to speed up computation
@@ -92,7 +96,7 @@ double my_square_matrix::get_determ() const
     {
         for (unsigned int l_column_index = 0; l_column_index < l_height ; ++l_column_index)
         {
-            if(0 == get_data(l_row_index,l_column_index))
+            if(0 == this->get_data(l_row_index,l_column_index))
             {
                 l_number_line[l_row_index]++;
                 l_number_column[l_column_index]++;
@@ -132,7 +136,7 @@ double my_square_matrix::get_determ() const
     {
         for(unsigned int l_row_index = 0; l_row_index < l_height; ++l_row_index)
         {
-            double l_coef = get_data(l_row_index, l_column_max);
+            T l_coef = this->get_data(l_row_index, l_column_max);
             if(0 != l_coef)
             {
                 my_square_matrix l_extracted_matrix = extract_square_matrix(l_row_index, l_column_max);
@@ -144,7 +148,7 @@ double my_square_matrix::get_determ() const
     {
         for(unsigned int l_column_index = 0; l_column_index < l_height; ++l_column_index)
         {
-            double l_coef = get_data(l_line_max, l_column_index);
+            T l_coef = this->get_data(l_line_max, l_column_index);
             if(0 != l_coef)
             {
                 my_square_matrix l_extracted_matrix = extract_square_matrix(l_line_max, l_column_index);
@@ -157,10 +161,11 @@ double my_square_matrix::get_determ() const
 }
 
 //-----------------------------------------------------------------------------
-my_square_matrix
-my_square_matrix::extract_square_matrix(unsigned int p_excluded_row_index
-                                       ,unsigned int p_excluded_column_index
-                                       ) const
+template <typename T>
+my_square_matrix<T>
+my_square_matrix<T>::extract_square_matrix(unsigned int p_excluded_row_index
+                                          ,unsigned int p_excluded_column_index
+                                          ) const
 {
     unsigned int l_height = this->get_height();
     my_square_matrix extractedMatrix(l_height - 1);
@@ -173,7 +178,7 @@ my_square_matrix::extract_square_matrix(unsigned int p_excluded_row_index
         {
             if(l_row_index != p_excluded_row_index && l_column_index != p_excluded_column_index)
             {
-                extractedMatrix.set_data(l_extracted_row_index, l_extracted_column_index, get_data(l_row_index, l_column_index));
+                extractedMatrix.set_data(l_extracted_row_index, l_extracted_column_index, this->get_data(l_row_index, l_column_index));
             }
             if(l_column_index != p_excluded_column_index)
             {
@@ -193,7 +198,7 @@ my_square_matrix::extract_square_matrix(unsigned int p_excluded_row_index
 bool test_square_matrix()
 {
     bool l_ok = true;
-    my_square_matrix l_matrix(3);
+    my_square_matrix<double> l_matrix(3);
     l_matrix.set_data(0, 0, -1.0);
     l_matrix.set_data(0, 1, 2.0);
     l_matrix.set_data(0, 2, 5.0);
@@ -213,12 +218,12 @@ bool test_square_matrix()
     l_matrix.set_data(2, 2, 0.0);
     l_ok &= quicky_utils::quicky_test::check_expected(l_matrix.get_determ(), 32.0, "my_square_matrix::get_determ()");
 
-    my_square_matrix l_extracted_ref(2);
+    my_square_matrix<double> l_extracted_ref(2);
     l_extracted_ref.set_data(0, 0, 0.0);
     l_extracted_ref.set_data(0, 1, 8.0);
     l_extracted_ref.set_data(1, 0, 0.0);
     l_extracted_ref.set_data(1, 1, 0.0);
-    my_square_matrix l_extracted = l_matrix.extract_square_matrix(0, 1);
+    my_square_matrix<double> l_extracted = l_matrix.extract_square_matrix(0, 1);
     l_ok &= quicky_utils::quicky_test::check_expected(l_extracted == l_extracted_ref, true, "my_square_matrix::extract_square_matrix()");
 
     l_matrix.set_data(0,0,100);
@@ -233,14 +238,14 @@ bool test_square_matrix()
     l_ok &= quicky_utils::quicky_test::check_expected(l_matrix.get_determ(), 1000000.0, "my_square_matrix::get_determ()");
 
     {
-        my_square_matrix l_small_matrix(2);
+        my_square_matrix<double> l_small_matrix(2);
         l_small_matrix.set_data(0, 0, 0);
         l_small_matrix.set_data(0, 1, 1);
         l_small_matrix.set_data(1, 0, 2);
         l_small_matrix.set_data(1, 1, 3);
-        my_square_matrix l_transposed = l_small_matrix.get_transposed();
+        my_square_matrix<double> l_transposed = l_small_matrix.get_transposed();
 
-        my_square_matrix l_reference(2);
+        my_square_matrix<double> l_reference(2);
         l_reference.set_data(0, 0, 0);
         l_reference.set_data(1, 0, 1);
         l_reference.set_data(0, 1, 2);
