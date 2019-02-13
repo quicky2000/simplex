@@ -79,8 +79,8 @@ T my_square_matrix<T>::get_determ() const
     bool l_column = false;
     unsigned int l_max = 0;
     // Search line and column having maximum number of zero to speed up computation
-    int l_line_max = 0;
-    int l_column_max = 0;
+    unsigned int l_line_max = 0;
+    unsigned int l_column_max = 0;
     unsigned int * l_number_line = new unsigned int[l_height];
     unsigned int * l_number_column = new unsigned int[l_height];
 
