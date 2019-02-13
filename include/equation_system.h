@@ -33,7 +33,8 @@ class SystemEquation
                   ,const my_matrix & p_coef
                   );
 
-    double * solve();
+    my_matrix
+    solve();
 
     std::string to_string() const;
 };
@@ -52,17 +53,18 @@ SystemEquation::SystemEquation(const my_square_matrix & p_matrix
 }
 
 //-----------------------------------------------------------------------------
-double * SystemEquation::solve()
+my_matrix
+SystemEquation::solve()
 {
     if(m_matrix.get_determ()==0)
     {
-        return(NULL);
+        return my_matrix();
     }
 
     unsigned int l_width = m_matrix.get_width();
     bool l_pivot;
     std::tuple<double, unsigned int> l_max;
-    double * l_result= new double[l_width];
+    my_matrix l_result(l_width, 1);
 
     // Matrix triangularisation
     for(unsigned int i = 0; i < l_width ; ++i)
@@ -102,10 +104,10 @@ double * SystemEquation::solve()
     // Triangular system resolution
     for(unsigned int j = l_width - 1; j < l_width; --j)
     {
-        l_result[j] = m_coef.get_data(j, 0) / m_matrix.get_data(j,j);
+        l_result.set_data(j, 0, m_coef.get_data(j, 0) / m_matrix.get_data(j,j));
         for(unsigned int i = j + 1; i < l_width; ++i)
         {
-            l_result[j] = l_result[j] - (l_result[i] * m_matrix.get_data(j,i)) / m_matrix.get_data(j,j);
+            l_result.set_data(j, 0, l_result.get_data(j, 0) - (l_result.get_data(i, 0) * m_matrix.get_data(j,i)) / m_matrix.get_data(j,j));
         }
     }
     return(l_result);
@@ -148,12 +150,13 @@ bool test_equation_system()
     l_coef.set_data(2,0,0);
 
     SystemEquation l_system(l_matrix,l_coef);
-    double * l_result = l_system.solve();
+    my_matrix l_result = l_system.solve();
 
-    assert(l_result);
-    l_ok &= quicky_utils::quicky_test::check_expected(l_result[0], 1.0, "Variable[0]");
-    l_ok &= quicky_utils::quicky_test::check_expected(l_result[1], 2.0, "Variable[1]");
-    l_ok &= quicky_utils::quicky_test::check_expected(l_result[2], 3.0, "Variable[2]");
+    assert(l_result.get_height());
+
+    l_ok &= quicky_utils::quicky_test::check_expected(l_result.get_data(0, 0), 1.0, "Variable[0]");
+    l_ok &= quicky_utils::quicky_test::check_expected(l_result.get_data(1, 0), 2.0, "Variable[1]");
+    l_ok &= quicky_utils::quicky_test::check_expected(l_result.get_data(2, 0), 3.0, "Variable[2]");
 
     std::cout << "Equation Matrix :" << std::endl;
     std::cout << l_matrix.to_string();
@@ -165,21 +168,17 @@ bool test_equation_system()
     std::cout << l_system.to_string();
 
 
-    if(l_result != NULL)
+    for(unsigned int i = 0; i < l_result.get_height();++i)
     {
-        for(unsigned int i = 0; i < l_coef.get_height();++i)
-        {
-            std::cout << "Result[" << std::to_string(i) << "] : " << l_result[i] << std::endl;
-        }
+        std::cout << "Result[" << std::to_string(i) << "] : " << l_result.get_data(i, 0) << std::endl;
     }
-    delete[] l_result;
 
     l_matrix.set_data(2,0,0);
     l_matrix.set_data(2,1,0);
     l_matrix.set_data(2,2,0);
     SystemEquation l_system2 = SystemEquation(l_matrix,l_coef);
     l_result = l_system2.solve();
-    l_ok &= quicky_utils::quicky_test::check_expected(l_result, (double*)NULL, "equation_system::solve() No result");
+    l_ok &= quicky_utils::quicky_test::check_expected(l_result.get_height(), 0u, "equation_system::solve() No result");
     return l_ok;
 }
 #endif // SIMPLEX_SELF_TEST
