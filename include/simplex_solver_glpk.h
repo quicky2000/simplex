@@ -89,6 +89,9 @@ namespace simplex
         static inline
         int convert(const simplex::equation_type & p_equation_type);
 
+        static inline
+        std::string status_to_string(int p_status);
+
         glp_prob * m_problem;
         double * m_B_coefs;
         simplex::equation_type * m_equation_types;
@@ -232,7 +235,7 @@ namespace simplex
         }
         glp_set_obj_dir(m_problem, GLP_MAX);
         glp_simplex(m_problem, NULL);
-        std::cout << "STATUS= " << glp_get_status(m_problem) << std::endl;
+        std::cout << "STATUS= " << status_to_string(glp_get_status(m_problem)) << std::endl;
         for (unsigned int l_index = 0;
              l_index < m_nb_variables;
              ++l_index
@@ -263,6 +266,28 @@ namespace simplex
                 return GLP_FR;
 
         }
+    }
+
+    //-------------------------------------------------------------------------
+    std::string
+    simplex_solver_glpk::status_to_string(int p_status)
+    {
+        switch(p_status)
+        {
+            case GLP_OPT:
+                return "Optimal solution";
+            case GLP_FEAS:
+                return "Feasible solution";
+            case GLP_INFEAS:
+                return "Ineasible solution";
+            case GLP_NOFEAS:
+                return "No feasible solution";
+            case GLP_UNBND:
+                return "Unbounded solution";
+            case GLP_UNDEF:
+                return "Undefined solution";
+        }
+        throw quicky_exception::quicky_logic_exception("Uknown GLPK solver status: " + std::to_string(p_status), __LINE__, __FILE__);
     }
 
 }
