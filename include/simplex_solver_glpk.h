@@ -226,9 +226,9 @@ namespace simplex
                 ++l_index;
             }
             glp_load_matrix(m_problem, m_A_coefs.size(), l_equation_index_list, l_variable_index_list, l_coef_list);
-            //delete[] l_equation_index_list;
-            //delete[] l_variable_index_list;
-            //delete[] l_coef_list;
+            delete[] l_equation_index_list;
+            delete[] l_variable_index_list;
+            delete[] l_coef_list;
         }
         glp_set_obj_dir(m_problem, GLP_MAX);
         glp_simplex(m_problem, NULL);
