@@ -235,7 +235,11 @@ namespace simplex
             delete[] l_coef_list;
         }
         glp_set_obj_dir(m_problem, GLP_MAX);
-        glp_simplex(m_problem, NULL);
+        glp_smcp l_solver_parameters;
+        glp_init_smcp(&l_solver_parameters);
+        l_solver_parameters.out_frq = 1;
+        l_solver_parameters.msg_lev = GLP_MSG_ALL;
+        glp_simplex(m_problem, &l_solver_parameters);
         std::cout << "STATUS= " << status_to_string(glp_get_status(m_problem)) << std::endl;
         for (unsigned int l_index = 0;
              l_index < m_nb_variables;
