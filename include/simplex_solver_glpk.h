@@ -23,6 +23,7 @@
 #include <string>
 #include <map>
 #include <cstring>
+#include <cassert>
 
 namespace simplex
 {
