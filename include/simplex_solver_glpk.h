@@ -287,8 +287,9 @@ namespace simplex
                 return "Unbounded solution";
             case GLP_UNDEF:
                 return "Undefined solution";
+            default:
+                throw quicky_exception::quicky_logic_exception("Uknown GLPK solver status: " + std::to_string(p_status), __LINE__, __FILE__);
         }
-        throw quicky_exception::quicky_logic_exception("Uknown GLPK solver status: " + std::to_string(p_status), __LINE__, __FILE__);
     }
 
 }
