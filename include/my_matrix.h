@@ -679,15 +679,14 @@ namespace simplex
 //-------------------------------------------------------------------------
     template <typename T>
     my_matrix<T>::my_matrix(const my_matrix & p_matrix)
-            :
-            m_width(p_matrix.m_width),
-            m_height(p_matrix.m_height),
-            m_data(new T[m_width * m_height])
+            :m_width(p_matrix.m_width)
+            ,m_height(p_matrix.m_height)
+            ,m_data(new T[m_width * m_height])
     {
-        memcpy(m_data,
-               p_matrix.m_data,
-               sizeof(T) * m_width * m_height
-              );
+       for(unsigned int l_index = 0; l_index < m_width * m_height; ++l_index)
+       {
+           m_data[l_index] = p_matrix.m_data[l_index];
+       }
     }
 
 //-------------------------------------------------------------------------
@@ -744,10 +743,10 @@ namespace simplex
         m_height = p_matrix.m_height;
         delete[] m_data;
         m_data = new T[m_width * m_height];
-        memcpy(m_data,
-               p_matrix.m_data,
-               m_width * m_height * sizeof(T)
-              );
+        for(unsigned int l_index = 0; l_index < m_width * m_height; ++l_index)
+        {
+            m_data[l_index] = p_matrix.m_data[l_index];
+        }
         return *this;
     }
 
