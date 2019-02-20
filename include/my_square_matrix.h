@@ -143,7 +143,7 @@ namespace simplex
                 if (0 != l_coef)
                 {
                     my_square_matrix l_extracted_matrix = extract_square_matrix(l_row_index, l_column_max);
-                    l_determ += l_coef * pow(-1, l_row_index) * pow(-1, l_column_max) * l_extracted_matrix.get_determ();
+                    l_determ += l_coef * (T)(((l_row_index + l_column_max) % 2) ? -1 : 1)* l_extracted_matrix.get_determ();
                 }
             }
         }
@@ -155,7 +155,7 @@ namespace simplex
                 if (0 != l_coef)
                 {
                     my_square_matrix l_extracted_matrix = extract_square_matrix(l_line_max, l_column_index);
-                    l_determ += l_coef * pow(-1, l_column_index) * pow(-1, l_line_max) * l_extracted_matrix.get_determ();
+                    l_determ += l_coef * (T)(((l_column_index + l_line_max) % 2) ? -1 : 1) * l_extracted_matrix.get_determ();
                 }
             }
         }
