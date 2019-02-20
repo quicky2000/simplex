@@ -20,6 +20,7 @@
 
 #include "simplex_listener.h"
 #include "quicky_exception.h"
+#include "equation_system.h"
 #include <sstream>
 #include <limits>
 #include <vector>
@@ -37,7 +38,7 @@ namespace simplex
     } t_equation_type;
 
     template <typename COEF_TYPE,typename ARRAY_TYPE>
-    class simplex_solver_base: public simplex_listener_target_if
+    class simplex_solver_base: public simplex_listener_target_if<COEF_TYPE>
     {
       public:
         typedef COEF_TYPE t_coef_type;
@@ -107,6 +108,12 @@ namespace simplex
          * @return the modified stream
          */
         inline std::ostream & display_array(std::ostream & p_stream)const override;
+
+        /**
+         * Return value of variables
+         * @return value of variables
+         */
+        std::vector<COEF_TYPE> get_variable_values() const override;
 
         /**
          * Define equation type
@@ -869,6 +876,36 @@ namespace simplex
             }
         }
         return true;
+    }
+
+    //-------------------------------------------------------------------------
+    template <typename COEF_TYPE, typename ARRAY_TYPE>
+    std::vector<COEF_TYPE>
+    simplex_solver_base<COEF_TYPE, ARRAY_TYPE>::get_variable_values() const
+    {
+        std::vector<COEF_TYPE> l_result(m_nb_variables, (COEF_TYPE)0);
+        my_square_matrix<COEF_TYPE> l_matrix(m_nb_equations);
+        my_matrix<COEF_TYPE> l_coefs(m_nb_equations, 1);
+        // Create Equation system
+        for(unsigned int l_equation_index = 0; l_equation_index < m_nb_equations; ++l_equation_index)
+        {
+            for(unsigned int l_variable_index = 0; l_variable_index < m_nb_equations; ++l_variable_index)
+            {
+                l_matrix.set_data(l_equation_index, l_variable_index, m_array.get_A_coef(l_equation_index, get_base_variable(l_variable_index)));
+            }
+            l_coefs.set_data(l_equation_index, 0, m_array.get_B_coef(l_equation_index));
+        }
+        my_equation_system<COEF_TYPE> l_equation_system(l_matrix, l_coefs);
+
+        my_matrix<COEF_TYPE> l_result_matrix = l_equation_system.solve();
+        assert(l_result_matrix.get_height() == m_nb_equations);
+
+        // Fill result
+        for(unsigned int l_index = 0; l_index < m_nb_equations; ++l_index)
+        {
+            l_result[get_base_variable(l_index)] = l_result_matrix.get_data(l_index, 0);
+        }
+        return l_result;
     }
 }
 #endif //SIMPLEX_SOLVER_BASE_H

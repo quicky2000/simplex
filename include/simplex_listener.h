@@ -27,7 +27,7 @@ namespace simplex
   class simplex_listener
   {
     public:
-    inline simplex_listener(const simplex_listener_target_if & p_simplex,
+    inline simplex_listener(const simplex_listener_target_if<COEF_TYPE> & p_simplex,
 			                std::ostream & p_ostream = std::cout
 			               );
     inline void start_iteration(const unsigned int & p_nb_iteration);
@@ -36,14 +36,14 @@ namespace simplex
     inline void new_Z0(COEF_TYPE p_z0);
     private:
     unsigned int m_nb_iteration;
-    const simplex_listener_target_if & m_simplex;
+    const simplex_listener_target_if<COEF_TYPE> & m_simplex;
     std::ostream & m_ostream;
     bool m_start;
   };
 
   //----------------------------------------------------------------------------
   template <typename COEF_TYPE>
-  simplex_listener<COEF_TYPE>::simplex_listener(const simplex_listener_target_if & p_simplex,
+  simplex_listener<COEF_TYPE>::simplex_listener(const simplex_listener_target_if<COEF_TYPE> & p_simplex,
 							                    std::ostream & p_ostream
 							                   ):
     m_nb_iteration(0),
@@ -70,7 +70,7 @@ namespace simplex
   void simplex_listener<COEF_TYPE>::new_input_var_event(const unsigned int & p_input_variable_index
 					     )
   {
-    m_ostream << "Iteration[" << m_nb_iteration << "] : New input variable selected : " << p_input_variable_index << std::endl;
+      m_ostream << "Iteration[" << m_nb_iteration << "] : New input variable selected : " << p_input_variable_index << std::endl;
   }
   
   //----------------------------------------------------------------------------
@@ -87,6 +87,11 @@ namespace simplex
   {
     m_ostream << "Iteration[" << m_nb_iteration << "] : New Z0 : " << p_z0 << std::endl;
     m_simplex.display_array(m_ostream);
+    std::vector<COEF_TYPE> l_values = m_simplex.get_variable_values();
+    for(unsigned int l_index = 0; l_index < l_values.size(); ++l_index)
+    {
+        m_ostream << "Iteration[" << m_nb_iteration << "] : Variable value[" << l_index << "] = " << l_values[l_index] << std::endl;
+    }
   }
 
 }

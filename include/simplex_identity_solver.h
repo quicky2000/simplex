@@ -35,7 +35,7 @@ namespace simplex
      * @tparam COEF_TYPE Type of array coef
      */
     template <typename COEF_TYPE>
-    class simplex_identity_solver: public simplex_listener_target_if
+    class simplex_identity_solver: public simplex_listener_target_if<COEF_TYPE>
     {
       public:
         /**
@@ -90,6 +90,12 @@ namespace simplex
          * @return the modified stream
          */
         std::ostream & display_array(std::ostream & p_stream)const override;
+
+        /**
+         * Return value of variables
+         * @return value of variables
+         */
+        std::vector<COEF_TYPE> get_variable_values() const override;
 
         /**
          * Method implementing simplex algorithm to find max optimum solution
@@ -694,5 +700,21 @@ namespace simplex
             m_array.set_A_coef(p_row_index, l_column_index, m_array.get_A_coef(p_row_index, l_column_index) - (p_q * l_u) / p_pivot);
         }
     }
+
+    //-------------------------------------------------------------------------
+    template <typename COEF_TYPE>
+    std::vector<COEF_TYPE> simplex_identity_solver<COEF_TYPE>::get_variable_values() const
+    {
+        std::vector<COEF_TYPE> l_result(m_array.get_nb_variables(), 0);
+        for(unsigned int l_index = 0; l_index < m_array.get_nb_equations(); ++l_index)
+        {
+            if(m_base_variables_index[l_index] < m_array.get_nb_variables())
+            {
+                l_result[m_base_variables_index[l_index]] = m_array.get_B_coef(l_index);
+            }
+        }
+        return l_result;
+    }
+
 }
 #endif //SIMPLEX_SIMPLEX_IDENTITY_SOLVER_H

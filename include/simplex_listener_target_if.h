@@ -19,16 +19,19 @@
 #define SIMPLEX_SIMPLEX_LISTENER_TARGET_IF_H
 
 #include <iostream>
+#include <vector>
 
 namespace simplex
 {
     /**
      * Interface class that should be implement by objects passed as parameters to simplex_listener
      */
+    template <typename COEF_TYPE>
     class simplex_listener_target_if
     {
       public:
         virtual std::ostream & display_array(std::ostream & p_stream) const = 0;
+        virtual std::vector<COEF_TYPE> get_variable_values() const = 0;
       private:
     };
 }
