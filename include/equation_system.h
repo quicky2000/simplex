@@ -99,7 +99,7 @@ namespace simplex
                     {
                         if (j == i)
                         {
-                            m_matrix.set_data(i2, j, 0);
+                            m_matrix.set_data(i2, j, (T)0);
                         }
                         else
                         {

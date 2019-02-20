@@ -78,7 +78,7 @@ namespace simplex
             return (this->get_data(0, 0) * this->get_data(1, 1) - this->get_data(0, 1) * this->get_data(1, 0));
         }
 
-        T l_determ = 0;
+        T l_determ{0};
         bool l_column = false;
         unsigned int l_max = 0;
         // Search line and column having maximum number of zero to speed up computation
@@ -131,7 +131,7 @@ namespace simplex
 
         if (l_max == l_height)
         {
-            return 0;
+            return (T)0;
         }
 
         // Recursive computation
