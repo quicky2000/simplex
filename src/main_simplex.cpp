@@ -45,6 +45,8 @@ template <typename SIMPLEX_TYPE>
 bool
 test_case3(const std::string & p_suffix);
 
+bool test_simplex_identity_solver();
+
 using namespace quicky_utils;
 using namespace simplex;
 
@@ -59,39 +61,7 @@ int main(int argc,char ** argv)
         l_ok &= test_square_matrix();
         l_ok &= test_equation_system();
 
-        // Example
-        // Max Z -1 * X1 - 4 * X2 - 3 * X3           = 0
-        //        2 * X1 + 2 * X2 + 1 * X3 + E1      = 4
-        //            X1 + 2 * X2 + 2 * X3 +    + E2 = 6
-        simplex::simplex_identity_solver<double> l_identity_solver(3,2);
-        l_identity_solver.set_Z_coef(0, 1);
-        l_identity_solver.set_Z_coef(1, 4);
-        l_identity_solver.set_Z_coef(2, 3);
-        l_identity_solver.set_B_coef(0, 4);
-        l_identity_solver.set_B_coef(1, 6);
-        l_identity_solver.set_A_coef(0, 0, 2);
-        l_identity_solver.set_A_coef(0, 1, 2);
-        l_identity_solver.set_A_coef(0, 2, 1);
-        l_identity_solver.set_A_coef(1, 0, 1);
-        l_identity_solver.set_A_coef(1, 1, 2);
-        l_identity_solver.set_A_coef(1, 2, 2);
-        l_identity_solver.display_array(std::cout);
-
-        double l_max = 0;
-        bool l_infinite = false;
-        simplex::simplex_listener<double> l_listener(l_identity_solver);
-        if(l_identity_solver.find_max(l_max,l_infinite,&l_listener))
-        {
-            std::cout << "Max = " << l_max << std::endl ;
-        }
-        else if(l_infinite)
-        {
-            std::cout << "Inifinite Max" << std::endl;
-        }
-        else
-        {
-            std::cout << "No Max found !?" << std::endl;
-        }
+        l_ok &= test_simplex_identity_solver();
 
         std::cout << "============ TEST CASE 1 ==============" << std::endl;
         l_ok &= test_case1<simplex::simplex_solver<double>>();
@@ -953,5 +923,44 @@ test_case3(const std::string & p_suffix)
     return l_ok;
 }
 
+bool test_simplex_identity_solver()
+{
+    bool l_ok = true;
+    // Example
+    // Max Z -1 * X1 - 4 * X2 - 3 * X3           = 0
+    //        2 * X1 + 2 * X2 + 1 * X3 + E1      = 4
+    //            X1 + 2 * X2 + 2 * X3 +    + E2 = 6
+    simplex::simplex_identity_solver<double> l_identity_solver(3,2);
+    l_identity_solver.set_Z_coef(0, 1);
+    l_identity_solver.set_Z_coef(1, 4);
+    l_identity_solver.set_Z_coef(2, 3);
+    l_identity_solver.set_B_coef(0, 4);
+    l_identity_solver.set_B_coef(1, 6);
+    l_identity_solver.set_A_coef(0, 0, 2);
+    l_identity_solver.set_A_coef(0, 1, 2);
+    l_identity_solver.set_A_coef(0, 2, 1);
+    l_identity_solver.set_A_coef(1, 0, 1);
+    l_identity_solver.set_A_coef(1, 1, 2);
+    l_identity_solver.set_A_coef(1, 2, 2);
+    l_identity_solver.display_array(std::cout);
+
+    double l_max = 0;
+    bool l_infinite = false;
+    simplex::simplex_listener<double> l_listener(l_identity_solver);
+    if(l_identity_solver.find_max(l_max,l_infinite,&l_listener))
+    {
+        std::cout << "Max = " << l_max << std::endl ;
+    }
+    else if(l_infinite)
+    {
+        std::cout << "Inifinite Max" << std::endl;
+    }
+    else
+    {
+        std::cout << "No Max found !?" << std::endl;
+    }
+    l_ok &= quicky_test::check_expected(l_max, 10.0, "Result of test_simplex_identity_solver");
+    return l_ok;
+}
 #endif // SIMPLEX_SELF_TEST
 //EOF
