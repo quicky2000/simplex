@@ -87,6 +87,23 @@ namespace simplex
                 );
 
       private:
+        /**
+         * Method to intercept terminal output from GLPK
+         * @param p_info additional info provided when registering hook ( this)
+         * @param p_msg message send to terminal by GLPK
+         * @return 0 to let GPLK display message, something else to not display
+         */
+        static inline
+        int terminal_hook(void *p_info
+                         ,const char *p_msg
+                         );
+
+        /**
+         * Method treating messages sent by GLPK to terminal output
+         * @param p_msg message to be analyzed
+         */
+        void treat_message(const std::string & p_msg);
+
         static inline
         int convert(const simplex::equation_type & p_equation_type);
 
@@ -239,6 +256,10 @@ namespace simplex
         glp_init_smcp(&l_solver_parameters);
         l_solver_parameters.out_frq = 1;
         l_solver_parameters.msg_lev = GLP_MSG_ALL;
+
+        // Intercept terminal outputs
+        glp_term_hook(simplex_solver_glpk::terminal_hook, this);
+
         glp_simplex(m_problem, &l_solver_parameters);
         std::cout << "STATUS= " << status_to_string(glp_get_status(m_problem)) << std::endl;
         for (unsigned int l_index = 0;
@@ -294,6 +315,47 @@ namespace simplex
             default:
                 throw quicky_exception::quicky_logic_exception("Uknown GLPK solver status: " + std::to_string(p_status), __LINE__, __FILE__);
         }
+    }
+
+    //-------------------------------------------------------------------------
+    int
+    simplex_solver_glpk::terminal_hook(void *p_info
+                                      ,const char *p_msg
+                                      )
+    {
+        static_cast<simplex_solver_glpk*>(p_info)->treat_message(p_msg);
+        return 1;
+    }
+
+    //-------------------------------------------------------------------------
+    void
+    simplex_solver_glpk::treat_message(const std::string & p_msg)
+    {
+        std::cout << "Message : " << p_msg;
+        size_t l_pos = p_msg.find(':');
+
+        // Check if we are in step message
+        if(std::string::npos == l_pos)
+        {
+            return;
+        }
+        // We start at second character as first one indicate the phase of simplex method
+        unsigned long l_step = std::stoul(p_msg.substr(1, l_pos - 1));
+
+        l_pos = p_msg.find('=', l_pos);
+        assert(std::string::npos != l_pos);
+        // Skip spaces
+        l_pos = p_msg.find_first_not_of(" \t", l_pos + 1);
+        assert(std::string::npos != l_pos);
+        std::string l_substr(p_msg.substr(l_pos));
+
+        l_pos = l_substr.find("inf");
+        assert(std::string::npos != l_pos);
+
+        std::string l_objective_str = l_substr.substr(0, l_pos);
+        double l_objective = std::stod(l_objective_str);
+        std::cout << "Step: " << l_step << "\tObjective : " << l_objective << std::endl;
+
     }
 
 }
