@@ -18,6 +18,7 @@
 #ifndef SIMPLEX_SOLVER_GLPK_H
 #define SIMPLEX_SOLVER_GLPK_H
 
+#include "simplex_listener_target_if.h"
 #include "simplex_solver_base.h"
 #include "glpk.h"
 #include <string>
@@ -27,7 +28,7 @@
 
 namespace simplex
 {
-    class simplex_solver_glpk
+    class simplex_solver_glpk: public simplex_listener_target_if<double>
     {
       public:
         inline simplex_solver_glpk(unsigned int p_nb_variables
@@ -86,6 +87,18 @@ namespace simplex
                 ,bool & p_infinite
                 );
 
+        /**
+         * Return values of variable at current iteration
+         * @return
+         */
+        std::vector<double> get_variable_values() const override;
+
+        /**
+         * Supposed to display array content
+         * @param p_stream
+         * @return
+         */
+        std::ostream & display_array(std::ostream & p_stream) const override;
       private:
         /**
          * Method to intercept terminal output from GLPK
@@ -355,7 +368,32 @@ namespace simplex
         std::string l_objective_str = l_substr.substr(0, l_pos);
         double l_objective = std::stod(l_objective_str);
         std::cout << "Step: " << l_step << "\tObjective : " << l_objective << std::endl;
+    }
 
+    //-------------------------------------------------------------------------
+    std::vector<double>
+    simplex_solver_glpk::get_variable_values() const
+    {
+        assert(m_problem);
+        assert(GLP_FEAS == glp_get_status(m_problem));
+        std::vector<double> l_result;
+        for (unsigned int l_index = 0;
+             l_index < m_nb_variables;
+             ++l_index
+                )
+        {
+            l_result.push_back(glp_get_col_prim(m_problem, 1 + l_index));
+        }
+        return l_result;
+    }
+
+    //-------------------------------------------------------------------------
+    std::ostream &
+    simplex_solver_glpk::display_array(std::ostream & p_stream) const
+    {
+        // Not implemented because don't know how to access coefficients at
+        // this time
+        return p_stream;
     }
 
 }
