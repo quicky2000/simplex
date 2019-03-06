@@ -278,22 +278,34 @@ namespace simplex
         glp_set_obj_dir(m_problem, GLP_MAX);
         glp_smcp l_solver_parameters;
         glp_init_smcp(&l_solver_parameters);
-        l_solver_parameters.out_frq = 1;
-        l_solver_parameters.msg_lev = GLP_MSG_ALL;
 
-        // Intercept terminal outputs
-        glp_term_hook(simplex_solver_glpk::terminal_hook, this);
-
-        glp_simplex(m_problem, &l_solver_parameters);
-        std::cout << "STATUS= " << status_to_string(glp_get_status(m_problem)) << std::endl;
-        for (unsigned int l_index = 0;
-             l_index < m_nb_variables;
-             ++l_index
-                )
+        if(m_listener)
         {
-            std::cout << glp_get_col_prim(m_problem, 1 + l_index) << std::endl;
+            // Intercept terminal outputs
+            glp_term_hook(simplex_solver_glpk::terminal_hook, this);
+            l_solver_parameters.out_frq = 1;
+            l_solver_parameters.msg_lev = GLP_MSG_ALL;
+
+            // Limit number of iteration because we saw in treat_message that
+            // variable values are not accessible during call of GLPK solver
+            // By this way we will got out of solver when iteration limit is
+            // reached an be able to access to variable values
+            l_solver_parameters.it_lim = 1;
         }
 
+        do
+        {
+            glp_simplex(m_problem, &l_solver_parameters);
+            std::cout << "STATUS= " << status_to_string(glp_get_status(m_problem)) << std::endl;
+            for (unsigned int l_index = 0;
+                 l_index < m_nb_variables;
+                 ++l_index
+                )
+            {
+                std::cout << "Var[" << l_index << "] = " << glp_get_col_prim(m_problem, 1 + l_index) << std::endl;
+            }
+        }
+        while(GLP_FEAS == glp_get_status(m_problem));
         p_max = glp_get_obj_val(m_problem);
         m_listener = NULL;
         return true;
