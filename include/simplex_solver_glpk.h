@@ -138,6 +138,11 @@ namespace simplex
          * Member value to be accessible from treat_message method
          */
         simplex_listener<double> * m_listener;
+
+        /**
+         * Store iteration number
+         */
+        uint64_t m_iteration;
     };
 
     //-------------------------------------------------------------------------
@@ -151,6 +156,7 @@ namespace simplex
     , m_nb_variables(p_nb_variables)
     , m_prepared(false)
     , m_listener(nullptr)
+    , m_iteration(0)
     {
         glp_set_prob_name(m_problem, "Problem");
         glp_add_rows(m_problem, p_nb_equations);
@@ -221,6 +227,7 @@ namespace simplex
                                  )
     {
         m_listener = p_listener;
+        m_iteration = 0;
         if(!m_prepared)
         {
             // Complete problem description
@@ -281,7 +288,7 @@ namespace simplex
 
         if(m_listener)
         {
-            // Intercept terminal outputs
+            // Intercept terminal outputs to get iteration number
             glp_term_hook(simplex_solver_glpk::terminal_hook, this);
             l_solver_parameters.out_frq = 1;
             l_solver_parameters.msg_lev = GLP_MSG_ALL;
@@ -378,6 +385,16 @@ namespace simplex
         }
         // We start at second character as first one indicate the phase of simplex method
         unsigned long l_step = std::stoul(p_msg.substr(1, l_pos - 1));
+
+        assert(m_listener);
+        if(m_iteration == l_step)
+        {
+            m_listener->start_iteration(l_step);
+        }
+        else
+        {
+            m_iteration = l_step;
+        }
 
         l_pos = p_msg.find('=', l_pos);
         assert(std::string::npos != l_pos);
