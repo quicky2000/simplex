@@ -307,7 +307,9 @@ namespace simplex
             {
                 m_listener->new_Z0(glp_get_obj_val(m_problem));
             }
+#ifdef DEBUG_SIMPLEX_SOLVER_GLPK
             std::cout << "STATUS= " << status_to_string(glp_get_status(m_problem)) << std::endl;
+#endif // DEBUG_SIMPLEX_SOLVER_GLPK
         }
         while(GLP_FEAS == glp_get_status(m_problem));
         p_max = glp_get_obj_val(m_problem);
@@ -372,7 +374,9 @@ namespace simplex
     void
     simplex_solver_glpk::treat_message(const std::string & p_msg)
     {
+#ifdef DEBUG_SIMPLEX_SOLVER_GLPK
         std::cout << "Message : " << p_msg;
+#endif // DEBUG_SIMPLEX_SOLVER_GLPK
         size_t l_pos = p_msg.find(':');
 
         // Check if we are in step message
@@ -393,6 +397,7 @@ namespace simplex
             m_iteration = l_step;
         }
 
+#ifdef DEBUG_SIMPLEX_SOLVER_GLPK
         l_pos = p_msg.find('=', l_pos);
         assert(std::string::npos != l_pos);
         // Skip spaces
@@ -406,6 +411,7 @@ namespace simplex
         std::string l_objective_str = l_substr.substr(0, l_pos);
         double l_objective = std::stod(l_objective_str);
         std::cout << "Step: " << l_step << "\tObjective : " << l_objective << std::endl;
+#endif // DEBUG_SIMPLEX_SOLVER_GLPK
     }
 
     //-------------------------------------------------------------------------
