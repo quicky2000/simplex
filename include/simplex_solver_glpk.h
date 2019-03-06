@@ -18,7 +18,7 @@
 #ifndef SIMPLEX_SOLVER_GLPK_H
 #define SIMPLEX_SOLVER_GLPK_H
 
-#include "simplex_listener_target_if.h"
+#include "simplex_listener.h"
 #include "simplex_solver_base.h"
 #include "glpk.h"
 #include <string>
@@ -77,14 +77,16 @@ namespace simplex
 
         /**
          * Method implementing simplex algorithm to find max optimum solution
-         * @param reference on variable where result will be stored
-         * @param reference on a boolean value that will receive true if max
+         * @param p_max reference on variable where result will be stored
+         * @param p_infinite reference on a boolean value that will receive true if max
          * is infinite
+         * @param p_listener optional listener to treat iterations information
          * @return value indicating if a max was found
          */
         bool
         find_max(double & p_max
                 ,bool & p_infinite
+                ,simplex_listener<double> *p_listener = NULL
                 );
 
         /**
@@ -130,6 +132,12 @@ namespace simplex
         unsigned int m_nb_variables;
         std::map<std::pair<unsigned int, unsigned int>,double> m_A_coefs;
         bool m_prepared;
+
+        /**
+         * Optional listener when calling find_max
+         * Member value to be accessible from treat_message method
+         */
+        simplex_listener<double> * m_listener;
     };
 
     //-------------------------------------------------------------------------
@@ -142,6 +150,7 @@ namespace simplex
     , m_nb_equations(p_nb_equations)
     , m_nb_variables(p_nb_variables)
     , m_prepared(false)
+    , m_listener(nullptr)
     {
         glp_set_prob_name(m_problem, "Problem");
         glp_add_rows(m_problem, p_nb_equations);
@@ -206,10 +215,12 @@ namespace simplex
 
     //-------------------------------------------------------------------------
     bool
-    simplex_solver_glpk::find_max(double & p_max,
-                                  bool & p_infinite
+    simplex_solver_glpk::find_max(double & p_max
+                                 ,bool & p_infinite
+                                 ,simplex_listener<double> * p_listener
                                  )
     {
+        m_listener = p_listener;
         if(!m_prepared)
         {
             // Complete problem description
@@ -284,6 +295,7 @@ namespace simplex
         }
 
         p_max = glp_get_obj_val(m_problem);
+        m_listener = NULL;
         return true;
     }
 
