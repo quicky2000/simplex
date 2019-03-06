@@ -992,9 +992,11 @@ bool test_simplex_solver_glpk()
     l_glpk.set_A_coef(2, 1, 2.0);
     l_glpk.set_A_coef(2, 2, 6.0);
 
+    simplex_listener<double> l_listener(l_glpk);
+
     double l_max;
     bool l_infinite;
-    l_glpk.find_max(l_max, l_infinite);
+    l_glpk.find_max(l_max, l_infinite, &l_listener);
 
     // Compare string representation to avoid double representation issue
     std::string l_result = std::to_string(l_max);

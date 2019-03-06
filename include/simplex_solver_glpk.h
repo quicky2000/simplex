@@ -303,14 +303,11 @@ namespace simplex
         do
         {
             glp_simplex(m_problem, &l_solver_parameters);
-            std::cout << "STATUS= " << status_to_string(glp_get_status(m_problem)) << std::endl;
-            for (unsigned int l_index = 0;
-                 l_index < m_nb_variables;
-                 ++l_index
-                )
+            if(m_listener)
             {
-                std::cout << "Var[" << l_index << "] = " << glp_get_col_prim(m_problem, 1 + l_index) << std::endl;
+                m_listener->new_Z0(glp_get_obj_val(m_problem));
             }
+            std::cout << "STATUS= " << status_to_string(glp_get_status(m_problem)) << std::endl;
         }
         while(GLP_FEAS == glp_get_status(m_problem));
         p_max = glp_get_obj_val(m_problem);
@@ -416,7 +413,7 @@ namespace simplex
     simplex_solver_glpk::get_variable_values() const
     {
         assert(m_problem);
-        assert(GLP_FEAS == glp_get_status(m_problem));
+        assert(GLP_FEAS == glp_get_status(m_problem) || GLP_OPT == glp_get_status(m_problem));
         std::vector<double> l_result;
         for (unsigned int l_index = 0;
              l_index < m_nb_variables;
