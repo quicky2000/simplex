@@ -101,6 +101,8 @@ namespace simplex
          * @return
          */
         std::ostream & display_array(std::ostream & p_stream) const override;
+
+        typedef double t_coef_type;
       private:
         /**
          * Method to intercept terminal output from GLPK
