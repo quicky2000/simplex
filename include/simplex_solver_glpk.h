@@ -313,7 +313,7 @@ namespace simplex
             std::cout << "STATUS= " << status_to_string(glp_get_status(m_problem)) << std::endl;
 #endif // DEBUG_SIMPLEX_SOLVER_GLPK
         }
-        while(GLP_FEAS == glp_get_status(m_problem));
+        while(GLP_FEAS == glp_get_status(m_problem) || GLP_INFEAS == glp_get_status(m_problem));
         p_max = glp_get_obj_val(m_problem);
         m_listener = NULL;
         glp_term_hook(NULL, NULL);
@@ -422,7 +422,7 @@ namespace simplex
     simplex_solver_glpk::get_variable_values() const
     {
         assert(m_problem);
-        assert(GLP_FEAS == glp_get_status(m_problem) || GLP_OPT == glp_get_status(m_problem));
+        assert(GLP_FEAS == glp_get_status(m_problem) || GLP_OPT == glp_get_status(m_problem) || GLP_INFEAS == glp_get_status(m_problem));
         std::vector<double> l_result;
         for (unsigned int l_index = 0;
              l_index < m_nb_variables;
