@@ -316,6 +316,7 @@ namespace simplex
         while(GLP_FEAS == glp_get_status(m_problem));
         p_max = glp_get_obj_val(m_problem);
         m_listener = NULL;
+        glp_term_hook(NULL, NULL);
         return true;
     }
 
