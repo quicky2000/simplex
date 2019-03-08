@@ -348,7 +348,7 @@ namespace simplex
             case GLP_FEAS:
                 return "Feasible solution";
             case GLP_INFEAS:
-                return "Ineasible solution";
+                return "Infeasible solution";
             case GLP_NOFEAS:
                 return "No feasible solution";
             case GLP_UNBND:
