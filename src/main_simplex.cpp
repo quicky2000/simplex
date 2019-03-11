@@ -972,7 +972,7 @@ bool test_simplex_identity_solver()
 bool test_simplex_solver_glpk()
 {
     bool l_ok = true;
-    simplex::simplex_solver_glpk l_glpk(3, 3);
+    simplex::simplex_solver_glpk l_glpk(3, 3, 0 , 0);
     l_glpk.set_Z_coef(0, 10.0);
     l_glpk.set_Z_coef(1, 6.0);
     l_glpk.set_Z_coef(2, 4.0);

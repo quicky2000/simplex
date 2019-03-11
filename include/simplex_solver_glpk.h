@@ -34,6 +34,13 @@ namespace simplex
         inline simplex_solver_glpk(unsigned int p_nb_variables
                                   ,unsigned int p_nb_equations
                                   );
+
+        inline simplex_solver_glpk(unsigned int p_nb_variables
+                                  ,unsigned int p_nb_inequations_lt
+                                  ,unsigned int p_nb_equations
+                                  ,unsigned int p_nb_inequations_gt
+                                  );
+
         inline ~simplex_solver_glpk();
 
         /**
@@ -149,22 +156,32 @@ namespace simplex
 
     //-------------------------------------------------------------------------
     simplex_solver_glpk::simplex_solver_glpk(unsigned int p_nb_variables
+                                            ,unsigned int p_nb_inequations_lt
                                             ,unsigned int p_nb_equations
+                                            ,unsigned int p_nb_inequations_gt
                                             )
-    : m_problem(glp_create_prob())
-    , m_B_coefs(new double[p_nb_equations])
-    , m_equation_types(new simplex::equation_type[p_nb_equations])
-    , m_nb_equations(p_nb_equations)
-    , m_nb_variables(p_nb_variables)
-    , m_prepared(false)
-    , m_listener(nullptr)
-    , m_iteration(0)
+            : m_problem(glp_create_prob())
+            , m_B_coefs(new double[p_nb_equations])
+            , m_equation_types(new simplex::equation_type[p_nb_equations])
+            , m_nb_equations(p_nb_equations + p_nb_inequations_gt + p_nb_inequations_lt)
+            , m_nb_variables(p_nb_variables)
+            , m_prepared(false)
+            , m_listener(nullptr)
+            , m_iteration(0)
     {
         glp_set_prob_name(m_problem, "Problem");
-        glp_add_rows(m_problem, p_nb_equations);
+        glp_add_rows(m_problem, m_nb_equations);
         glp_add_cols(m_problem, p_nb_variables);
         memset(m_equation_types, 0, m_nb_equations * sizeof(simplex::equation_type));
         memset(m_B_coefs, 0, m_nb_equations * sizeof(double));
+    }
+
+    //-------------------------------------------------------------------------
+    simplex_solver_glpk::simplex_solver_glpk(unsigned int p_nb_variables
+                                            ,unsigned int p_nb_equations
+                                            )
+                                            :simplex_solver_glpk(p_nb_variables, 0, p_nb_equations, 0)
+    {
     }
 
     //-------------------------------------------------------------------------
