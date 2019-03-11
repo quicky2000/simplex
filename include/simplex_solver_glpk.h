@@ -19,12 +19,14 @@
 #define SIMPLEX_SOLVER_GLPK_H
 
 #include "simplex_listener.h"
-#include "simplex_solver_base.h"
+#include "simplex_map.h"
+#include "simplex_solver.h"
 #include "glpk.h"
 #include <string>
 #include <map>
 #include <cstring>
 #include <cassert>
+#include <vector>
 
 namespace simplex
 {
@@ -109,6 +111,23 @@ namespace simplex
          */
         std::ostream & display_array(std::ostream & p_stream) const override;
 
+        /**
+         * Declare that a variable is a base variable
+         * @param variable index in simplex array
+         */
+        inline
+        void define_base_variable(const unsigned int & p_variable_index);
+
+#ifdef SIMPLEX_SELF_TEST
+        /**
+         *  Method checking if variable values passed as parameters respect
+         *  simplex problem constraints
+         * @param p_values variable values
+         * @return true if constraints are respected
+         */
+        bool check_variables(const std::vector<double> & p_values);
+#endif // SIMPLEX_SELF_TEST
+
         typedef double t_coef_type;
       private:
         /**
@@ -135,9 +154,9 @@ namespace simplex
         std::string status_to_string(int p_status);
 
         glp_prob * m_problem;
+        unsigned int m_nb_equations;
         double * m_B_coefs;
         simplex::equation_type * m_equation_types;
-        unsigned int m_nb_equations;
         unsigned int m_nb_variables;
         std::map<std::pair<unsigned int, unsigned int>,double> m_A_coefs;
         bool m_prepared;
@@ -152,6 +171,14 @@ namespace simplex
          * Store iteration number
          */
         uint64_t m_iteration;
+
+#ifdef SIMPLEX_SELF_TEST
+        /**
+         * My own simplex solver to perform some operations used in tests that
+         * are not implemented by GLPK
+         */
+        simplex_solver<double,simplex_map<double>> m_my_solver;
+#endif // SIMPLEX_SELF_TEST
     };
 
     //-------------------------------------------------------------------------
@@ -161,13 +188,16 @@ namespace simplex
                                             ,unsigned int p_nb_inequations_gt
                                             )
             : m_problem(glp_create_prob())
-            , m_B_coefs(new double[p_nb_equations])
-            , m_equation_types(new simplex::equation_type[p_nb_equations])
             , m_nb_equations(p_nb_equations + p_nb_inequations_gt + p_nb_inequations_lt)
+            , m_B_coefs(new double[m_nb_equations])
+            , m_equation_types(new simplex::equation_type[m_nb_equations])
             , m_nb_variables(p_nb_variables)
             , m_prepared(false)
             , m_listener(nullptr)
             , m_iteration(0)
+#ifdef SIMPLEX_SELF_TEST
+            , m_my_solver(p_nb_variables, p_nb_inequations_lt, p_nb_equations, p_nb_inequations_gt)
+#endif // SIMPLEX_SELF_TEST
     {
         glp_set_prob_name(m_problem, "Problem");
         glp_add_rows(m_problem, m_nb_equations);
@@ -201,6 +231,9 @@ namespace simplex
         assert(p_index < m_nb_variables);
         assert(!m_prepared);
         glp_set_obj_coef(m_problem, 1 + p_index, p_value);
+#ifdef SIMPLEX_SELF_TEST
+        m_my_solver.set_Z_coef(p_index, p_value);
+#endif // SIMPLEX_SELF_TEST
     }
 
     //-------------------------------------------------------------------------
@@ -212,6 +245,9 @@ namespace simplex
         assert(p_index < m_nb_equations);
         assert(!m_prepared);
         m_B_coefs[p_index] = p_value;
+#ifdef SIMPLEX_SELF_TEST
+        m_my_solver.set_B_coef(p_index, p_value);
+#endif // SIMPLEX_SELF_TEST
     }
 
     //-------------------------------------------------------------------------
@@ -225,6 +261,9 @@ namespace simplex
         assert(p_equation_index < m_nb_equations);
         assert(!m_prepared);
         m_A_coefs[std::pair<unsigned int, unsigned int>(p_equation_index, p_variable_index)] = p_value;
+#ifdef SIMPLEX_SELF_TEST
+        m_my_solver.set_A_coef(p_equation_index, p_variable_index, p_value);
+#endif // SIMPLEX_SELF_TEST
     }
 
     //-------------------------------------------------------------------------
@@ -236,6 +275,9 @@ namespace simplex
         assert(p_equation_index < m_nb_equations);
         assert(!m_prepared);
         m_equation_types[p_equation_index] = p_equation_type;
+#ifdef SIMPLEX_SELF_TEST
+        m_my_solver.define_equation_type(p_equation_index, p_equation_type);
+#endif // SIMPLEX_SELF_TEST
     }
 
     //-------------------------------------------------------------------------
@@ -459,6 +501,24 @@ namespace simplex
         // this time
         return p_stream;
     }
+
+    //-------------------------------------------------------------------------
+    void
+    simplex_solver_glpk::define_base_variable(const unsigned int & p_variable_index)
+    {
+#ifdef SIMPLEX_SELF_TEST
+        m_my_solver.define_base_variable(p_variable_index);
+#endif // SIMPLEX_SELF_TEST
+    }
+
+#ifdef SIMPLEX_SELF_TEST
+    //-------------------------------------------------------------------------
+    bool
+    simplex_solver_glpk::check_variables(const std::vector<double> & p_values)
+    {
+        return m_my_solver.check_variables(p_values);
+    }
+#endif // SIMPLEX_SELF_TEST
 
 }
 #endif //SIMPLEX_SOLVER_GLPK_H

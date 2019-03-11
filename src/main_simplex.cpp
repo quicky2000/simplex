@@ -67,6 +67,8 @@ int main(int argc,char ** argv)
 
         l_ok &= test_simplex_identity_solver();
 
+        std::cout << "============ TEST CASE 1 GLPK ==============" << std::endl;
+        l_ok &= test_case1<simplex::simplex_solver_glpk>();
         std::cout << "============ TEST CASE 1 ==============" << std::endl;
         l_ok &= test_case1<simplex::simplex_solver<double>>();
         std::cout << "============ TEST CASE 1 ==============" << std::endl;
@@ -89,6 +91,8 @@ int main(int argc,char ** argv)
         l_ok &= test_case2<simplex::simplex_solver_integer_ppcm<int32_t>>();
         std::cout << "============ TEST CASE 2 " << type_string<quicky_utils::fract<ext_int<int32_t>>>::name() << " ==============" << std::endl;
         l_ok &= test_case2<simplex::simplex_solver<quicky_utils::fract<quicky_utils::ext_int<int32_t>>>>();
+        std::cout << "============ TEST CASE 2 GLPK ==============" << std::endl;
+        l_ok &= test_case2<simplex::simplex_solver_glpk>();
         std::cout << "============ TEST CASE 3 ==============" << std::endl;
         l_ok &= test_case3<simplex::simplex_solver<double>>("double");
         std::cout << "============ TEST CASE 3 bis ==============" << std::endl;
@@ -97,6 +101,8 @@ int main(int argc,char ** argv)
         l_ok &= test_case3<simplex::simplex_solver_integer_ppcm<int32_t>>("integer_ppcm");
         std::cout << "============ TEST CASE 3 " << type_string<quicky_utils::fract<ext_int<int32_t>>>::name() << " ==============" << std::endl;
         l_ok &= test_case3<simplex::simplex_solver<quicky_utils::fract<quicky_utils::ext_int<int32_t>>>>("toto");
+        std::cout << "============ TEST CASE 3 GLPK ==============" << std::endl;
+        l_ok &= test_case3<simplex::simplex_solver_glpk>("glpk");
     }
     catch(quicky_exception::quicky_runtime_exception & e)
     {
@@ -153,13 +159,6 @@ bool test_case1()
     if(l_simplex.find_max(l_max,l_infinite,&l_listener))
     {
         std::cout << "Max = " << l_max << std::endl ;
-        for(unsigned int l_index = 0;
-            l_index < l_simplex.get_total_nb_equation();
-            ++l_index
-           )
-        {
-            std::cout << "Base variable[" << l_index << "] is X" << l_simplex.get_base_variable(l_index) + 1 << std::endl;
-        }
         assert(l_simplex.check_variables({typename SIMPLEX_TYPE::t_coef_type(0),
                                           typename SIMPLEX_TYPE::t_coef_type(1),
                                           typename SIMPLEX_TYPE::t_coef_type(2)
