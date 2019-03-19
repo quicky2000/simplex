@@ -884,12 +884,12 @@ namespace simplex
     simplex_solver_base<COEF_TYPE, ARRAY_TYPE>::get_variable_values() const
     {
         std::vector<COEF_TYPE> l_result(m_nb_variables, (COEF_TYPE)0);
-        my_square_matrix<COEF_TYPE> l_matrix(m_nb_equations);
-        my_matrix<COEF_TYPE> l_coefs(m_nb_equations, 1);
+        my_square_matrix<COEF_TYPE> l_matrix(m_nb_total_equations);
+        my_matrix<COEF_TYPE> l_coefs(m_nb_total_equations, 1);
         // Create Equation system
-        for(unsigned int l_equation_index = 0; l_equation_index < m_nb_equations; ++l_equation_index)
+        for(unsigned int l_equation_index = 0; l_equation_index < m_nb_total_equations; ++l_equation_index)
         {
-            for(unsigned int l_variable_index = 0; l_variable_index < m_nb_equations; ++l_variable_index)
+            for(unsigned int l_variable_index = 0; l_variable_index < m_nb_total_equations; ++l_variable_index)
             {
                 l_matrix.set_data(l_equation_index, l_variable_index, m_array.get_A_coef(l_equation_index, get_base_variable(l_variable_index)));
             }
@@ -898,12 +898,16 @@ namespace simplex
         my_equation_system<COEF_TYPE> l_equation_system(l_matrix, l_coefs);
 
         my_matrix<COEF_TYPE> l_result_matrix = l_equation_system.solve();
-        assert(l_result_matrix.get_height() == m_nb_equations);
+        assert(l_result_matrix.get_height() == m_nb_total_equations);
 
         // Fill result
-        for(unsigned int l_index = 0; l_index < m_nb_equations; ++l_index)
+        for(unsigned int l_index = 0; l_index < m_nb_variables; ++l_index)
         {
-            l_result[get_base_variable(l_index)] = l_result_matrix.get_data(l_index, 0);
+            unsigned int l_base_variable_index = get_base_variables_position(l_index);
+            if(l_base_variable_index != ::std::numeric_limits<unsigned int>::max())
+            {
+                l_result[l_index] = l_result_matrix.get_data(l_base_variable_index,0);
+            }
         }
         return l_result;
     }

@@ -101,8 +101,8 @@ int main(int argc,char ** argv)
         l_ok &= test_case3<simplex::simplex_solver_integer_ppcm<int32_t>>("integer_ppcm");
         std::cout << "============ TEST CASE 3 " << type_string<quicky_utils::fract<ext_int<int32_t>>>::name() << " ==============" << std::endl;
         l_ok &= test_case3<simplex::simplex_solver<quicky_utils::fract<quicky_utils::ext_int<int32_t>>>>("toto");
-        std::cout << "============ TEST CASE 3 GLPK ==============" << std::endl;
-        l_ok &= test_case3<simplex::simplex_solver_glpk>("glpk");
+        //std::cout << "============ TEST CASE 3 GLPK ==============" << std::endl;
+        //l_ok &= test_case3<simplex::simplex_solver_glpk>("glpk");
     }
     catch(quicky_exception::quicky_runtime_exception & e)
     {
@@ -177,6 +177,13 @@ bool test_case1()
         std::cout << "No Max found !?" << std::endl;
     }
     l_ok &= quicky_test::check_expected<typename SIMPLEX_TYPE::t_coef_type>(l_max, (typename SIMPLEX_TYPE::t_coef_type)10,"Result test case 1");
+    std::vector<typename SIMPLEX_TYPE::t_coef_type> l_variable_values = l_simplex.get_variable_values();
+    assert(5 == l_variable_values.size());
+    l_ok &= quicky_test::check_expected(l_variable_values[0], typename SIMPLEX_TYPE::t_coef_type(0), "Variable[0]");
+    l_ok &= quicky_test::check_expected(l_variable_values[1], typename SIMPLEX_TYPE::t_coef_type(1), "Variable[1]");
+    l_ok &= quicky_test::check_expected(l_variable_values[2], typename SIMPLEX_TYPE::t_coef_type(2), "Variable[2]");
+    l_ok &= quicky_test::check_expected(l_variable_values[3], typename SIMPLEX_TYPE::t_coef_type(0), "Variable[3]");
+    l_ok &= quicky_test::check_expected(l_variable_values[4], typename SIMPLEX_TYPE::t_coef_type(0), "Variable[4]");
     return l_ok;
 }
 
@@ -256,6 +263,10 @@ bool test_case2()
         std::cout << "No Max found !?" << std::endl;
     }
     l_ok &= quicky_test::check_expected<typename SIMPLEX_TYPE::t_coef_type>(l_max, (typename SIMPLEX_TYPE::t_coef_type)27000, "Result test case 2");
+    std::vector<typename SIMPLEX_TYPE::t_coef_type> l_variable_values = l_simplex.get_variable_values();
+    assert(2 == l_variable_values.size());
+    l_ok &= quicky_test::check_expected(l_variable_values[0], (typename SIMPLEX_TYPE::t_coef_type)15, "Variable[0]");
+    l_ok &= quicky_test::check_expected(l_variable_values[1], (typename SIMPLEX_TYPE::t_coef_type)10, "Variable[1]");
     return l_ok;
 }
 
@@ -924,6 +935,25 @@ test_case3(const std::string & p_suffix)
     }
     l_ok &= quicky_test::check_expected<typename SIMPLEX_TYPE::t_coef_type>(l_max, (typename SIMPLEX_TYPE::t_coef_type)3, "Result of test case 3");
     l_output_file.close();
+    std::vector<typename SIMPLEX_TYPE::t_coef_type> l_variable_values = l_simplex.get_variable_values();
+    l_ok &= quicky_test::check_expected(l_variable_values[0], (typename SIMPLEX_TYPE::t_coef_type)0, "Variable[0]");
+    l_ok &= quicky_test::check_expected(l_variable_values[1], (typename SIMPLEX_TYPE::t_coef_type)1, "Variable[1]");
+    l_ok &= quicky_test::check_expected(l_variable_values[2], (typename SIMPLEX_TYPE::t_coef_type)0, "Variable[2]");
+    l_ok &= quicky_test::check_expected(l_variable_values[3], (typename SIMPLEX_TYPE::t_coef_type)0, "Variable[3]");
+    l_ok &= quicky_test::check_expected(l_variable_values[4], (typename SIMPLEX_TYPE::t_coef_type)0, "Variable[4]");
+    l_ok &= quicky_test::check_expected(l_variable_values[5], (typename SIMPLEX_TYPE::t_coef_type)1, "Variable[5]");
+    l_ok &= quicky_test::check_expected(l_variable_values[6], (typename SIMPLEX_TYPE::t_coef_type)1, "Variable[6]");
+    l_ok &= quicky_test::check_expected(l_variable_values[7], (typename SIMPLEX_TYPE::t_coef_type)0, "Variable[7]");
+    l_ok &= quicky_test::check_expected(l_variable_values[8], (typename SIMPLEX_TYPE::t_coef_type)0, "Variable[8]");
+    l_ok &= quicky_test::check_expected(l_variable_values[9], (typename SIMPLEX_TYPE::t_coef_type)0, "Variable[9]");
+    l_ok &= quicky_test::check_expected(l_variable_values[10], (typename SIMPLEX_TYPE::t_coef_type)0, "Variable[10]");
+    l_ok &= quicky_test::check_expected(l_variable_values[11], (typename SIMPLEX_TYPE::t_coef_type)0, "Variable[11]");
+    l_ok &= quicky_test::check_expected(l_variable_values[12], (typename SIMPLEX_TYPE::t_coef_type)0, "Variable[12]");
+    l_ok &= quicky_test::check_expected(l_variable_values[13], (typename SIMPLEX_TYPE::t_coef_type)0, "Variable[13]");
+    l_ok &= quicky_test::check_expected(l_variable_values[14], (typename SIMPLEX_TYPE::t_coef_type)0, "Variable[14]");
+    l_ok &= quicky_test::check_expected(l_variable_values[15], (typename SIMPLEX_TYPE::t_coef_type)0, "Variable[15]");
+    l_ok &= quicky_test::check_expected(l_variable_values[16], (typename SIMPLEX_TYPE::t_coef_type)0, "Variable[16]");
+    l_ok &= quicky_test::check_expected(l_variable_values[17], (typename SIMPLEX_TYPE::t_coef_type)0, "Variable[17]");
     return l_ok;
 }
 
@@ -965,6 +995,11 @@ bool test_simplex_identity_solver()
         std::cout << "No Max found !?" << std::endl;
     }
     l_ok &= quicky_test::check_expected(l_max, 10.0, "Result of test_simplex_identity_solver");
+    std::vector<double> l_variable_values = l_identity_solver.get_variable_values();
+    assert(3 == l_variable_values.size());
+    l_ok &= quicky_test::check_expected(l_variable_values[0], 0.0, "Variable[0]");
+    l_ok &= quicky_test::check_expected(l_variable_values[1], 1.0, "Variable[1]");
+    l_ok &= quicky_test::check_expected(l_variable_values[2], 2.0, "Variable[2]");
     return l_ok;
 }
 
