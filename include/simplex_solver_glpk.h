@@ -153,6 +153,9 @@ namespace simplex
         static inline
         std::string status_to_string(int p_status);
 
+        static inline
+        std::string return_to_string(int p_return);
+
         glp_prob * m_problem;
         unsigned int m_nb_equations;
         double * m_B_coefs;
@@ -363,7 +366,8 @@ namespace simplex
 
         do
         {
-            glp_simplex(m_problem, &l_solver_parameters);
+            int l_return = glp_simplex(m_problem, &l_solver_parameters);
+            std::cout << "Solver return \"" << return_to_string(l_return) << "\"" << std::endl;
             if(m_listener)
             {
                 m_listener->new_Z0(glp_get_obj_val(m_problem));
@@ -419,6 +423,47 @@ namespace simplex
                 return "Undefined solution";
             default:
                 throw quicky_exception::quicky_logic_exception("Uknown GLPK solver status: " + std::to_string(p_status), __LINE__, __FILE__);
+        }
+    }
+
+    //-------------------------------------------------------------------------
+    std::string
+    simplex_solver_glpk::return_to_string(int p_return)
+    {
+        switch(p_return)
+        {
+            case 0:
+                return "Success";
+            case GLP_EBADB:
+                return "Initial base is invalid";
+            case GLP_ESING:
+                return "Basis matrix is singular";
+            case GLP_ECOND:
+                return "Basis matrix is ill conditionned";
+            case GLP_EBOUND:
+                return "Incorrect bounds or fractional bounds";
+            case GLP_EROOT:
+                return "Optimal basis not provided";
+            case GLP_ENOPFS:
+                return "LP relaxation has no primal feasible solution";
+            case GLP_ENODFS:
+                return "LP relaxation has no dual feasible solution";
+            case GLP_EFAIL:
+                return "Solver failure";
+            case GLP_EOBJLL:
+                return "Objective function reach its lower limit";
+            case GLP_EOBJUL:
+                return "Objective function reach its upper limit";
+            case GLP_EMIPGAP:
+                return "Relative mip gap tolerance reached";
+            case GLP_EITLIM:
+                return "Iteration limit exceeded";
+            case GLP_ETMLIM:
+                return "Time limit exceeded";
+            case GLP_ESTOP:
+                return "Premature end by application";
+            default:
+                throw quicky_exception::quicky_logic_exception("Uknown GLPK solver return: " + std::to_string(p_return), __LINE__, __FILE__);
         }
     }
 
