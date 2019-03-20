@@ -23,6 +23,7 @@ set(MY_SOURCE_FILES
     src/test_equation_system.cpp
     include/simplex_listener_target_if.h
     include/simplex_solver_glpk.h
+    include/simplex_listener_if.h
    )
 
 # List header directories in project

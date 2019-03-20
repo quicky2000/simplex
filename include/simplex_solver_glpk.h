@@ -21,6 +21,7 @@
 #include "simplex_listener.h"
 #include "simplex_map.h"
 #include "simplex_solver.h"
+#include "simplex_listener_if.h"
 #include "glpk.h"
 #include <string>
 #include <map>
@@ -95,7 +96,7 @@ namespace simplex
         bool
         find_max(double & p_max
                 ,bool & p_infinite
-                ,simplex_listener<double> *p_listener = NULL
+                ,simplex_listener_if<double> *p_listener = NULL
                 );
 
         /**
@@ -168,7 +169,7 @@ namespace simplex
          * Optional listener when calling find_max
          * Member value to be accessible from treat_message method
          */
-        simplex_listener<double> * m_listener;
+        simplex_listener_if<double> * m_listener;
 
         /**
          * Store iteration number
@@ -287,7 +288,7 @@ namespace simplex
     bool
     simplex_solver_glpk::find_max(double & p_max
                                  ,bool & p_infinite
-                                 ,simplex_listener<double> * p_listener
+                                 ,simplex_listener_if<double> *p_listener
                                  )
     {
         m_listener = p_listener;
