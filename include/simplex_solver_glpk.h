@@ -328,6 +328,9 @@ namespace simplex
                                  ("X" + std::to_string(l_index)).c_str()
                                 );
                 glp_set_col_bnds(m_problem, l_index + 1, GLP_LO, 0.0, 0.0);
+#ifdef USE_MIP_SOLVER
+                glp_set_col_kind(m_problem, l_index + 1, GLP_BV);
+#endif // USE_MIP_SOLVER
             }
             // Coefficient arrays
             int *l_equation_index_list = new int[m_A_coefs.size() + 1];
@@ -348,11 +351,17 @@ namespace simplex
             delete[] l_coef_list;
         }
         glp_set_obj_dir(m_problem, GLP_MAX);
+#ifndef USE_MIP_SOLVER
         glp_smcp l_solver_parameters;
         glp_init_smcp(&l_solver_parameters);
+#else // USE_MIP_SOLVER
+        glp_iocp l_mip_solver_parameter;
+        glp_init_iocp(&l_mip_solver_parameter);
+#endif // USE_MIP_SOLVER
 
         if(m_listener)
         {
+#ifndef USE_MIP_SOLVER
             // Intercept terminal outputs to get iteration number
             glp_term_hook(simplex_solver_glpk::terminal_hook, this);
             l_solver_parameters.out_frq = 1;
@@ -363,22 +372,42 @@ namespace simplex
             // By this way we will got out of solver when iteration limit is
             // reached an be able to access to variable values
             l_solver_parameters.it_lim = 1;
+#else // USE_MIP_SOLVER
+            l_mip_solver_parameter.presolve = GLP_ON;
+            l_mip_solver_parameter.out_frq = 1000;
+#endif // USE_MIP_SOLVER
         }
 
         do
         {
+#ifndef USE_MIP_SOLVER
             int l_return = glp_simplex(m_problem, &l_solver_parameters);
+#else // USE_MIP_SOLVER
+            int l_return = glp_intopt(m_problem, &l_mip_solver_parameter);
+#endif // USE_MIP_SOLVER
             std::cout << "Solver return \"" << return_to_string(l_return) << "\"" << std::endl;
             if(m_listener)
             {
                 m_listener->new_Z0(glp_get_obj_val(m_problem));
             }
 #ifdef DEBUG_SIMPLEX_SOLVER_GLPK
+#ifndef USE_MIP_SOLVER
             std::cout << "STATUS= " << status_to_string(glp_get_status(m_problem)) << std::endl;
+#else // USE_MIP_SOLVER
+            std::cout << "STATUS= " << status_to_string(glp_mip_status(m_problem)) << std::endl;
+#endif // USE_MIP_SOLVER
 #endif // DEBUG_SIMPLEX_SOLVER_GLPK
         }
         while(GLP_FEAS == glp_get_status(m_problem) || GLP_INFEAS == glp_get_status(m_problem));
+#ifndef USE_MIP_SOLVER
         p_max = glp_get_obj_val(m_problem);
+#else // USE_MIP_SOLVER
+        p_max = glp_mip_obj_val(m_problem);
+        if(p_listener)
+        {
+            p_listener->new_Z0(p_max);
+        }
+#endif // USE_MIP_SOLVER
         m_listener = NULL;
         glp_term_hook(NULL, NULL);
         return true;
@@ -527,14 +556,24 @@ namespace simplex
     simplex_solver_glpk::get_variable_values() const
     {
         assert(m_problem);
+#ifndef USE_MIP_SOLVER
+        std::cout << status_to_string(glp_get_status(m_problem)) << std::endl;
         assert(GLP_FEAS == glp_get_status(m_problem) || GLP_OPT == glp_get_status(m_problem) || GLP_INFEAS == glp_get_status(m_problem));
+#else // USE_MIP_SOLVER
+        std::cout << status_to_string(glp_mip_status(m_problem)) << std::endl;
+        assert(GLP_FEAS == glp_mip_status(m_problem) || GLP_OPT == glp_mip_status(m_problem) || GLP_INFEAS == glp_mip_status(m_problem));
+#endif // USE_MIP_SOLVER
         std::vector<double> l_result;
         for (unsigned int l_index = 0;
              l_index < m_nb_variables;
              ++l_index
                 )
         {
+#ifndef USE_MIP_SOLVER
             l_result.push_back(glp_get_col_prim(m_problem, 1 + l_index));
+#else // USE_MIP_SOLVER
+            l_result.push_back(glp_mip_col_val(m_problem, 1 + l_index));
+#endif // USE_MIP_SOLVER
         }
         return l_result;
     }
