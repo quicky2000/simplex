@@ -24,6 +24,7 @@ set(MY_SOURCE_FILES
     include/simplex_listener_target_if.h
     include/simplex_solver_glpk.h
     include/simplex_listener_if.h
+    src/simplex_solver_glpk.cpp
    )
 
 # List header directories in project

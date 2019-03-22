@@ -101,8 +101,9 @@ int main(int argc,char ** argv)
         l_ok &= test_case3<simplex::simplex_solver_integer_ppcm<int32_t>>("integer_ppcm");
         std::cout << "============ TEST CASE 3 " << type_string<quicky_utils::fract<ext_int<int32_t>>>::name() << " ==============" << std::endl;
         l_ok &= test_case3<simplex::simplex_solver<quicky_utils::fract<quicky_utils::ext_int<int32_t>>>>("toto");
-        //std::cout << "============ TEST CASE 3 GLPK ==============" << std::endl;
-        //l_ok &= test_case3<simplex::simplex_solver_glpk>("glpk");
+        simplex_solver_glpk::use_mip(true);
+        std::cout << "============ TEST CASE 3 GLPK ==============" << std::endl;
+        l_ok &= test_case3<simplex::simplex_solver_glpk>("glpk");
     }
     catch(quicky_exception::quicky_runtime_exception & e)
     {
