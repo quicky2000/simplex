@@ -364,6 +364,7 @@ namespace simplex
     };
 
     //----------------------------------------------------------------------------
+    inline
     std::ostream &
     operator<<(std::ostream & p_stream,
                const t_equation_type & p_equation_type

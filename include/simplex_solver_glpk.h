@@ -93,6 +93,7 @@ namespace simplex
          * @param p_listener optional listener to treat iterations information
          * @return value indicating if a max was found
          */
+        inline
         bool
         find_max(double & p_max
                 ,bool & p_infinite
@@ -103,6 +104,7 @@ namespace simplex
          * Return values of variable at current iteration
          * @return
          */
+        inline
         std::vector<double> get_variable_values() const override;
 
         /**
@@ -110,6 +112,7 @@ namespace simplex
          * @param p_stream
          * @return
          */
+        inline
         std::ostream & display_array(std::ostream & p_stream) const override;
 
         /**
@@ -126,6 +129,7 @@ namespace simplex
          * @param p_values variable values
          * @return true if constraints are respected
          */
+        inline
         bool check_variables(const std::vector<double> & p_values);
 #endif // SIMPLEX_SELF_TEST
 
@@ -146,6 +150,7 @@ namespace simplex
          * Method treating messages sent by GLPK to terminal output
          * @param p_msg message to be analyzed
          */
+        inline
         void treat_message(const std::string & p_msg);
 
         static inline
