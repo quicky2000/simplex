@@ -32,6 +32,7 @@ namespace simplex
       public:
         virtual std::ostream & display_array(std::ostream & p_stream) const = 0;
         virtual std::vector<COEF_TYPE> get_variable_values() const = 0;
+        inline virtual ~simplex_listener_target_if(){};
       private:
     };
 }
