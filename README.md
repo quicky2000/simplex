@@ -3,7 +3,7 @@ Simplex
 
 Library implementing simplex algorithm used in operational research
 
-Continuous integration with [Travis-Ci](https://travis-ci.org/quicky2000/simplex) : ![Build Status](https://travis-ci.org/quicky2000/simplex.svg?branch=master)
+Continuous integration with [Travis-Ci](https://travis-ci.com/quicky2000/simplex) : ![Build Status](https://travis-ci.com/quicky2000/simplex.svg?branch=master)
 
 License
 -------
@@ -13,7 +13,7 @@ Build
 -----
 
 Build process is the same used in [Travis file](.travis.yml)
-Reference build can be found [here](https://travis-ci.org/quicky2000/simplex)
+Reference build can be found [here](https://travis-ci.com/quicky2000/simplex)
 
 ```
 MY_LOCATION=`pwd`
